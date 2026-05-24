@@ -8,7 +8,7 @@ export default function Home() {
         <Link href="#" className="nowrap-link" id="link-ulises">
           Ulises Reyes-Kaura
         </Link>
-        , I am a product designer and professor based in{" "}
+        . I am a product designer and professor based in{" "}
         <Link href="#" id="link-philadelphia">
           Philadelphia
         </Link>
