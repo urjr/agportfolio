@@ -1,0 +1,111 @@
+// Brand Identity Variables
+$color-bg: #ffffff;
+$color-text: #000000;
+$font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+$header-height: 60px;
+$footer-height: 60px;
+
+// Simple Reset
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  background-color: $color-bg;
+  color: $color-text;
+  font-family: $font-family;
+  overflow-x: hidden;
+  height: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+
+  &:hover {
+    opacity: 0.6;
+  }
+}
+
+// Navigation Styles
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: $header-height;
+  background-color: rgba($color-bg, 0.85);
+  backdrop-filter: blur(8px);
+  z-index: 100;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .nav-links {
+    display: flex;
+    gap: 2.5rem;
+    list-style: none;
+    font-size: 0.85rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+}
+
+// Footer Styles
+.footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: $footer-height;
+  background-color: rgba($color-bg, 0.85);
+  backdrop-filter: blur(8px);
+  z-index: 100;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .footer-links {
+    display: flex;
+    gap: 2.5rem;
+    list-style: none;
+    font-size: 0.85rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+}
+
+// Main Content Section
+.main-content {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: #{$header-height} 1.5rem #{$footer-height} 1.5rem;
+  text-align: center;
+}
+
+// Fluid Typography for "Hello World" to fill the screen
+.hero-title {
+  font-size: clamp(3rem, 13vw, 16rem);
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  line-height: 0.85;
+  text-align: center;
+  white-space: nowrap;
+  user-select: none;
+
+  @media (max-width: 580px) {
+    white-space: normal;
+    font-size: clamp(3rem, 15vw, 6.5rem);
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+  }
+}
