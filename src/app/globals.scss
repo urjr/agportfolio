@@ -118,4 +118,36 @@ a {
     line-height: 0.95;
     letter-spacing: -0.02em;
   }
+
+  // Biography/Introduction specific layout adjustments
+  &.intro-title {
+    font-size: clamp(1.8rem, 4.2vw, 4.2rem);
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    text-align: left;
+    white-space: normal;
+    max-width: 1200px;
+    user-select: text;
+
+    a {
+      border-bottom: 2px solid currentColor;
+      padding-bottom: 2px;
+      transition: opacity 0.2s ease;
+
+      &:hover {
+        opacity: 0.5;
+      }
+    }
+
+    .nowrap-link {
+      white-space: nowrap;
+    }
+
+    @media (max-width: 580px) {
+      font-size: clamp(1.6rem, 7vw, 2.5rem);
+      line-height: 1.2;
+      text-align: left;
+    }
+  }
 }
