@@ -56,24 +56,28 @@ export default function TransitionProvider({ children }: { children: ReactNode }
     const main = document.querySelector("main.main-content");
     if (!main) return;
 
-    // 1. Always split text nodes on mount so they are ready in the DOM to animate out
-    const blocks = main.querySelectorAll("h1, p, h2, h3, li, blockquote");
-    blocks.forEach((block) => {
-      Array.from(block.childNodes).forEach(processNode);
-    });
-
     if (!hasNavigatedRef.current) {
-      // Direct load: Skip entry transitions, render fully visible immediately with no animations
-      const words = Array.from(main.querySelectorAll(".transition-word"));
-      words.forEach((word) => {
-        const el = word as HTMLElement;
-        el.style.transition = "none";
-        el.style.transitionDelay = "0s";
-        el.style.opacity = "1";
-        el.style.transform = "none";
-      });
-      setIsActive(true);
-      return;
+      // Direct load: Wait a tiny beat for hydration, split text, and render instantly with no animations
+      const directTimer = setTimeout(() => {
+        const blocks = main.querySelectorAll("h1, p, h2, h3, li, blockquote");
+        blocks.forEach((block) => {
+          Array.from(block.childNodes).forEach(processNode);
+        });
+
+        const words = Array.from(main.querySelectorAll(".transition-word"));
+        words.forEach((word) => {
+          const el = word as HTMLElement;
+          el.style.transition = "none";
+          el.style.transitionDelay = "0s";
+          el.style.opacity = "1";
+          el.style.transform = "none";
+        });
+        setIsActive(true);
+      }, 50); // Safe 50ms hydration buffer
+
+      return () => {
+        clearTimeout(directTimer);
+      };
     }
 
     // Client-side link was clicked: Run transition out, then enter transition with a clean beat pause
@@ -82,6 +86,12 @@ export default function TransitionProvider({ children }: { children: ReactNode }
     setIsPending(true); // Hide container instantly to avoid pop-in/flash
 
     const transitionTimer = setTimeout(() => {
+      // 1. Split text nodes on the fully loaded and stable React DOM
+      const blocks = main.querySelectorAll("h1, p, h2, h3, li, blockquote");
+      blocks.forEach((block) => {
+        Array.from(block.childNodes).forEach(processNode);
+      });
+
       // 2. Perform responsive offsetTop sorting to group parsed items into perfect lines
       const words = Array.from(main.querySelectorAll(".transition-word"));
       const linesMap = new Map<number, HTMLElement[]>();
@@ -111,6 +121,7 @@ export default function TransitionProvider({ children }: { children: ReactNode }
       sortedKeys.forEach((key, lineIndex) => {
         const els = linesMap.get(key)!;
         els.forEach((el) => {
+          el.style.transition = ""; // Restore default CSS transition (clear "none" values)
           el.style.transitionDelay = `${lineIndex * 0.08}s`;
         });
       });
