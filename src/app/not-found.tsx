@@ -77,9 +77,9 @@ export default function NotFound() {
           const rand = Math.random();
           
           if (isHoveredRef.current) {
-            // Intense horizontal tearing / wave jitter when hovered (up to 45px displacement)
+            // Refined horizontal tearing / wave jitter when hovered (up to 16px displacement to prevent text overlapping)
             if (rand > 0.3) {
-              jitter = (Math.random() - 0.5) * 45;
+              jitter = (Math.random() - 0.5) * 16;
             }
           } else {
             // Subtle, eerie digital vibration when idle
