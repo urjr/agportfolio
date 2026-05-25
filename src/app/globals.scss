@@ -176,7 +176,7 @@ a {
 
   // Biography/Introduction specific layout adjustments
   &.intro-title {
-    font-size: clamp(2.4rem, 4.5vw, 4.2rem); // Increased minimum size and multiplier to maintain distinct hierarchy over the subtitle in tablet viewports
+    font-size: clamp(2.6rem, 4.5vw, 4.2rem); // Adjusted minimum to 2.6rem to keep a perfect 1.6 contrast ratio against the subtitle in portrait tablets (768px)
     font-weight: 400;
     line-height: 1.15;
     letter-spacing: -0.02em;
