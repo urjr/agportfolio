@@ -5,7 +5,7 @@ export default function Home() {
     <main className="main-content">
       <div className="bio-container">
         <h1 className="hero-title intro-title first-line" id="hero-title">
-          I'm{" "}
+          My name is{" "}
           <Link href="#" className="nowrap-link" id="link-ulises">
             Ulises Reyes-Kaura
           </Link>
