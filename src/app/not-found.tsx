@@ -22,15 +22,10 @@ export default function NotFound() {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    // Set high-resolution canvas dimensions
-    const width = 500;
-    const height = 300;
-    canvas.width = width;
-    canvas.height = height;
-
     const img = new Image();
     let animationId: number;
     let loaded = false;
+    let cleanupResize: (() => void) | null = null;
 
     const handleLoad = () => {
       if (loaded) return;
@@ -39,36 +34,41 @@ export default function NotFound() {
 
       // Create an offscreen canvas to pre-render the static base image
       const offscreen = document.createElement("canvas");
-      offscreen.width = width;
-      offscreen.height = height;
       const oCtx = offscreen.getContext("2d");
       if (!oCtx) return;
 
-      // Center and scale the image inside the offscreen canvas (contain fit)
-      const imgRatio = img.naturalWidth / img.naturalHeight;
-      const canvasRatio = width / height;
-      let dWidth = width;
-      let dHeight = height;
-      let dx = 0;
-      let dy = 0;
+      const resize = () => {
+        const w = window.innerWidth;
+        const h = 320; // Perfect responsive height for the 404 graphic container
+        canvas.width = w;
+        canvas.height = h;
 
-      if (imgRatio > canvasRatio) {
-        dHeight = width / imgRatio;
-        dy = (height - dHeight) / 2;
-      } else {
-        dWidth = height * imgRatio;
-        dx = (width - dWidth) / 2;
-      }
+        offscreen.width = w;
+        offscreen.height = h;
+        oCtx.clearRect(0, 0, w, h);
 
-      // Draw the custom 404.png graphic (already white text on a black background) directly
-      oCtx.drawImage(img, dx, dy, dWidth, dHeight);
+        const imgRatio = img.naturalWidth / img.naturalHeight;
+        // Keep asset same size (max 500px, or slightly smaller on screens narrower than 540px)
+        const dWidth = Math.min(500, w - 40);
+        const dHeight = dWidth / imgRatio;
+        const dx = (w - dWidth) / 2;
+        const dy = (h - dHeight) / 2;
+
+        oCtx.drawImage(img, dx, dy, dWidth, dHeight);
+      };
+
+      resize();
+      window.addEventListener("resize", resize);
+      cleanupResize = () => window.removeEventListener("resize", resize);
 
       const render = () => {
-        ctx.clearRect(0, 0, width, height);
+        const w = canvas.width;
+        const h = canvas.height;
+        ctx.clearRect(0, 0, w, h);
 
         // Slices the offscreen pre-rendered image into horizontal bands and draws them with dynamic jitter
         const sliceCount = 45;
-        const sliceHeight = height / sliceCount;
+        const sliceHeight = h / sliceCount;
 
         for (let i = 0; i < sliceCount; i++) {
           const sy = i * sliceHeight;
@@ -77,9 +77,9 @@ export default function NotFound() {
           const rand = Math.random();
           
           if (isHoveredRef.current) {
-            // Intense horizontal tearing / wave jitter when hovered
+            // Intense horizontal tearing / wave jitter when hovered (up to 45px displacement)
             if (rand > 0.3) {
-              jitter = (Math.random() - 0.5) * 35;
+              jitter = (Math.random() - 0.5) * 45;
             }
           } else {
             // Subtle, eerie digital vibration when idle
@@ -92,11 +92,11 @@ export default function NotFound() {
             offscreen,
             0,
             sy,
-            width,
+            w,
             sliceHeight,
             jitter,
             sy,
-            width,
+            w,
             sliceHeight
           );
         }
@@ -104,11 +104,11 @@ export default function NotFound() {
         // Occasional digital chromatic aberration split bars
         if (Math.random() > (isHoveredRef.current ? 0.45 : 0.96)) {
           ctx.fillStyle = isHoveredRef.current ? "rgba(0, 255, 240, 0.45)" : "rgba(0, 255, 240, 0.25)"; // Cyan chromatic slice
-          ctx.fillRect(0, Math.random() * height, width, Math.random() * 8);
+          ctx.fillRect(0, Math.random() * h, w, Math.random() * 8);
         }
         if (Math.random() > (isHoveredRef.current ? 0.45 : 0.96)) {
           ctx.fillStyle = isHoveredRef.current ? "rgba(255, 0, 193, 0.45)" : "rgba(255, 0, 193, 0.25)"; // Magenta chromatic slice
-          ctx.fillRect(0, Math.random() * height, width, Math.random() * 8);
+          ctx.fillRect(0, Math.random() * h, w, Math.random() * 8);
         }
 
         animationId = requestAnimationFrame(render);
@@ -136,6 +136,9 @@ export default function NotFound() {
       if (animationId) {
         cancelAnimationFrame(animationId);
       }
+      if (cleanupResize) {
+        cleanupResize();
+      }
     };
   }, []); // Run EXACTLY once on mount
 
@@ -148,7 +151,7 @@ export default function NotFound() {
         alignItems: "center",
         justifyContent: "center",
         minHeight: "100vh", 
-        padding: 0, // Override main-content's header/footer paddings to perfectly center content
+        padding: "80px 0 0 0", // Top padding to clear the reintroduced inverted navbar elegantly
         backgroundColor: "#000000", // Pure black background
         color: "#ffffff", // Pure white text
         transition: "background-color 0.3s ease",
@@ -156,9 +159,89 @@ export default function NotFound() {
         position: "absolute",
         left: 0,
         top: 0,
-        zIndex: 100, // Mounts over navigation layers to highlight the isolated 404 broken state
+        zIndex: 100, // Mounts over root pages to showcase the isolated 404 state
       }}
     >
+      {/* Custom Inverted Navbar */}
+      <header 
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "70px",
+          backgroundColor: "rgba(0, 0, 0, 0.85)", // Inverted dark background
+          backdropFilter: "blur(8px)",
+          borderBottom: "1px solid rgba(255, 255, 255, 0.15)", // Premium subtle border
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          padding: "0 2rem",
+          zIndex: 110, // Renders above main 404 content
+        }}
+      >
+        <div 
+          style={{
+            position: "absolute",
+            left: "2rem",
+            fontFamily: "'Pecita', cursive, serif",
+            fontSize: "1.4rem",
+            fontWeight: "normal",
+            textTransform: "none",
+          }}
+        >
+          <Link href="/" style={{ color: "#ffffff", textDecoration: "none" }}>
+            U R-K
+          </Link>
+        </div>
+        <nav aria-label="Main Navigation">
+          <ul 
+            style={{
+              display: "flex",
+              gap: "2.5rem",
+              listStyle: "none",
+              fontSize: "0.85rem",
+              letterSpacing: "0.1em",
+              textTransform: "uppercase",
+              fontFamily: "'Gabarito', sans-serif",
+              fontWeight: 500,
+              padding: 0,
+              margin: 0,
+            }}
+          >
+            <li>
+              <Link 
+                href="/work" 
+                style={{ 
+                  color: "#ffffff", 
+                  textDecoration: "none",
+                  transition: "color 0.2s"
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.color = "#ff00c1"}
+                onMouseLeave={(e) => e.currentTarget.style.color = "#ffffff"}
+              >
+                Work
+              </Link>
+            </li>
+            <li>
+              <Link 
+                href="/about" 
+                style={{ 
+                  color: "#ffffff", 
+                  textDecoration: "none",
+                  transition: "color 0.2s"
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.color = "#ff00c1"}
+                onMouseLeave={(e) => e.currentTarget.style.color = "#ffffff"}
+              >
+                About
+              </Link>
+            </li>
+          </ul>
+        </nav>
+      </header>
+
+      {/* Full-width glitch viewport container */}
       <div
         ref={containerRef}
         onMouseEnter={() => setIsHovered(true)}
@@ -169,17 +252,17 @@ export default function NotFound() {
           justifyContent: "center",
           alignItems: "center",
           minHeight: "320px",
-          width: "100%",
-          maxWidth: "500px",
+          width: "100%", // Span full width of screen
           userSelect: "none",
           position: "relative",
+          overflow: "hidden", // Prevents horizontal scrollbars during canvas horizontal jitter
         }}
       >
         <canvas 
           ref={canvasRef} 
           style={{ 
-            maxWidth: "100%", 
-            height: "auto", 
+            width: "100%", 
+            height: "100%", 
             display: imageLoaded ? "block" : "none" 
           }} 
         />
@@ -202,7 +285,7 @@ export default function NotFound() {
         style={{
           marginTop: "1.5rem",
           fontSize: "0.68rem",
-          color: "#aaaaaa", // Slightly lighter grey for readability against black
+          color: "#aaaaaa", // Lighter grey for readability
           letterSpacing: "0.03em",
           textAlign: "center",
           fontFamily: "'Gabarito', sans-serif",
@@ -229,7 +312,7 @@ export default function NotFound() {
           fontSize: "0.85rem",
           letterSpacing: "0.15em",
           fontFamily: "'Gabarito', sans-serif",
-          fontWeight: 900, // ExtraBold sans-serif font
+          fontWeight: 900, // ExtraBold
           borderBottom: "2px solid #ffffff",
           paddingBottom: "4px",
           color: "#ffffff",
