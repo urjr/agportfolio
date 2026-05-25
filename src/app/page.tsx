@@ -19,18 +19,12 @@ export default function Home() {
           </Link>{" "}
           based in{" "}
           <Link href="#" id="link-philadelphia" className="philly-svg-link">
-            <span className="philly-svg-wrapper">
-              <img
-                src="/assets/home/philly-midnight.svg"
-                alt="Philadelphia"
-                className="philly-svg philly-midnight"
-              />
-              <img
-                src="/assets/home/philly-kelly.svg"
-                alt="Philadelphia"
-                className="philly-svg philly-kelly"
-              />
-            </span>
+            <span className="philly-text">Philadelphia</span>
+            <img
+              src="/assets/home/philly-midnight.svg"
+              alt="Philadelphia"
+              className="philly-svg"
+            />
           </Link>
           .
         </h1>

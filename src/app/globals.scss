@@ -204,48 +204,46 @@ a {
     }
 
     .philly-svg-link {
-      border-bottom: none !important;
       display: inline-block;
-      vertical-align: baseline;
-      height: 1.15em; // Fits perfectly inline with Pecita link heights (which are scaled to 1.15em)
       position: relative;
-      margin-left: 0.1em;
-      margin-right: 0.1em;
+      border-bottom: none !important; // Hide default link border on the parent container
+      vertical-align: baseline;
+      padding-bottom: 0;
 
-      .philly-svg-wrapper {
-        position: relative;
+      .philly-text {
         display: inline-block;
-        height: 100%;
-        width: 7.8em; // Calculated width based on the 1.15em height and 217/32 aspect ratio (1.15 * 6.78 = 7.8em)
-        vertical-align: middle;
+        font-family: 'Pecita', cursive, serif;
+        font-size: $pecita-scale;
+        font-weight: normal;
+        letter-spacing: 0;
+        border-bottom: 2px solid currentColor; // Renders the underline on the text itself
+        padding-bottom: 2px;
+        transition: opacity 0.2s ease;
+        opacity: 1;
       }
 
       .philly-svg {
         position: absolute;
         left: 0;
         top: 0;
+        width: 100%;
         height: 100%;
-        width: auto;
-        transition: opacity 0.3s ease;
-
-        &.philly-kelly {
-          opacity: 0;
-        }
-        &.philly-midnight {
-          opacity: 1;
-        }
+        object-fit: contain; // Proportionally fits inside the exact layout box of the text
+        opacity: 0;
+        transition: opacity 0.2s ease;
+        pointer-events: none;
+        vertical-align: baseline;
       }
 
       &:hover {
-        opacity: 1 !important; // Override the standard link hover opacity
+        opacity: 1 !important; // Override default link dimming
+
+        .philly-text {
+          opacity: 0;
+        }
 
         .philly-svg {
-          &.philly-kelly {
-            opacity: 1;
-          }
-          &.philly-midnight {
-            opacity: 0;
-          }
+          opacity: 1;
         }
       }
     }
