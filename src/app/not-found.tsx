@@ -7,6 +7,7 @@ export default function NotFound() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -16,93 +17,126 @@ export default function NotFound() {
     if (!ctx) return;
 
     // Set high-resolution canvas dimensions
-    const width = 450;
-    const height = 220;
+    const width = 500;
+    const height = 300;
     canvas.width = width;
     canvas.height = height;
 
-    // Create an offscreen canvas to pre-render the static text
-    const offscreen = document.createElement("canvas");
-    offscreen.width = width;
-    offscreen.height = height;
-    const oCtx = offscreen.getContext("2d");
-    if (!oCtx) return;
-
-    // Pre-draw the "404" static text on the offscreen canvas
-    oCtx.fillStyle = "#000000";
-    oCtx.font = "900 125px 'Gabarito', sans-serif";
-    oCtx.textAlign = "center";
-    oCtx.textBaseline = "middle";
-    oCtx.fillText("404", width / 2, height / 2 - 15);
-
-    oCtx.font = "700 15px 'Gabarito', sans-serif";
-    if ("letterSpacing" in oCtx) {
-      oCtx.letterSpacing = "6px";
-    }
-    oCtx.fillText("PAGE NOT FOUND", width / 2 + 3, height / 2 + 65);
-
+    const img = new Image();
+    img.src = "/404.png";
+    
     let animationId: number;
 
-    const render = () => {
-      ctx.clearRect(0, 0, width, height);
+    img.onload = () => {
+      setImageLoaded(true);
 
-      // Slices the offscreen pre-rendered text into horizontal bands and draws them with dynamic jitter
-      const sliceCount = 35;
-      const sliceHeight = height / sliceCount;
+      // Create an offscreen canvas to pre-render and invert the static base image
+      const offscreen = document.createElement("canvas");
+      offscreen.width = width;
+      offscreen.height = height;
+      const oCtx = offscreen.getContext("2d");
+      if (!oCtx) return;
 
-      for (let i = 0; i < sliceCount; i++) {
-        const sy = i * sliceHeight;
-        
-        let jitter = 0;
-        const rand = Math.random();
-        
-        if (isHovered) {
-          // Intense horizontal tearing / wave jitter when hovered
-          if (rand > 0.35) {
-            jitter = (Math.random() - 0.5) * 22;
+      // Center and scale the image inside the offscreen canvas (contain fit)
+      const imgRatio = img.naturalWidth / img.naturalHeight;
+      const canvasRatio = width / height;
+      let dWidth = width;
+      let dHeight = height;
+      let dx = 0;
+      let dy = 0;
+
+      if (imgRatio > canvasRatio) {
+        dHeight = width / imgRatio;
+        dy = (height - dHeight) / 2;
+      } else {
+        dWidth = height * imgRatio;
+        dx = (width - dWidth) / 2;
+      }
+
+      // Automatically invert the graphic to render it in bright white on the black background
+      if ("filter" in oCtx) {
+        oCtx.filter = "invert(1)";
+      }
+      oCtx.drawImage(img, dx, dy, dWidth, dHeight);
+
+      const render = () => {
+        ctx.clearRect(0, 0, width, height);
+
+        // Slices the offscreen pre-rendered image into horizontal bands and draws them with dynamic jitter
+        const sliceCount = 45;
+        const sliceHeight = height / sliceCount;
+
+        for (let i = 0; i < sliceCount; i++) {
+          const sy = i * sliceHeight;
+          
+          let jitter = 0;
+          const rand = Math.random();
+          
+          if (isHovered) {
+            // Intense horizontal tearing / wave jitter when hovered
+            if (rand > 0.3) {
+              jitter = (Math.random() - 0.5) * 35;
+            }
+          } else {
+            // Subtle, eerie digital vibration when idle
+            if (rand > 0.85) {
+              jitter = (Math.random() - 0.5) * 5;
+            }
           }
-        } else {
-          // Subtle, eerie digital vibration when idle
-          if (rand > 0.85) {
-            jitter = (Math.random() - 0.5) * 4;
-          }
+
+          ctx.drawImage(
+            offscreen,
+            0,
+            sy,
+            width,
+            sliceHeight,
+            jitter,
+            sy,
+            width,
+            sliceHeight
+          );
         }
 
-        ctx.drawImage(
-          offscreen,
-          0,
-          sy,
-          width,
-          sliceHeight,
-          jitter,
-          sy,
-          width,
-          sliceHeight
-        );
-      }
+        // Occasional digital chromatic aberration split bars
+        if (Math.random() > (isHovered ? 0.45 : 0.96)) {
+          ctx.fillStyle = isHovered ? "rgba(0, 255, 240, 0.45)" : "rgba(0, 255, 240, 0.25)"; // Cyan chromatic slice
+          ctx.fillRect(0, Math.random() * height, width, Math.random() * 8);
+        }
+        if (Math.random() > (isHovered ? 0.45 : 0.96)) {
+          ctx.fillStyle = isHovered ? "rgba(255, 0, 193, 0.45)" : "rgba(255, 0, 193, 0.25)"; // Magenta chromatic slice
+          ctx.fillRect(0, Math.random() * height, width, Math.random() * 8);
+        }
 
-      // Occasional digital chromatic aberration split bars
-      if (Math.random() > (isHovered ? 0.5 : 0.95)) {
-        ctx.fillStyle = isHovered ? "rgba(0, 255, 240, 0.4)" : "rgba(0, 255, 240, 0.25)"; // Cyan chromatic slice
-        ctx.fillRect(0, Math.random() * height, width, Math.random() * 6);
-      }
-      if (Math.random() > (isHovered ? 0.5 : 0.95)) {
-        ctx.fillStyle = isHovered ? "rgba(255, 0, 193, 0.4)" : "rgba(255, 0, 193, 0.25)"; // Magenta chromatic slice
-        ctx.fillRect(0, Math.random() * height, width, Math.random() * 6);
-      }
+        animationId = requestAnimationFrame(render);
+      };
 
-      animationId = requestAnimationFrame(render);
+      render();
     };
 
-    render();
-
     return () => {
-      cancelAnimationFrame(animationId);
+      if (animationId) {
+        cancelAnimationFrame(animationId);
+      }
     };
   }, [isHovered]);
 
   return (
-    <main className="main-content" style={{ flexDirection: "column", minHeight: "100vh", justifyContent: "center" }}>
+    <main 
+      className="main-content" 
+      style={{ 
+        flexDirection: "column", 
+        minHeight: "100vh", 
+        justifyContent: "center",
+        backgroundColor: "#000000", // Pure black background
+        color: "#ffffff", // Pure white text
+        transition: "background-color 0.3s ease",
+        width: "100vw",
+        position: "absolute",
+        left: 0,
+        top: 0,
+        zIndex: 100, // Mounts over navigation layers to highlight the isolated 404 broken state
+      }}
+    >
       <div
         ref={containerRef}
         onMouseEnter={() => setIsHovered(true)}
@@ -112,20 +146,26 @@ export default function NotFound() {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          minHeight: "240px",
+          minHeight: "320px",
           width: "100%",
-          maxWidth: "450px",
+          maxWidth: "500px",
           userSelect: "none",
         }}
       >
-        <canvas ref={canvasRef} style={{ maxWidth: "100%", height: "auto" }} />
+        {imageLoaded ? (
+          <canvas ref={canvasRef} style={{ maxWidth: "100%", height: "auto" }} />
+        ) : (
+          <div style={{ fontFamily: "'Gabarito', sans-serif", fontSize: "1.2rem", fontWeight: 500, opacity: 0.5 }}>
+            LOADING MATRIX...
+          </div>
+        )}
       </div>
 
       <p
         style={{
-          marginTop: "1rem",
+          marginTop: "1.5rem",
           fontSize: "0.68rem",
-          color: "#888",
+          color: "#aaaaaa", // Slightly lighter grey for readability against black
           letterSpacing: "0.03em",
           textAlign: "center",
           fontFamily: "'Gabarito', sans-serif",
@@ -152,18 +192,20 @@ export default function NotFound() {
           fontSize: "0.85rem",
           letterSpacing: "0.15em",
           fontFamily: "'Gabarito', sans-serif",
-          fontWeight: 800, // Bold (ExtraBold) sans-serif font
-          borderBottom: "2px solid #000",
+          fontWeight: 900, // ExtraBold sans-serif font
+          borderBottom: "2px solid #ffffff",
           paddingBottom: "4px",
-          color: "#000",
+          color: "#ffffff",
           textDecoration: "none",
-          transition: "border-color 0.2s, opacity 0.2s",
+          transition: "border-color 0.2s, color 0.2s, opacity 0.2s",
         }}
         onMouseEnter={(e) => {
           e.currentTarget.style.borderColor = "#ff00c1";
+          e.currentTarget.style.color = "#ff00c1";
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.style.borderColor = "#000";
+          e.currentTarget.style.borderColor = "#ffffff";
+          e.currentTarget.style.color = "#ffffff";
         }}
       >
         take me home
