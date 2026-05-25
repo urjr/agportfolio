@@ -203,10 +203,33 @@ a {
       white-space: nowrap;
     }
 
+    &.second-line {
+      font-size: clamp(0.9rem, 2.1vw, 2.1rem); // Optically cuts font size in half
+      letter-spacing: -0.01em;
+      line-height: 1.3;
+      margin-top: 0.5rem; // Adds elegant vertical spacing
+
+      @media (max-width: 580px) {
+        font-size: clamp(0.85rem, 3.5vw, 1.25rem);
+        line-height: 1.35;
+        margin-top: 0.75rem;
+      }
+    }
+
     @media (max-width: 580px) {
       font-size: clamp(1.6rem, 7vw, 2.5rem);
       line-height: 1.2;
       text-align: left;
     }
   }
+}
+
+// Stacking layout container for block-level biography statements
+.bio-container {
+  width: 100%;
+  max-width: 1200px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem; // Spacing between the stacked statement blocks
+  text-align: left;
 }
