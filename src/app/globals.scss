@@ -210,8 +210,8 @@ a {
       margin-top: 0.5rem; // Adds elegant vertical spacing
 
       @media (max-width: 580px) {
-        font-size: clamp(0.85rem, 3.5vw, 1.25rem);
-        line-height: 1.35;
+        font-size: clamp(1.05rem, 4.5vw, 1.4rem); // Prioritizes legibility on smaller screens
+        line-height: 1.4; // More comfortable reading line height on mobile
         margin-top: 0.75rem;
       }
     }
