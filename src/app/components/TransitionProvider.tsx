@@ -53,33 +53,33 @@ export default function TransitionProvider({ children }: { children: ReactNode }
   };
 
   useEffect(() => {
-    // If this is a direct browser page load (not client-side link clicked),
-    // we bypass transitions entirely to load immediately.
+    const main = document.querySelector("main.main-content");
+    if (!main) return;
+
+    // 1. Always split text nodes on mount so they are ready in the DOM to animate out
+    const blocks = main.querySelectorAll("h1, p, h2, h3, li, blockquote");
+    blocks.forEach((block) => {
+      Array.from(block.childNodes).forEach(processNode);
+    });
+
     if (!hasNavigatedRef.current) {
+      // Direct load: Skip entry stagger delays, render fully visible immediately
+      const words = Array.from(main.querySelectorAll(".transition-word"));
+      words.forEach((word) => {
+        const el = word as HTMLElement;
+        el.style.transitionDelay = "0s";
+      });
       setIsActive(true);
       return;
     }
 
+    // Client-side link was clicked: Run transition out, then enter transition with a clean beat pause
     setIsExiting(false);
     setIsActive(false);
-    setIsPending(true); // Hide page content immediately to avoid pop-in/flash
+    setIsPending(true); // Hide container instantly to avoid pop-in/flash
 
-    // 1. Resting delay pause (250ms) to create a clean gap between exit and entry
     const transitionTimer = setTimeout(() => {
-      const main = document.querySelector("main.main-content");
-      if (!main) {
-        setIsPending(false);
-        setIsActive(true);
-        return;
-      }
-
-      // 2. Target all key typographic elements
-      const blocks = main.querySelectorAll("h1, p, h2, h3, li, blockquote");
-      blocks.forEach((block) => {
-        Array.from(block.childNodes).forEach(processNode);
-      });
-
-      // 3. Perform responsive offsetTop sorting to group parsed items into perfect lines
+      // 2. Perform responsive offsetTop sorting to group parsed items into perfect lines
       const words = Array.from(main.querySelectorAll(".transition-word"));
       const linesMap = new Map<number, HTMLElement[]>();
 
@@ -103,19 +103,19 @@ export default function TransitionProvider({ children }: { children: ReactNode }
         }
       });
 
-      // 4. Stagger delays top-to-bottom
+      // 3. Stagger delays top-to-bottom (0.08s step for pronounced staggered appearance)
       const sortedKeys = Array.from(linesMap.keys()).sort((a, b) => a - b);
       sortedKeys.forEach((key, lineIndex) => {
         const els = linesMap.get(key)!;
         els.forEach((el) => {
-          el.style.transitionDelay = `${lineIndex * 0.05}s`;
+          el.style.transitionDelay = `${lineIndex * 0.08}s`;
         });
       });
 
-      // 5. Unblock pending and arm entering state
+      // 4. Unblock pending and arm entering state
       setIsPending(false);
       setIsActive(true);
-    }, 250); // 250ms pure resting beat
+    }, 250); // 250ms pure resting beat pause
 
     return () => {
       clearTimeout(transitionTimer);
