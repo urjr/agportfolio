@@ -23,14 +23,15 @@ export default function NotFound() {
     canvas.height = height;
 
     const img = new Image();
-    img.src = "/404.png";
-    
     let animationId: number;
+    let loaded = false;
 
-    img.onload = () => {
+    const handleLoad = () => {
+      if (loaded) return;
+      loaded = true;
       setImageLoaded(true);
 
-      // Create an offscreen canvas to pre-render and invert the static base image
+      // Create an offscreen canvas to pre-render the static base image
       const offscreen = document.createElement("canvas");
       offscreen.width = width;
       offscreen.height = height;
@@ -109,6 +110,21 @@ export default function NotFound() {
 
       render();
     };
+
+    // Rigorously bind handlers BEFORE assigning the image src to prevent race conditions
+    img.onload = handleLoad;
+    img.onerror = (e) => {
+      console.error("Failed to load 404.png graphic:", e);
+      // Fallback in case of asset failures to prevent being permanently stuck
+      setImageLoaded(true);
+    };
+
+    img.src = "/404.png";
+
+    // Immediate execution fallback if already resolved from memory cache
+    if (img.complete) {
+      handleLoad();
+    }
 
     return () => {
       if (animationId) {
