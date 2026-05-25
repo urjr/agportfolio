@@ -104,10 +104,11 @@ a {
   .nav-brand {
     position: absolute;
     left: 2rem;
-    font-size: 0.85rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    font-weight: 400;
+    font-family: 'Pecita', cursive, serif;
+    font-size: 1.4rem; // Script/handwritten initials look best slightly larger
+    letter-spacing: 0;
+    text-transform: none;
+    font-weight: normal;
   }
 
   .nav-links {

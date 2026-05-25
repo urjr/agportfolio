@@ -5,7 +5,7 @@ export default function Navbar() {
     <header className="navbar" id="navbar">
       <div className="nav-brand">
         <Link href="/" id="nav-home">
-          Home
+          U R-K
         </Link>
       </div>
       <nav aria-label="Main Navigation">
