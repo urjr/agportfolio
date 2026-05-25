@@ -53,10 +53,7 @@ export default function NotFound() {
         dx = (width - dWidth) / 2;
       }
 
-      // Automatically invert the graphic to render it in bright white on the black background
-      if ("filter" in oCtx) {
-        oCtx.filter = "invert(1)";
-      }
+      // Draw the custom 404.png graphic (already white text on a black background) directly
       oCtx.drawImage(img, dx, dy, dWidth, dHeight);
 
       const render = () => {
@@ -124,9 +121,12 @@ export default function NotFound() {
     <main 
       className="main-content" 
       style={{ 
-        flexDirection: "column", 
-        minHeight: "100vh", 
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
         justifyContent: "center",
+        minHeight: "100vh", 
+        padding: 0, // Override main-content's header/footer paddings to perfectly center content
         backgroundColor: "#000000", // Pure black background
         color: "#ffffff", // Pure white text
         transition: "background-color 0.3s ease",
