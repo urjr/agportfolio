@@ -24,6 +24,7 @@ export default function Home() {
         <Link href="#" id="link-upenn">
           UPenn
         </Link>
+        .
       </h1>
     </main>
   );
