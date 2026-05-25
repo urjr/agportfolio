@@ -29,8 +29,8 @@ export default function Home() {
             Google
           </Link>
           , designing agentic experiences for{" "}
-          <Link href="#" className="nowrap-link" id="link-google-analytics">
-            Google Analytics
+          <Link href="#" id="link-analytics">
+            Analytics
           </Link>
           , and teach design at{" "}
           <Link href="#" id="link-upenn">
