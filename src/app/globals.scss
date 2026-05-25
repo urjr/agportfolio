@@ -207,6 +207,12 @@ a {
   }
 }
 
+// Pending resting state (prevents any flash of text prior to transition split)
+.transition-container-pending {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
 // Main Content Section
 .main-content {
   min-height: 100vh;

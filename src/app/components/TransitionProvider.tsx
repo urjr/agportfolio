@@ -8,7 +8,9 @@ export default function TransitionProvider({ children }: { children: ReactNode }
   const pathname = usePathname();
   const [isActive, setIsActive] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
+  const [isPending, setIsPending] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const hasNavigatedRef = useRef(false);
 
   // Recursive splitter to wrap plain text words inside specific block containers in spans
   const processNode = (node: Node) => {
@@ -51,21 +53,33 @@ export default function TransitionProvider({ children }: { children: ReactNode }
   };
 
   useEffect(() => {
+    // If this is a direct browser page load (not client-side link clicked),
+    // we bypass transitions entirely to load immediately.
+    if (!hasNavigatedRef.current) {
+      setIsActive(true);
+      return;
+    }
+
     setIsExiting(false);
     setIsActive(false);
+    setIsPending(true); // Hide page content immediately to avoid pop-in/flash
 
-    // Dynamic analysis delay to ensure Next.js route paint lifecycle completes
-    const timer = setTimeout(() => {
+    // 1. Resting delay pause (250ms) to create a clean gap between exit and entry
+    const transitionTimer = setTimeout(() => {
       const main = document.querySelector("main.main-content");
-      if (!main) return;
+      if (!main) {
+        setIsPending(false);
+        setIsActive(true);
+        return;
+      }
 
-      // 1. Target all key typographic elements
+      // 2. Target all key typographic elements
       const blocks = main.querySelectorAll("h1, p, h2, h3, li, blockquote");
       blocks.forEach((block) => {
         Array.from(block.childNodes).forEach(processNode);
       });
 
-      // 2. Perform responsive offsetTop sorting to group parsed items into perfect lines
+      // 3. Perform responsive offsetTop sorting to group parsed items into perfect lines
       const words = Array.from(main.querySelectorAll(".transition-word"));
       const linesMap = new Map<number, HTMLElement[]>();
 
@@ -89,7 +103,7 @@ export default function TransitionProvider({ children }: { children: ReactNode }
         }
       });
 
-      // 3. Stagger delays top-to-bottom
+      // 4. Stagger delays top-to-bottom
       const sortedKeys = Array.from(linesMap.keys()).sort((a, b) => a - b);
       sortedKeys.forEach((key, lineIndex) => {
         const els = linesMap.get(key)!;
@@ -98,13 +112,13 @@ export default function TransitionProvider({ children }: { children: ReactNode }
         });
       });
 
-      // 4. Arm entering state
+      // 5. Unblock pending and arm entering state
+      setIsPending(false);
       setIsActive(true);
-    }, 60);
+    }, 250); // 250ms pure resting beat
 
     return () => {
-      clearTimeout(timer);
-      setIsActive(false);
+      clearTimeout(transitionTimer);
     };
   }, [pathname]);
 
@@ -133,6 +147,9 @@ export default function TransitionProvider({ children }: { children: ReactNode }
 
       e.preventDefault();
 
+      // Enable transitions for subsequent path loads
+      hasNavigatedRef.current = true;
+
       // Trigger exit transition
       setIsExiting(true);
 
@@ -150,7 +167,9 @@ export default function TransitionProvider({ children }: { children: ReactNode }
 
   // Dynamic CSS classes for active page transition states
   const containerClass = `page-transition-container ${
-    isExiting
+    isPending
+      ? "transition-container-pending"
+      : isExiting
       ? "transition-container-exiting"
       : isActive
       ? "transition-container-active"
