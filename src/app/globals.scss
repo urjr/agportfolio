@@ -213,7 +213,7 @@ a {
       .philly-text {
         display: inline-block;
         font-family: 'Pecita', cursive, serif;
-        font-size: $pecita-scale;
+        font-size: inherit; // Prevent compounding sizing by inheriting the parent link's 1.15em font scale
         font-weight: normal;
         letter-spacing: 0;
         border-bottom: 2px solid currentColor; // Renders the underline on the text itself
