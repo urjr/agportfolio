@@ -278,7 +278,9 @@ export default function NotFound() {
             display: imageLoaded ? "block" : "none", 
             width: "100%", 
             height: "100%", 
-            outline: "none" 
+            outline: "none",
+            opacity: isHovered ? 1 : 0.6, // Dim (60% opacity) by default, shifts to solid brightness (100%) on hover
+            transition: "opacity 0.2s ease", // Smooth glow fade effect on hover
           }}
         >
           <canvas 
