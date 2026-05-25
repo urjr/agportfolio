@@ -292,14 +292,14 @@ export default function NotFound() {
           fontWeight: 400,
         }}
       >
-        Graphic and effect inspired by{" "}
+        Shoutout to{" "}
         <a
           href="https://codepen.io/tmrDevelops/pen/jqqmOw"
           target="_blank"
           rel="noopener noreferrer"
           style={{ textDecoration: "underline", color: "inherit", fontWeight: 500 }}
         >
-          Tiffany Rayside (tmrDevelops)
+          Tiffany Rayside
         </a>
       </p>
 
