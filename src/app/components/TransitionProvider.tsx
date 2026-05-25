@@ -63,11 +63,14 @@ export default function TransitionProvider({ children }: { children: ReactNode }
     });
 
     if (!hasNavigatedRef.current) {
-      // Direct load: Skip entry stagger delays, render fully visible immediately
+      // Direct load: Skip entry transitions, render fully visible immediately with no animations
       const words = Array.from(main.querySelectorAll(".transition-word"));
       words.forEach((word) => {
         const el = word as HTMLElement;
+        el.style.transition = "none";
         el.style.transitionDelay = "0s";
+        el.style.opacity = "1";
+        el.style.transform = "none";
       });
       setIsActive(true);
       return;
@@ -122,7 +125,7 @@ export default function TransitionProvider({ children }: { children: ReactNode }
     };
   }, [pathname]);
 
-  // Global click interceptor to catch internal navigation links elegantly
+  // Global click interceptor and mouseover detector
   useEffect(() => {
     const handleGlobalClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
@@ -159,9 +162,20 @@ export default function TransitionProvider({ children }: { children: ReactNode }
       }, 550);
     };
 
+    // Attach mouseover delegation to flag hovered philly links
+    const handleMouseOver = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      const phillyLink = target.closest(".philly-svg-link");
+      if (phillyLink) {
+        phillyLink.classList.add("has-hovered");
+      }
+    };
+
     document.addEventListener("click", handleGlobalClick);
+    document.addEventListener("mouseover", handleMouseOver);
     return () => {
       document.removeEventListener("click", handleGlobalClick);
+      document.removeEventListener("mouseover", handleMouseOver);
     };
   }, [router]);
 

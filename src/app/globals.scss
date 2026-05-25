@@ -204,6 +204,7 @@ a {
     opacity: 0 !important;
     transform: translateY(-50px) !important; // Increased to make floating upward exit highly obvious
     transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.7s ease !important;
+    transition-delay: 0s !important; // Forces all elements to exit immediately and simultaneously
   }
 }
 
@@ -286,10 +287,6 @@ a {
         padding-bottom: 2px;
         transition: opacity 0.15s ease-out; // Snappy fade-out transition
         opacity: 1;
-
-        @media (prefers-reduced-motion: no-preference) {
-          animation: glitch-text-anim 0.3s step-end forwards; // Slowed exit animation from 0.2s to 0.3s
-        }
       }
 
       .philly-svg {
@@ -303,9 +300,19 @@ a {
         transition: opacity 0.15s ease-in; // Snappy fade-in transition
         pointer-events: none;
         vertical-align: baseline;
+      }
 
-        @media (prefers-reduced-motion: no-preference) {
-          animation: glitch-svg-anim 0.6s step-end forwards; // Slowed exit animation from 0.4s to 0.6s
+      // Exit animations only run once the element has actually been hovered to avoid load-time glitching
+      &.has-hovered {
+        .philly-text {
+          @media (prefers-reduced-motion: no-preference) {
+            animation: glitch-text-anim 0.3s step-end forwards;
+          }
+        }
+        .philly-svg {
+          @media (prefers-reduced-motion: no-preference) {
+            animation: glitch-svg-anim 0.6s step-end forwards;
+          }
         }
       }
 
