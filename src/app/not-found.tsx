@@ -9,6 +9,12 @@ export default function NotFound() {
   const [isHovered, setIsHovered] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
 
+  // Keep a ref of isHovered so the render loop can read it without re-running the mount hook
+  const isHoveredRef = useRef(isHovered);
+  useEffect(() => {
+    isHoveredRef.current = isHovered;
+  }, [isHovered]);
+
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -70,7 +76,7 @@ export default function NotFound() {
           let jitter = 0;
           const rand = Math.random();
           
-          if (isHovered) {
+          if (isHoveredRef.current) {
             // Intense horizontal tearing / wave jitter when hovered
             if (rand > 0.3) {
               jitter = (Math.random() - 0.5) * 35;
@@ -96,12 +102,12 @@ export default function NotFound() {
         }
 
         // Occasional digital chromatic aberration split bars
-        if (Math.random() > (isHovered ? 0.45 : 0.96)) {
-          ctx.fillStyle = isHovered ? "rgba(0, 255, 240, 0.45)" : "rgba(0, 255, 240, 0.25)"; // Cyan chromatic slice
+        if (Math.random() > (isHoveredRef.current ? 0.45 : 0.96)) {
+          ctx.fillStyle = isHoveredRef.current ? "rgba(0, 255, 240, 0.45)" : "rgba(0, 255, 240, 0.25)"; // Cyan chromatic slice
           ctx.fillRect(0, Math.random() * height, width, Math.random() * 8);
         }
-        if (Math.random() > (isHovered ? 0.45 : 0.96)) {
-          ctx.fillStyle = isHovered ? "rgba(255, 0, 193, 0.45)" : "rgba(255, 0, 193, 0.25)"; // Magenta chromatic slice
+        if (Math.random() > (isHoveredRef.current ? 0.45 : 0.96)) {
+          ctx.fillStyle = isHoveredRef.current ? "rgba(255, 0, 193, 0.45)" : "rgba(255, 0, 193, 0.25)"; // Magenta chromatic slice
           ctx.fillRect(0, Math.random() * height, width, Math.random() * 8);
         }
 
@@ -131,7 +137,7 @@ export default function NotFound() {
         cancelAnimationFrame(animationId);
       }
     };
-  }, [isHovered]);
+  }, []); // Run EXACTLY once on mount
 
   return (
     <main 
@@ -166,12 +172,27 @@ export default function NotFound() {
           width: "100%",
           maxWidth: "500px",
           userSelect: "none",
+          position: "relative",
         }}
       >
-        {imageLoaded ? (
-          <canvas ref={canvasRef} style={{ maxWidth: "100%", height: "auto" }} />
-        ) : (
-          <div style={{ fontFamily: "'Gabarito', sans-serif", fontSize: "1.2rem", fontWeight: 500, opacity: 0.5 }}>
+        <canvas 
+          ref={canvasRef} 
+          style={{ 
+            maxWidth: "100%", 
+            height: "auto", 
+            display: imageLoaded ? "block" : "none" 
+          }} 
+        />
+        {!imageLoaded && (
+          <div 
+            style={{ 
+              fontFamily: "'Gabarito', sans-serif", 
+              fontSize: "1.2rem", 
+              fontWeight: 500, 
+              opacity: 0.5,
+              position: "absolute"
+            }}
+          >
             LOADING MATRIX...
           </div>
         )}
