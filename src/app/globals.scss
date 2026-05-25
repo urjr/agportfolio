@@ -273,31 +273,31 @@ a {
 
       @keyframes glitch-text-anim {
         0% {
-          clip-path: inset(40% 0 50% 0);
+          clip-path: inset(40% 0 35% 0); // 25% slice height (increased from 10%)
           transform: skew(30deg) translate(-15px, 6px);
         }
         15% {
-          clip-path: inset(90% 0 1% 0);
+          clip-path: inset(75% 0 5% 0); // 20% slice height (increased from 9%)
           transform: skew(-35deg) translate(15px, -6px);
         }
         30% {
-          clip-path: inset(15% 0 80% 0);
+          clip-path: inset(15% 0 70% 0); // 15% slice height (increased from 5%)
           transform: skew(40deg) translate(-8px, -3px);
         }
         45% {
-          clip-path: inset(75% 0 5% 0);
+          clip-path: inset(55% 0 10% 0); // 35% slice height (increased from 20%)
           transform: skew(-45deg) translate(12px, 4px);
         }
         60% {
-          clip-path: inset(25% 0 60% 0);
+          clip-path: inset(25% 0 45% 0); // 30% slice height (increased from 15%)
           transform: skew(35deg) translate(-6px, -4px);
         }
         75% {
-          clip-path: inset(5% 0 95% 0);
+          clip-path: inset(5% 0 83% 0); // 12% slice height (increased from 0%)
           transform: skew(-30deg) translate(10px, 2px);
         }
         90% {
-          clip-path: inset(60% 0 10% 0);
+          clip-path: inset(45% 0 10% 0); // 45% slice height (increased from 30%)
           transform: skew(20deg) translate(-3px, -2px);
         }
         100% {
@@ -308,32 +308,32 @@ a {
 
       @keyframes glitch-svg-anim {
         0% {
-          clip-path: inset(10% 0 85% 0);
+          clip-path: inset(10% 0 70% 0); // 20% slice height (increased from 5%)
           transform: translate(-15px, -8px) skew(-30deg);
           filter: hue-rotate(90deg);
         }
         10% {
-          clip-path: inset(80% 0 5% 0);
+          clip-path: inset(65% 0 5% 0); // 30% slice height (increased from 15%)
           transform: translate(12px, 10px) skew(35deg);
           filter: hue-rotate(-90deg);
         }
         20% {
-          clip-path: inset(40% 0 45% 0);
+          clip-path: inset(40% 0 30% 0); // 30% slice height (increased from 15%)
           transform: translate(-8px, 6px) skew(-40deg);
           filter: invert(0.8);
         }
         30% {
-          clip-path: inset(5% 0 90% 0);
+          clip-path: inset(5% 0 77% 0); // 18% slice height (increased from 5%)
           transform: translate(-12px, 12px) skew(45deg);
           filter: none;
         }
         40% {
-          clip-path: inset(30% 0 50% 0);
+          clip-path: inset(30% 0 35% 0); // 35% slice height (increased from 20%)
           transform: translate(10px, -6px) skew(-35deg);
           filter: hue-rotate(180deg);
         }
         50% {
-          clip-path: inset(15% 0 70% 0);
+          clip-path: inset(15% 0 55% 0); // 30% slice height (increased from 15%)
           transform: translate(-6px, 4px) skew(30deg);
           filter: invert(0.5);
         }
