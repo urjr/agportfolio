@@ -9,6 +9,14 @@ export default function NotFound() {
   const [isHovered, setIsHovered] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
 
+  // Set theme-dark globally on mount and revert on unmount
+  useEffect(() => {
+    document.body.classList.add("theme-dark");
+    return () => {
+      document.body.classList.remove("theme-dark");
+    };
+  }, []);
+
   // Keep a ref of isHovered so the render loop can read it without re-running the mount hook
   const isHoveredRef = useRef(isHovered);
   useEffect(() => {
@@ -165,10 +173,9 @@ export default function NotFound() {
         alignItems: "center",
         justifyContent: "center",
         minHeight: "100vh", 
-        padding: "80px 0 0 0", // Top padding to clear the reintroduced inverted navbar elegantly
-        backgroundColor: "#000000", // Pure black background
-        color: "#ffffff", // Pure white text
-        transition: "background-color 0.3s ease",
+        padding: "80px 0 0 0",
+        backgroundColor: "transparent", // Inherit background from body transition smoothly
+        color: "inherit", // Inherit color from body transition smoothly
         width: "100vw",
         position: "absolute",
         left: 0,
@@ -176,85 +183,6 @@ export default function NotFound() {
         zIndex: 100, // Mounts over root pages to showcase the isolated 404 state
       }}
     >
-      {/* Custom Inverted Navbar */}
-      <header 
-        style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          width: "100%",
-          height: "70px",
-          backgroundColor: "rgba(0, 0, 0, 0.85)", // Inverted dark background
-          backdropFilter: "blur(8px)",
-          borderBottom: "none",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          padding: "0 2rem",
-          zIndex: 110, // Renders above main 404 content
-        }}
-      >
-        <div 
-          style={{
-            position: "absolute",
-            left: "2rem",
-            fontFamily: "'Pecita', cursive, serif",
-            fontSize: "1.4rem",
-            fontWeight: "normal",
-            textTransform: "none",
-          }}
-        >
-          <Link href="/" style={{ color: "#ffffff", textDecoration: "none" }}>
-            U R-K
-          </Link>
-        </div>
-        <nav aria-label="Main Navigation">
-          <ul 
-            style={{
-              display: "flex",
-              gap: "2.5rem",
-              listStyle: "none",
-              fontSize: "0.85rem",
-              letterSpacing: "0.1em",
-              textTransform: "uppercase",
-              fontFamily: "'Gabarito', sans-serif",
-              fontWeight: 500,
-              padding: 0,
-              margin: 0,
-            }}
-          >
-            <li>
-              <Link 
-                href="/work" 
-                style={{ 
-                  color: "#ffffff", 
-                  textDecoration: "none",
-                  transition: "color 0.2s"
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.color = "#ff00c1"}
-                onMouseLeave={(e) => e.currentTarget.style.color = "#ffffff"}
-              >
-                Work
-              </Link>
-            </li>
-            <li>
-              <Link 
-                href="/about" 
-                style={{ 
-                  color: "#ffffff", 
-                  textDecoration: "none",
-                  transition: "color 0.2s"
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.color = "#ff00c1"}
-                onMouseLeave={(e) => e.currentTarget.style.color = "#ffffff"}
-              >
-                About
-              </Link>
-            </li>
-          </ul>
-        </nav>
-      </header>
-
       {/* Full-width glitch viewport container */}
       <div
         ref={containerRef}
