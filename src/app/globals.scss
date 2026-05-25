@@ -222,7 +222,7 @@ a {
         opacity: 1;
 
         @media (prefers-reduced-motion: no-preference) {
-          animation: glitch-text-leave 0.1s step-end forwards;
+          animation: glitch-text-leave 0.2s step-end forwards; // Swapped to slow leaving duration
         }
       }
 
@@ -239,7 +239,7 @@ a {
         vertical-align: baseline;
 
         @media (prefers-reduced-motion: no-preference) {
-          animation: glitch-svg-leave 0.2s step-end forwards;
+          animation: glitch-svg-leave 0.4s step-end forwards; // Swapped to slow leaving duration
         }
       }
 
@@ -261,12 +261,12 @@ a {
       .philly-svg-link {
         &:hover {
           .philly-text {
-            animation: glitch-text-anim 0.2s step-end forwards;
+            animation: glitch-text-anim 0.1s step-end forwards; // Swapped to fast hover duration
             text-shadow: -2px 0 #00fff0, 2px 0 #ff00c1; // Cyan and magenta chromatic shift
           }
 
           .philly-svg {
-            animation: glitch-svg-anim 0.4s step-end 0.08s forwards; // Jerky digital resolution, stabilizes at 60%
+            animation: glitch-svg-anim 0.2s step-end 0.04s forwards; // Swapped to fast hover duration and halved delay
           }
         }
       }
