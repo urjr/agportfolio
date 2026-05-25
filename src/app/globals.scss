@@ -1,7 +1,57 @@
+// Load Custom Fonts
+@font-face {
+  font-family: 'Gabarito';
+  src: url('/fonts/gabarito/Gabarito-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Gabarito';
+  src: url('/fonts/gabarito/Gabarito-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Gabarito';
+  src: url('/fonts/gabarito/Gabarito-SemiBold.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Gabarito';
+  src: url('/fonts/gabarito/Gabarito-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Gabarito';
+  src: url('/fonts/gabarito/Gabarito-ExtraBold.woff2') format('woff2');
+  font-weight: 800;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Gabarito';
+  src: url('/fonts/gabarito/Gabarito-Black.woff2') format('woff2');
+  font-weight: 900;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Pecita';
+  src: url('/fonts/pecita/Pecita.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
+
 // Brand Identity Variables
 $color-bg: #ffffff;
 $color-text: #000000;
-$font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+$font-family: 'Gabarito', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 $header-height: 60px;
 $footer-height: 60px;
 
@@ -16,6 +66,7 @@ html, body {
   background-color: $color-bg;
   color: $color-text;
   font-family: $font-family;
+  font-weight: 500; // Medium by default
   overflow-x: hidden;
   height: 100%;
   -webkit-font-smoothing: antialiased;
@@ -131,6 +182,9 @@ a {
     user-select: text;
 
     a {
+      font-family: 'Pecita', cursive, serif;
+      font-weight: normal;
+      letter-spacing: 0;
       border-bottom: 2px solid currentColor;
       padding-bottom: 2px;
       transition: opacity 0.2s ease;
