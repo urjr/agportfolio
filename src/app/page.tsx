@@ -21,12 +21,11 @@ export default function Home() {
           <Link href="#" id="link-philadelphia" className="philly-svg-link">
             <span className="philly-text">Philadelphia</span>
             <img
-              src="/assets/home/philly-midnight.svg"
+              src="/assets/home/philly-kelly.svg"
               alt="Philadelphia"
               className="philly-svg"
             />
           </Link>
-          .
         </h1>
         <p className="hero-title intro-title second-line" id="hero-subtitle">
           Currently, I work at{" "}
