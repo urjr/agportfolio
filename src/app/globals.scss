@@ -225,7 +225,7 @@ a {
       .philly-svg {
         position: absolute;
         left: 0;
-        top: 0.11em; // Nudges the SVG down relative to parent font size to align non-descending character baselines perfectly with the Pecita text
+        top: -0.11em; // Nudges the SVG up relative to parent font size to align non-descending character baselines perfectly with the Pecita text
         width: 100%;
         height: calc(100% - 4px); // Excludes padding (2px) and border (2px) to align vector baseline perfectly with text
         object-fit: contain; // Proportionally fits inside the exact layout box of the text
