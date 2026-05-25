@@ -18,8 +18,19 @@ export default function Home() {
             educator
           </Link>{" "}
           based in{" "}
-          <Link href="#" id="link-philadelphia">
-            Philadelphia
+          <Link href="#" id="link-philadelphia" className="philly-svg-link">
+            <span className="philly-svg-wrapper">
+              <img
+                src="/assets/home/philly-midnight.svg"
+                alt="Philadelphia"
+                className="philly-svg philly-midnight"
+              />
+              <img
+                src="/assets/home/philly-kelly.svg"
+                alt="Philadelphia"
+                className="philly-svg philly-kelly"
+              />
+            </span>
           </Link>
           .
         </h1>

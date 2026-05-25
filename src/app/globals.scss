@@ -203,6 +203,53 @@ a {
       white-space: nowrap;
     }
 
+    .philly-svg-link {
+      border-bottom: none !important;
+      display: inline-block;
+      vertical-align: baseline;
+      height: 1.15em; // Fits perfectly inline with Pecita link heights (which are scaled to 1.15em)
+      position: relative;
+      margin-left: 0.1em;
+      margin-right: 0.1em;
+
+      .philly-svg-wrapper {
+        position: relative;
+        display: inline-block;
+        height: 100%;
+        width: 7.8em; // Calculated width based on the 1.15em height and 217/32 aspect ratio (1.15 * 6.78 = 7.8em)
+        vertical-align: middle;
+      }
+
+      .philly-svg {
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+        width: auto;
+        transition: opacity 0.3s ease;
+
+        &.philly-kelly {
+          opacity: 0;
+        }
+        &.philly-midnight {
+          opacity: 1;
+        }
+      }
+
+      &:hover {
+        opacity: 1 !important; // Override the standard link hover opacity
+
+        .philly-svg {
+          &.philly-kelly {
+            opacity: 1;
+          }
+          &.philly-midnight {
+            opacity: 0;
+          }
+        }
+      }
+    }
+
     &.second-line {
       font-size: clamp(1.5rem, 1.1rem + 1.1vw, 2.1rem); // Optimizes tablet-size legibility with a shallower, smoother scaling curve
       font-weight: 400; // Regular weight to create a elegant typographic hierarchy against the Medium (500) first line
