@@ -172,7 +172,7 @@ export default function NotFound() {
           height: "70px",
           backgroundColor: "rgba(0, 0, 0, 0.85)", // Inverted dark background
           backdropFilter: "blur(8px)",
-          borderBottom: "1px solid rgba(255, 255, 255, 0.15)", // Premium subtle border
+          borderBottom: "none",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
@@ -258,14 +258,24 @@ export default function NotFound() {
           overflow: "hidden", // Prevents horizontal scrollbars during canvas horizontal jitter
         }}
       >
-        <canvas 
-          ref={canvasRef} 
+        <Link 
+          href="/" 
           style={{ 
+            display: imageLoaded ? "block" : "none", 
             width: "100%", 
             height: "100%", 
-            display: imageLoaded ? "block" : "none" 
-          }} 
-        />
+            outline: "none" 
+          }}
+        >
+          <canvas 
+            ref={canvasRef} 
+            style={{ 
+              width: "100%", 
+              height: "100%", 
+              display: "block" 
+            }} 
+          />
+        </Link>
         {!imageLoaded && (
           <div 
             style={{ 
@@ -303,33 +313,7 @@ export default function NotFound() {
         </a>
       </p>
 
-      <Link
-        href="/"
-        style={{
-          display: "inline-block",
-          marginTop: "3.5rem",
-          textTransform: "uppercase",
-          fontSize: "0.85rem",
-          letterSpacing: "0.15em",
-          fontFamily: "'Gabarito', sans-serif",
-          fontWeight: 900, // ExtraBold
-          borderBottom: "2px solid #ffffff",
-          paddingBottom: "4px",
-          color: "#ffffff",
-          textDecoration: "none",
-          transition: "border-color 0.2s, color 0.2s, opacity 0.2s",
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.borderColor = "#ff00c1";
-          e.currentTarget.style.color = "#ff00c1";
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.borderColor = "#ffffff";
-          e.currentTarget.style.color = "#ffffff";
-        }}
-      >
-        take me home
-      </Link>
+
     </main>
   );
 }
