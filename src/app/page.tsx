@@ -13,8 +13,8 @@ export default function Home() {
           product designer
         </Link>{" "}
         and{" "}
-        <Link href="#" id="link-professor">
-          professor
+        <Link href="#" id="link-educator">
+          educator
         </Link>{" "}
         based in{" "}
         <Link href="#" id="link-philadelphia">
