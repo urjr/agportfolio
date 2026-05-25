@@ -220,6 +220,10 @@ a {
         padding-bottom: 2px;
         transition: opacity 0.15s ease-out; // Snappy fade-out transition
         opacity: 1;
+
+        @media (prefers-reduced-motion: no-preference) {
+          animation: glitch-text-leave 0.1s step-end forwards;
+        }
       }
 
       .philly-svg {
@@ -233,6 +237,10 @@ a {
         transition: opacity 0.15s ease-in; // Snappy fade-in transition
         pointer-events: none;
         vertical-align: baseline;
+
+        @media (prefers-reduced-motion: no-preference) {
+          animation: glitch-svg-leave 0.2s step-end forwards;
+        }
       }
 
       &:hover {
@@ -332,6 +340,53 @@ a {
         60% {
           clip-path: inset(0 0 0 0);
           transform: translate(0, 0) skew(0deg);
+          filter: none;
+        }
+        100% {
+          clip-path: inset(0 0 0 0);
+          transform: translate(0, 0) skew(0deg);
+          filter: none;
+        }
+      }
+
+      @keyframes glitch-text-leave {
+        0% {
+          clip-path: inset(10% 0 85% 0);
+          transform: skew(-20deg) translate(8px, -4px);
+        }
+        33% {
+          clip-path: inset(80% 0 5% 0);
+          transform: skew(25deg) translate(-6px, 3px);
+        }
+        66% {
+          clip-path: inset(45% 0 45% 0);
+          transform: skew(-15deg) translate(4px, -2px);
+        }
+        100% {
+          clip-path: inset(0 0 0 0);
+          transform: skew(0deg) translate(0, 0);
+        }
+      }
+
+      @keyframes glitch-svg-leave {
+        0% {
+          clip-path: inset(40% 0 50% 0);
+          transform: translate(10px, -6px) skew(30deg);
+          filter: hue-rotate(90deg);
+        }
+        25% {
+          clip-path: inset(90% 0 1% 0);
+          transform: translate(-8px, 5px) skew(-35deg);
+          filter: invert(0.8);
+        }
+        50% {
+          clip-path: inset(15% 0 75% 0);
+          transform: translate(6px, -4px) skew(25deg);
+          filter: none;
+        }
+        75% {
+          clip-path: inset(60% 0 20% 0);
+          transform: translate(-3px, 2px) skew(-15deg);
           filter: none;
         }
         100% {
