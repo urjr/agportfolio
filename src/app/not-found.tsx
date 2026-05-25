@@ -66,8 +66,8 @@ export default function NotFound() {
         const h = canvas.height;
         ctx.clearRect(0, 0, w, h);
 
-        // Slices the offscreen pre-rendered image into horizontal bands and draws them with dynamic jitter
-        const sliceCount = 45;
+        // Slices the offscreen pre-rendered image into horizontal bands (125 slices for an extremely fine digital look)
+        const sliceCount = 125;
         const sliceHeight = h / sliceCount;
 
         for (let i = 0; i < sliceCount; i++) {
@@ -101,14 +101,28 @@ export default function NotFound() {
           );
         }
 
-        // Occasional digital chromatic aberration split bars
+        // High-frequency, ultra-fine digital static noise (1px high hair-thin lines for fine static feel)
+        const fineNoiseLineCount = isHoveredRef.current ? 16 : 5;
+        ctx.fillStyle = "rgba(255, 255, 255, 0.12)";
+        for (let j = 0; j < fineNoiseLineCount; j++) {
+          if (Math.random() > 0.4) {
+            ctx.fillRect(
+              Math.random() * w,
+              Math.random() * h,
+              Math.random() * (w * 0.25) + 10,
+              1 // Exactly 1px thick for maximum high-res fine detail
+            );
+          }
+        }
+
+        // Occasional ultra-fine digital chromatic aberration split bars (max 3px height)
         if (Math.random() > (isHoveredRef.current ? 0.45 : 0.96)) {
           ctx.fillStyle = isHoveredRef.current ? "rgba(0, 255, 240, 0.45)" : "rgba(0, 255, 240, 0.25)"; // Cyan chromatic slice
-          ctx.fillRect(0, Math.random() * h, w, Math.random() * 8);
+          ctx.fillRect(0, Math.random() * h, w, Math.random() * 2 + 1); // Shrunk height to 1px - 3px
         }
         if (Math.random() > (isHoveredRef.current ? 0.45 : 0.96)) {
           ctx.fillStyle = isHoveredRef.current ? "rgba(255, 0, 193, 0.45)" : "rgba(255, 0, 193, 0.25)"; // Magenta chromatic slice
-          ctx.fillRect(0, Math.random() * h, w, Math.random() * 8);
+          ctx.fillRect(0, Math.random() * h, w, Math.random() * 2 + 1); // Shrunk height to 1px - 3px
         }
 
         animationId = requestAnimationFrame(render);
