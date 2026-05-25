@@ -227,7 +227,7 @@ a {
         left: 0;
         top: 0;
         width: 100%;
-        height: 100%;
+        height: calc(100% - 4px); // Excludes padding (2px) and border (2px) to align vector baseline perfectly with text
         object-fit: contain; // Proportionally fits inside the exact layout box of the text
         opacity: 0;
         transition: opacity 0.2s ease;
