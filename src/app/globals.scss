@@ -218,7 +218,7 @@ a {
         letter-spacing: 0;
         border-bottom: 2px solid currentColor; // Renders the underline on the text itself
         padding-bottom: 2px;
-        transition: opacity 0.2s ease;
+        transition: opacity 0.15s ease-out; // Snappy fade-out transition
         opacity: 1;
       }
 
@@ -230,7 +230,7 @@ a {
         height: calc(100% - 4px); // Excludes padding (2px) and border (2px) to align vector baseline perfectly with text
         object-fit: contain; // Proportionally fits inside the exact layout box of the text
         opacity: 0;
-        transition: opacity 0.2s ease;
+        transition: opacity 0.15s ease-in; // Snappy fade-in transition
         pointer-events: none;
         vertical-align: baseline;
       }
@@ -244,6 +244,78 @@ a {
 
         .philly-svg {
           opacity: 1;
+        }
+      }
+    }
+
+    // Accessible glitch-art transition choreography on hover
+    @media (prefers-reduced-motion: no-preference) {
+      .philly-svg-link {
+        &:hover {
+          .philly-text {
+            animation: glitch-text-anim 0.15s steps(2) forwards;
+            text-shadow: -2px 0 #00fff0, 2px 0 #ff00c1; // Cyan and magenta chromatic shift
+          }
+
+          .philly-svg {
+            animation: glitch-svg-anim 0.4s steps(4) 0.08s forwards; // Jerky digital resolution, stabilizes at 60%
+          }
+        }
+      }
+
+      @keyframes glitch-text-anim {
+        0% {
+          clip-path: inset(40% 0 50% 0);
+          transform: skew(0.3deg);
+        }
+        25% {
+          clip-path: inset(90% 0 1% 0);
+          transform: skew(-0.5deg) translate(-2px, 1px);
+        }
+        50% {
+          clip-path: inset(15% 0 80% 0);
+          transform: skew(0.8deg) translate(2px, -1px);
+        }
+        75% {
+          clip-path: inset(75% 0 5% 0);
+          transform: skew(-0.3deg) translate(-1px, -2px);
+        }
+        100% {
+          clip-path: inset(0 0 0 0);
+          transform: skew(0deg);
+        }
+      }
+
+      @keyframes glitch-svg-anim {
+        0% {
+          clip-path: inset(10% 0 85% 0);
+          transform: translate(-3px, -2px) skew(-1deg);
+          filter: hue-rotate(90deg);
+        }
+        15% {
+          clip-path: inset(80% 0 5% 0);
+          transform: translate(2px, 3px) skew(1deg);
+          filter: hue-rotate(-90deg);
+        }
+        30% {
+          clip-path: inset(40% 0 45% 0);
+          transform: translate(-1px, 1px);
+          filter: invert(0.8);
+        }
+        45% {
+          clip-path: inset(5% 0 90% 0);
+          transform: translate(-2px, 2px) skew(2deg);
+          filter: none;
+        }
+        60% {
+          clip-path: inset(0 0 0 0);
+          transform: translate(0, 0);
+          filter: none;
+        }
+        100% {
+          clip-path: inset(0 0 0 0);
+          transform: translate(0, 0);
+          filter: none;
         }
       }
     }
