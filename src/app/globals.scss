@@ -182,7 +182,7 @@ a {
   display: inline-block;
   opacity: 0;
   transform: translateY(50px); // Increased to make floating upward entry highly obvious
-  transition: transform 0.9s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.9s ease;
+  transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 1.2s ease;
   transition-fill-mode: forwards;
 }
 
@@ -200,11 +200,13 @@ a {
 
 // Exiting Animation State (Triggered on link clicks)
 .transition-container-exiting {
-  .transition-word, .transition-row {
+  .transition-word, .transition-row, .glitch-canvas-container {
     opacity: 0 !important;
-    transform: translateY(-50px) !important; // Increased to make floating upward exit highly obvious
-    transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.7s ease !important;
-    transition-delay: 0s !important; // Forces all elements to exit immediately and simultaneously
+    transform: translateY(-50px) !important; // Sleek upward slide
+    transition-property: transform, opacity !important;
+    transition-duration: 0.6s !important;
+    transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1), ease !important;
+    // Keeps inline transition-delay untouched so elements naturally stagger out!
   }
 }
 
@@ -259,7 +261,7 @@ a {
       letter-spacing: 0;
       border-bottom: 2px solid currentColor;
       padding-bottom: 2px;
-      transition: opacity 0.2s ease;
+      transition: opacity 0.2s ease, border-color 0.2s ease;
 
       &:hover {
         opacity: 0.5;
@@ -270,14 +272,14 @@ a {
       white-space: nowrap;
     }
 
-    .philly-svg-link {
+    .philly-svg-link, .google-svg-link, .upenn-svg-link, .analytics-svg-link {
       display: inline-block;
       position: relative;
       border-bottom: none !important; // Hide default link border on the parent container
       vertical-align: baseline;
       padding-bottom: 0;
 
-      .philly-text {
+      .philly-text, .google-text, .upenn-text, .analytics-text {
         display: inline-block;
         font-family: 'Pecita', cursive, serif;
         font-size: inherit; // Prevent compounding sizing by inheriting the parent link's 1.15em font scale
@@ -289,7 +291,7 @@ a {
         opacity: 1;
       }
 
-      .philly-svg {
+      .philly-svg, .google-svg, .upenn-svg, .analytics-svg {
         position: absolute;
         left: 0;
         top: -0.11em; // Nudges the SVG up relative to parent font size to align non-descending character baselines perfectly with the Pecita text
@@ -302,14 +304,18 @@ a {
         vertical-align: baseline;
       }
 
+      .google-svg {
+        top: -0.05em; // Aligns the Google logo's visual baseline with the surrounding text
+      }
+
       // Exit animations only run once the element has actually been hovered to avoid load-time glitching
       &.has-hovered {
-        .philly-text {
+        .philly-text, .google-text, .upenn-text, .analytics-text {
           @media (prefers-reduced-motion: no-preference) {
             animation: glitch-text-anim 0.3s step-end forwards;
           }
         }
-        .philly-svg {
+        .philly-svg, .google-svg, .upenn-svg, .analytics-svg {
           @media (prefers-reduced-motion: no-preference) {
             animation: glitch-svg-anim 0.6s step-end forwards;
           }
@@ -319,11 +325,11 @@ a {
       &:hover {
         opacity: 1 !important; // Override default link dimming
 
-        .philly-text {
+        .philly-text, .google-text, .upenn-text, .analytics-text {
           opacity: 0;
         }
 
-        .philly-svg {
+        .philly-svg, .google-svg, .upenn-svg, .analytics-svg {
           opacity: 1;
         }
       }
@@ -331,14 +337,14 @@ a {
 
     // Accessible glitch-art transition choreography on hover
     @media (prefers-reduced-motion: no-preference) {
-      .philly-svg-link {
+      .philly-svg-link, .google-svg-link, .upenn-svg-link, .analytics-svg-link {
         &:hover {
-          .philly-text {
+          .philly-text, .google-text, .upenn-text, .analytics-text {
             animation: glitch-text-leave 0.1s step-end forwards; // Swapped to low-jitter keyframes for hover
             text-shadow: -2px 0 #00fff0, 2px 0 #ff00c1; // Cyan and magenta chromatic shift
           }
 
-          .philly-svg {
+          .philly-svg, .google-svg, .upenn-svg, .analytics-svg {
             animation: glitch-svg-leave 0.2s step-end 0.04s forwards; // Swapped to low-jitter keyframes for hover
           }
         }

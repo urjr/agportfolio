@@ -7,7 +7,6 @@ export default function NotFound() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState(false);
-  const [imageLoaded, setImageLoaded] = useState(false);
 
   // Set theme-dark globally on mount and revert on unmount
   useEffect(() => {
@@ -38,7 +37,6 @@ export default function NotFound() {
     const handleLoad = () => {
       if (loaded) return;
       loaded = true;
-      setImageLoaded(true);
 
       // Create an offscreen canvas to pre-render the static base image
       const offscreen = document.createElement("canvas");
@@ -143,8 +141,6 @@ export default function NotFound() {
     img.onload = handleLoad;
     img.onerror = (e) => {
       console.error("Failed to load 404.png graphic:", e);
-      // Fallback in case of asset failures to prevent being permanently stuck
-      setImageLoaded(true);
     };
 
     img.src = "/404.png";
@@ -183,9 +179,24 @@ export default function NotFound() {
         zIndex: 100, // Mounts over root pages to showcase the isolated 404 state
       }}
     >
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
+            body {
+              background-color: #000000 !important;
+              color: #ffffff !important;
+            }
+            .navbar, .footer {
+              background-color: rgba(0, 0, 0, 0.85) !important;
+              color: #ffffff !important;
+            }
+          `,
+        }}
+      />
       {/* Full-width glitch viewport container */}
       <div
         ref={containerRef}
+        className="glitch-canvas-container"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         style={{
@@ -200,10 +211,11 @@ export default function NotFound() {
           overflow: "hidden", // Prevents horizontal scrollbars during canvas horizontal jitter
         }}
       >
+        <link rel="preload" href="/404.png" as="image" />
         <Link 
           href="/" 
           style={{ 
-            display: imageLoaded ? "block" : "none", 
+            display: "block", 
             width: "100%", 
             height: "100%", 
             outline: "none",
@@ -220,19 +232,6 @@ export default function NotFound() {
             }} 
           />
         </Link>
-        {!imageLoaded && (
-          <div 
-            style={{ 
-              fontFamily: "'Gabarito', sans-serif", 
-              fontSize: "1.2rem", 
-              fontWeight: 500, 
-              opacity: 0.5,
-              position: "absolute"
-            }}
-          >
-            LOADING MATRIX...
-          </div>
-        )}
       </div>
 
       <p

@@ -29,16 +29,31 @@ export default function Home() {
         </h1>
         <p className="hero-title intro-title second-line" id="hero-subtitle">
           Currently, I work at{" "}
-          <Link href="#" id="link-google">
-            Google
+          <Link href="#" id="link-google" className="google-svg-link">
+            <span className="google-text">Google</span>
+            <img
+              src="/assets/home/google-logo.svg"
+              alt="Google"
+              className="google-svg"
+            />
           </Link>
           , designing agentic experiences for{" "}
-          <Link href="#" id="link-analytics">
-            Analytics
+          <Link href="#" id="link-analytics" className="analytics-svg-link">
+            <span className="analytics-text">Analytics</span>
+            <img
+              src="/assets/home/analytics.svg"
+              alt="Analytics"
+              className="analytics-svg"
+            />
           </Link>
           , and teach design at{" "}
-          <Link href="#" id="link-upenn">
-            UPenn
+          <Link href="#" id="link-upenn" className="upenn-svg-link">
+            <span className="upenn-text">UPenn</span>
+            <img
+              src="/assets/home/penn.svg"
+              alt="UPenn"
+              className="upenn-svg"
+            />
           </Link>
           .
         </p>
