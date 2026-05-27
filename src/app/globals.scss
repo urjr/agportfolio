@@ -870,6 +870,9 @@ a {
     z-index: 10;
     opacity: 1;
     transition: opacity 0.4s ease,
+                left 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                right 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                top 0.8s cubic-bezier(0.16, 1, 0.3, 1),
                 transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
                 box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
                 border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1);
@@ -1062,7 +1065,11 @@ a {
     z-index: 20;
     opacity: 0;
     transform: translateY(-50%); // Centered vertically relative to the top offset
-    transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), color 0.15s ease;
+    transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                left 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                width 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                top 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                color 0.15s ease;
   }
 }
 

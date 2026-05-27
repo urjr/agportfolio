@@ -48,7 +48,10 @@ export default function About() {
       });
     };
 
-    // Run adjustment after brief load pass to ensure settled dimensions
+    // Run immediately on client mount
+    adjustHoverCardSides();
+
+    // Run adjustment after brief load pass to ensure settled dimensions (e.g. after font layout settling)
     const timer = setTimeout(adjustHoverCardSides, 100);
 
     window.addEventListener("resize", adjustHoverCardSides);
