@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 // Hand-crafted organic float timings, amplitudes, sways, and unified negative parallax scroll speeds.
 // By keeping all speeds negative (between -0.08 and -0.18), all cards float slightly slower than the text
@@ -18,24 +18,34 @@ const FLOAT_PARAMS = [
 ];
 
 export default function About() {
-  useEffect(() => {
-    const adjustHoverCardSides = (markAligned = false) => {
-      const container = document.querySelector(".about-container") as HTMLElement;
-      const content = document.querySelector(".about-content");
-      const groups = document.querySelectorAll(".about-link-group");
-      if (!container || !content || !groups.length) return;
+  const layoutCache = useRef<{ linkX: number; linkY: number; cardX: number; cardY: number; }[]>([]);
 
+  useEffect(() => {
+    const container = document.querySelector(".about-container") as HTMLElement;
+    const content = document.querySelector(".about-content");
+    const groups = document.querySelectorAll(".about-link-group");
+    if (!container || !content || !groups.length) return;
+
+    // Cache the static positions without active transforms to prevent layout tracking discrepancies
+    const cacheStaticCoordinates = () => {
       const containerRect = container.getBoundingClientRect();
       const contentRect = content.getBoundingClientRect();
       const contentCenter = contentRect.left + contentRect.width / 2;
-      
-      // Read the scroll position from document.body.scrollTop, falling back to page viewport APIs
-      const scrollY = document.body.scrollTop || window.scrollY || document.documentElement.scrollTop || 0;
 
+      // Temporarily clear inline transforms to measure static positions accurately
+      const originalTransforms: string[] = [];
+      groups.forEach((group, index) => {
+        const card = group.querySelector(".about-hover-card") as HTMLElement;
+        if (card) {
+          originalTransforms[index] = card.style.transform;
+          card.style.transform = "translateY(-50%) translate(0px, 0px)";
+        }
+      });
+
+      // Synchronous DOM coordinate measurement pass
       groups.forEach((group, index) => {
         const link = group.querySelector(".about-bold-link") as HTMLElement;
         const card = group.querySelector(".about-hover-card") as HTMLElement;
-        const connector = group.querySelector(".about-hover-connector") as HTMLElement;
         if (!link || !card) return;
 
         const linkRect = link.getBoundingClientRect();
@@ -50,80 +60,110 @@ export default function About() {
           card.classList.add("right-side");
         }
 
-        // Apply hand-crafted organic float duration, delay, amplitude (y), horizontal sway (x)
-        const params = FLOAT_PARAMS[index] || { duration: "6.0s", delay: "0.0s", y: "-6px", x: "0px", speed: 0 };
-        card.style.animationDuration = params.duration;
-        card.style.animationDelay = params.delay;
-        card.style.setProperty("--float-y", params.y);
-        card.style.setProperty("--float-x", params.x);
+        const linkX = linkRect.left - containerRect.left + linkRect.width / 2;
+        const linkY = linkRect.top - containerRect.top + linkRect.height / 2;
 
-        // Apply real-time parallax offset based on active scroll position
-        const parallaxY = scrollY * params.speed;
-        card.style.setProperty("--parallax-y", `${parallaxY.toFixed(1)}px`);
+        const cardRect = card.getBoundingClientRect();
+        const cardWidth = cardRect.width || 130;
+        const cardX = isLeft ? (-170 + cardWidth / 2) : (containerRect.width + 170 - cardWidth / 2);
+        const cardY = cardRect.top - containerRect.top + cardRect.height / 2;
 
-        if (connector) {
-          // 1. Get true, live centers of link and card relative to container
-          const linkX = linkRect.left - containerRect.left + linkRect.width / 2;
-          const linkY = linkRect.top - containerRect.top + linkRect.height / 2;
+        layoutCache.current[index] = { linkX, linkY, cardX, cardY };
+      });
 
-          const cardRect = card.getBoundingClientRect();
-          const cardWidth = cardRect.width || 130;
-
-          // Horizontal center of card relative to container
-          const cardX = isLeft ? (-170 + cardWidth / 2) : (containerRect.width + 170 - cardWidth / 2);
-          
-          // Vertical center of card relative to container (which dynamically shifts with scroll parallax!)
-          const cardY = cardRect.top - containerRect.top + cardRect.height / 2;
-
-          // 2. Perform trigonometry for diagonal line to keep it perfectly connected
-          const dx = cardX - linkX;
-          const dy = cardY - linkY;
-          const distance = Math.sqrt(dx * dx + dy * dy);
-          const angleRad = Math.atan2(dy, dx);
-          const angleDeg = angleRad * (180 / Math.PI);
-
-          // 3. Apply style properties
-          connector.style.left = `${linkX}px`;
-          connector.style.top = `${linkY}px`;
-          connector.style.width = `${distance}px`;
-          connector.style.transform = `rotate(${angleDeg}deg)`;
-        }
-
-        if (markAligned) {
-          card.classList.add("aligned");
-          if (connector) {
-            connector.classList.add("aligned");
-          }
+      // Restore original transforms instantly
+      groups.forEach((group, index) => {
+        const card = group.querySelector(".about-hover-card") as HTMLElement;
+        if (card && originalTransforms[index] !== undefined) {
+          card.style.transform = originalTransforms[index];
         }
       });
     };
 
-    // Run immediately on client mount to pre-position while invisible
-    adjustHoverCardSides(false);
+    // Perform initial static layout caching pass
+    cacheStaticCoordinates();
 
-    // Run adjustment after brief load pass to ensure settled dimensions, then fade in smoothly
-    const timer = setTimeout(() => adjustHoverCardSides(true), 100);
+    const startTime = Date.now();
+    let animationFrameId: number;
 
-    // High performance frame-throttled scroll and resize scheduler
-    let ticked = false;
-    const handleScrollOrResize = () => {
-      if (!ticked) {
-        window.requestAnimationFrame(() => {
-          adjustHoverCardSides(true);
-          ticked = false;
-        });
-        ticked = true;
-      }
+    const frameUpdate = () => {
+      const scrollY = document.body.scrollTop || window.scrollY || document.documentElement.scrollTop || 0;
+      const elapsed = (Date.now() - startTime) / 1000;
+
+      groups.forEach((group, index) => {
+        const card = group.querySelector(".about-hover-card") as HTMLElement;
+        const connector = group.querySelector(".about-hover-connector") as HTMLElement;
+        const cache = layoutCache.current[index];
+        if (!card || !cache) return;
+
+        const params = FLOAT_PARAMS[index] || { duration: "6.0s", delay: "0.0s", y: "-6px", x: "0px", speed: 0 };
+        const duration = parseFloat(params.duration);
+        const delay = parseFloat(params.delay);
+        const speed = params.speed;
+        const yAmplitude = parseFloat(params.y);
+        const xAmplitude = parseFloat(params.x);
+
+        const time = elapsed + delay;
+        const angle = (time * 2 * Math.PI) / duration;
+
+        // Mathematical organic float bobbing (y) and horizontal swaying (x) offsets
+        const floatY = yAmplitude * Math.sin(angle);
+        const floatX = xAmplitude * Math.sin(angle);
+
+        // Real-time scroll parallax offset
+        const parallaxY = scrollY * speed;
+
+        // Apply dynamic transforms inline (gpu accelerated)
+        card.style.transform = `translateY(-50%) translate(${floatX.toFixed(2)}px, ${(floatY + parallaxY).toFixed(2)}px)`;
+
+        if (connector) {
+          // Calculate diagonal coordinates relative to container (fully synced with float offsets!)
+          const startX = cache.linkX;
+          const startY = cache.linkY;
+          const endX = cache.cardX + floatX;
+          const endY = cache.cardY + floatY + parallaxY;
+
+          // Trigonometry
+          const dx = endX - startX;
+          const dy = endY - startY;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          const angleRad = Math.atan2(dy, dx);
+          const angleDeg = angleRad * (180 / Math.PI);
+
+          // Apply styling parameters
+          connector.style.left = `${startX}px`;
+          connector.style.top = `${startY}px`;
+          connector.style.width = `${distance.toFixed(1)}px`;
+          connector.style.transform = `rotate(${angleDeg.toFixed(2)}deg)`;
+        }
+
+        // Fade in aligned card and connector beautifully
+        card.classList.add("aligned");
+        if (connector) {
+          connector.classList.add("aligned");
+        }
+      });
+
+      animationFrameId = window.requestAnimationFrame(frameUpdate);
     };
 
-    // Use capture: true to intercept the scroll events from the scrollable document.body container
-    window.addEventListener("scroll", handleScrollOrResize, { capture: true, passive: true });
-    window.addEventListener("resize", handleScrollOrResize);
+    // Run adjustment after brief load pass to ensure settled dimensions
+    const timer = setTimeout(() => {
+      cacheStaticCoordinates();
+      // Start high-performance frame animation loop
+      animationFrameId = window.requestAnimationFrame(frameUpdate);
+    }, 100);
+
+    // Re-cache static bounds on resize
+    const handleResize = () => {
+      cacheStaticCoordinates();
+    };
+    window.addEventListener("resize", handleResize);
 
     return () => {
       clearTimeout(timer);
-      window.removeEventListener("scroll", handleScrollOrResize, { capture: true });
-      window.removeEventListener("resize", handleScrollOrResize);
+      window.cancelAnimationFrame(animationFrameId);
+      window.removeEventListener("resize", handleResize);
     };
   }, []);
 

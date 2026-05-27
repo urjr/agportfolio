@@ -881,12 +881,10 @@ a {
 
     &.left-side {
       left: -170px;
-      animation: hover-bob-left 6s ease-in-out infinite;
     }
 
     &.right-side {
       right: -170px;
-      animation: hover-bob-right 6s ease-in-out infinite;
     }
   }
 }
@@ -1033,18 +1031,7 @@ a {
   }
 }
 
-// Dynamic bobbing, organic swaying, and scroll parallax keyframes centered on the text line baseline
-@keyframes hover-bob-left {
-  0% { transform: translateY(-50%) translate(0px, var(--parallax-y, 0px)); }
-  50% { transform: translateY(-50%) translate(var(--float-x, 0px), calc(var(--float-y, -6px) + var(--parallax-y, 0px))); }
-  100% { transform: translateY(-50%) translate(0px, var(--parallax-y, 0px)); }
-}
-
-@keyframes hover-bob-right {
-  0% { transform: translateY(-50%) translate(0px, var(--parallax-y, 0px)); }
-  50% { transform: translateY(-50%) translate(var(--float-x, 0px), calc(var(--float-y, 4px) + var(--parallax-y, 0px))); }
-  100% { transform: translateY(-50%) translate(0px, var(--parallax-y, 0px)); }
-}
+// Dynamic bobbing keyframes are now synchronized frame-by-frame via requestAnimationFrame layout cache in JavaScript
 
 // Diagrammatic Hover Connectors
 .about-hover-connector {
