@@ -716,7 +716,7 @@ a {
         color: #DFE8F9;
       }
 
-      &:hover {
+      &:hover, .about-link-group:hover & {
         background-color: #A7C2ED !important; // Rich periwinkle hover background
         color: #13264F !important;
 
@@ -734,7 +734,7 @@ a {
         color: #F9F0DB;
       }
 
-      &:hover {
+      &:hover, .about-link-group:hover & {
         background-color: #E3C18E !important; // Rich gold-yellow hover background
         color: #42320E !important;
 
@@ -752,7 +752,7 @@ a {
         color: #FCDCD3;
       }
 
-      &:hover {
+      &:hover, .about-link-group:hover & {
         background-color: #E69A88 !important; // Rich peach hover background
         color: #562719 !important;
 
@@ -770,7 +770,7 @@ a {
         color: #DDEFEA;
       }
 
-      &:hover {
+      &:hover, .about-link-group:hover & {
         background-color: #9DCEBC !important; // Rich mint green hover background
         color: #133E35 !important;
 
@@ -803,7 +803,7 @@ a {
         border-color: #203A6F !important;
       }
 
-      &:hover {
+      &:hover, .about-link-group:hover & {
         background-color: #A7C2ED !important; // Richer periwinkle on hover
         color: #13264F !important;
         border: 2.5px solid #A7C2ED !important; // Keep constant 2.5px border on hover
@@ -829,7 +829,7 @@ a {
         border-color: #5C481A !important;
       }
 
-      &:hover {
+      &:hover, .about-link-group:hover & {
         background-color: #E3C18E !important; // Richer yellow on hover
         color: #42320E !important;
         border: 2.5px solid #E3C18E !important; // Keep constant 2.5px border on hover
@@ -867,6 +867,7 @@ a {
     width: 130px;
     height: 170px;
     pointer-events: auto; // Allow mouse interaction and hover delegation on the card itself
+    cursor: url("/assets/cursors/link.svg") 18 0, pointer; // Retro voxel pointing hand!
     z-index: 10;
     opacity: 1;
     transition: opacity 0.4s ease,
