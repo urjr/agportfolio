@@ -27,7 +27,9 @@ export default function About() {
       const containerRect = container.getBoundingClientRect();
       const contentRect = content.getBoundingClientRect();
       const contentCenter = contentRect.left + contentRect.width / 2;
-      const scrollY = window.scrollY;
+      
+      // Read the scroll position from document.body.scrollTop, falling back to page viewport APIs
+      const scrollY = document.body.scrollTop || window.scrollY || document.documentElement.scrollTop || 0;
 
       groups.forEach((group, index) => {
         const link = group.querySelector(".about-bold-link") as HTMLElement;
@@ -113,12 +115,13 @@ export default function About() {
       }
     };
 
-    window.addEventListener("scroll", handleScrollOrResize, { passive: true });
+    // Use capture: true to intercept the scroll events from the scrollable document.body container
+    window.addEventListener("scroll", handleScrollOrResize, { capture: true, passive: true });
     window.addEventListener("resize", handleScrollOrResize);
 
     return () => {
       clearTimeout(timer);
-      window.removeEventListener("scroll", handleScrollOrResize);
+      window.removeEventListener("scroll", handleScrollOrResize, { capture: true });
       window.removeEventListener("resize", handleScrollOrResize);
     };
   }, []);
