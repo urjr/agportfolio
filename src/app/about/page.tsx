@@ -82,6 +82,9 @@ export default function About() {
 
         if (markAligned) {
           card.classList.add("aligned");
+          if (connector) {
+            connector.classList.add("aligned");
+          }
         }
       });
     };

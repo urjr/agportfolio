@@ -1061,12 +1061,16 @@ a {
     z-index: 20;
     opacity: 0;
     transform-origin: 0 50% !important; // Force rotation around left center!
-    transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+    transition: opacity 0.8s ease-in-out,
                 left 0.8s cubic-bezier(0.16, 1, 0.3, 1),
                 width 0.8s cubic-bezier(0.16, 1, 0.3, 1),
                 top 0.8s cubic-bezier(0.16, 1, 0.3, 1),
                 transform 0.8s cubic-bezier(0.16, 1, 0.3, 1),
                 color 0.15s ease;
+
+    &.aligned {
+      opacity: 0.2; // Always visible at subtle opacity when aligned and resting
+    }
   }
 }
 
@@ -1098,11 +1102,11 @@ a {
   }
 }
 
-// Hover Interaction (Dashed line fades in on hover over link or card)
+// Hover Interaction (Dashed line highlights on hover over link or card)
 .about-link-group {
   &:hover {
     .about-hover-connector {
-      opacity: 0.2; // Render lines at low opacity (.2) only on hover!
+      opacity: 0.5; // Elevated visibility highlight on hover
     }
   }
 
