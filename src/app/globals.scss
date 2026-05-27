@@ -1230,39 +1230,50 @@ a {
 // ============================================================
 
 .company-modal {
-  position: relative;
+  // Independently fixed so FLIP inline-style controls its position/scale
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  z-index: 1001; // above scrim
   display: flex;
   flex-direction: row;
   gap: 0;
-  width: min(860px, 100%);
+  width: min(860px, calc(100vw - 48px));
   max-height: min(540px, 90vh);
-  border-radius: 20px;
+  // border-radius, transform, opacity are all driven by inline style (FLIP)
   overflow: hidden;
-  background: rgba(#FAF8F5, 0.96);
+  background: rgba(#FAF8F5, 0.98);
   border: 1.5px solid rgba(#2B2017, 0.09);
   box-shadow:
     0 2px 4px rgba(43, 32, 23, 0.04),
-    0 8px 24px rgba(43, 32, 23, 0.08),
-    0 32px 80px rgba(43, 32, 23, 0.14);
-  opacity: 0;
-  transform: scale(0.92) translateY(12px);
+    0 8px 24px rgba(43, 32, 23, 0.09),
+    0 32px 80px rgba(43, 32, 23, 0.16);
   transition:
-    opacity 0.36s cubic-bezier(0.16, 1, 0.3, 1),
-    transform 0.36s cubic-bezier(0.16, 1, 0.3, 1);
-  will-change: opacity, transform;
+    transform 0.46s cubic-bezier(0.16, 1, 0.3, 1),
+    border-radius 0.46s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 0.36s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity, border-radius;
+
+  // Fade in the right-column content slightly after the FLIP shape settles
+  .company-modal-details {
+    opacity: 0;
+    transition: opacity 0.22s ease;
+  }
 
   &.company-modal--visible {
-    opacity: 1;
-    transform: scale(1) translateY(0px);
+    .company-modal-details {
+      opacity: 1;
+      transition-delay: 0.3s;
+    }
   }
 
   body.theme-dark & {
-    background: rgba(#1A1410, 0.96);
+    background: rgba(#1A1410, 0.98);
     border-color: rgba(#FAF8F5, 0.08);
     box-shadow:
       0 2px 4px rgba(0, 0, 0, 0.12),
-      0 8px 24px rgba(0, 0, 0, 0.2),
-      0 32px 80px rgba(0, 0, 0, 0.35);
+      0 8px 24px rgba(0, 0, 0, 0.22),
+      0 32px 80px rgba(0, 0, 0, 0.38);
   }
 
   @media (max-width: 600px) {

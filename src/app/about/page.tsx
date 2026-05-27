@@ -97,11 +97,29 @@ export default function About() {
   const layoutCache = useRef<{ linkX: number; linkY: number; cardX: number; cardY: number; }[]>([]);
   const [activeCompany, setActiveCompany] = useState<string | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [originRect, setOriginRect] = useState<DOMRect | null>(null);
+  const hideCardRef = useRef<string | null>(null);
   const animationFrameRef = useRef<number>(0);
 
-  const openModal = useCallback((companyId: string) => {
+  const openModal = useCallback((companyId: string, triggerEl?: HTMLElement) => {
+    // Find the floating card element — prefer the card span, fall back to trigger
+    const group = triggerEl?.closest(".about-link-group");
+    const cardEl = (
+      group?.querySelector(`[data-company-id="${companyId}"]`) ??
+      document.querySelector(`[data-company-id="${companyId}"]`)
+    ) as HTMLElement | null;
+
+    // Capture the card's live viewport rect (includes float + parallax transforms)
+    setOriginRect(cardEl?.getBoundingClientRect() ?? null);
     setActiveCompany(companyId);
-    // Tiny delay so the element is mounted before we trigger the CSS transition
+
+    // Hide the source card so it appears to "fly into" the modal
+    if (cardEl) {
+      cardEl.style.opacity = "0";
+      cardEl.style.pointerEvents = "none";
+      hideCardRef.current = companyId;
+    }
+
     requestAnimationFrame(() => {
       requestAnimationFrame(() => setModalVisible(true));
     });
@@ -110,13 +128,72 @@ export default function About() {
 
   const closeModal = useCallback(() => {
     setModalVisible(false);
-    // Wait for CSS transition to finish before unmounting
-    const t = setTimeout(() => {
+    const companyId = hideCardRef.current;
+    hideCardRef.current = null;
+
+    // Start restoring the card at 150ms — the ease-out curve means the modal
+    // has already traveled ~60% back to the card by this point. A 280ms fade
+    // means the card is fully visible at ~430ms, just before the modal unmounts.
+    let cleanupTimer: ReturnType<typeof setTimeout>;
+    const restoreTimer = setTimeout(() => {
+      const card = companyId
+        ? (document.querySelector(`[data-company-id="${companyId}"]`) as HTMLElement | null)
+        : null;
+      if (card) {
+        card.style.transition = "opacity 0.28s ease";
+        card.style.opacity = "1";
+        card.style.pointerEvents = "";
+        cleanupTimer = setTimeout(() => {
+          card.style.transition = "";
+          card.style.opacity = "";
+        }, 280);
+      }
+    }, 150);
+
+    // Unmount the modal only after its close animation fully completes
+    const unmountTimer = setTimeout(() => {
       setActiveCompany(null);
+      setOriginRect(null);
       document.body.style.overflow = "";
-    }, 380);
-    return () => clearTimeout(t);
+    }, 480);
+
+    return () => {
+      clearTimeout(restoreTimer);
+      clearTimeout(unmountTimer);
+      clearTimeout(cleanupTimer);
+    };
   }, []);
+
+  // Compute FLIP inline style: positions modal at card rect on mount, transitions to center
+  const getModalStyle = (): React.CSSProperties => {
+    if (typeof window === "undefined") return {};
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const modalW = Math.min(860, vw - 48);
+    const modalH = Math.min(540, vh * 0.9);
+
+    if (modalVisible || !originRect) {
+      return {
+        transform: "translate(-50%, -50%)",
+        borderRadius: "20px",
+        opacity: modalVisible ? 1 : 0,
+      };
+    }
+
+    // FLIP: translate modal center from viewport center → card center, scale to card size
+    const cardCX = originRect.left + originRect.width / 2;
+    const cardCY = originRect.top + originRect.height / 2;
+    const dx = cardCX - vw / 2;
+    const dy = cardCY - vh / 2;
+    const scaleX = (originRect.width / modalW).toFixed(5);
+    const scaleY = (originRect.height / modalH).toFixed(5);
+
+    return {
+      transform: `translate(calc(-50% + ${dx.toFixed(1)}px), calc(-50% + ${dy.toFixed(1)}px)) scale(${scaleX}, ${scaleY})`,
+      borderRadius: "12px",
+      opacity: 0.85,
+    };
+  };
 
   // Close modal on Escape key
   useEffect(() => {
@@ -303,7 +380,7 @@ export default function About() {
               <Link
                 href="#"
                 className="about-bold-link about-link-work about-link-outlined"
-                onClick={(e) => { e.preventDefault(); openModal("google"); }}
+                onClick={(e) => { e.preventDefault(); openModal("google", e.currentTarget as HTMLElement); }}
               >
                 Google
               </Link>
@@ -315,12 +392,13 @@ export default function About() {
               <span className="about-connector-dot end-dot"></span>
             </span>
             <span
+              data-company-id="google"
               className="about-hover-card about-card-work left-side about-company-card"
-              onClick={() => openModal("google")}
+              onClick={(e) => openModal("google", e.currentTarget as HTMLElement)}
               role="button"
               tabIndex={0}
               aria-label="Open Google company details"
-              onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") openModal("google"); }}
+              onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") openModal("google", e.currentTarget as HTMLElement); }}
             >
               <span className="about-hover-card-inner">
                 <span className="about-hover-card-label">Google</span>
@@ -348,7 +426,7 @@ export default function About() {
             <Link
               href="#"
               className="about-bold-link about-link-work about-link-outlined"
-              onClick={(e) => { e.preventDefault(); openModal("notarize"); }}
+              onClick={(e) => { e.preventDefault(); openModal("notarize", e.currentTarget as HTMLElement); }}
             >
               Notarize
             </Link>
@@ -358,12 +436,13 @@ export default function About() {
               <span className="about-connector-dot end-dot"></span>
             </span>
             <span
+              data-company-id="notarize"
               className="about-hover-card about-card-work right-side about-company-card"
-              onClick={() => openModal("notarize")}
+              onClick={(e) => openModal("notarize", e.currentTarget as HTMLElement)}
               role="button"
               tabIndex={0}
               aria-label="Open Notarize company details"
-              onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") openModal("notarize"); }}
+              onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") openModal("notarize", e.currentTarget as HTMLElement); }}
             >
               <span className="about-hover-card-inner">
                 <span className="about-hover-card-label">Notarize</span>
@@ -404,7 +483,7 @@ export default function About() {
             <Link
               href="#"
               className="about-bold-link about-link-work about-link-outlined"
-              onClick={(e) => { e.preventDefault(); openModal("smarking"); }}
+              onClick={(e) => { e.preventDefault(); openModal("smarking", e.currentTarget as HTMLElement); }}
             >
               Smarking
             </Link>
@@ -414,12 +493,13 @@ export default function About() {
               <span className="about-connector-dot end-dot"></span>
             </span>
             <span
+              data-company-id="smarking"
               className="about-hover-card about-card-work left-side about-company-card"
-              onClick={() => openModal("smarking")}
+              onClick={(e) => openModal("smarking", e.currentTarget as HTMLElement)}
               role="button"
               tabIndex={0}
               aria-label="Open Smarking company details"
-              onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") openModal("smarking"); }}
+              onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") openModal("smarking", e.currentTarget as HTMLElement); }}
             >
               <span className="about-hover-card-inner">
                 <span className="about-hover-card-label">Smarking</span>
@@ -431,7 +511,7 @@ export default function About() {
             <Link
               href="#"
               className="about-bold-link about-link-work about-link-outlined"
-              onClick={(e) => { e.preventDefault(); openModal("adhawk"); }}
+              onClick={(e) => { e.preventDefault(); openModal("adhawk", e.currentTarget as HTMLElement); }}
             >
               AdHawk
             </Link>
@@ -441,12 +521,13 @@ export default function About() {
               <span className="about-connector-dot end-dot"></span>
             </span>
             <span
+              data-company-id="adhawk"
               className="about-hover-card about-card-work right-side about-company-card"
-              onClick={() => openModal("adhawk")}
+              onClick={(e) => openModal("adhawk", e.currentTarget as HTMLElement)}
               role="button"
               tabIndex={0}
               aria-label="Open AdHawk company details"
-              onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") openModal("adhawk"); }}
+              onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") openModal("adhawk", e.currentTarget as HTMLElement); }}
             >
               <span className="about-hover-card-inner">
                 <span className="about-hover-card-label">AdHawk</span>
@@ -507,7 +588,7 @@ export default function About() {
                 className="about-bold-link about-link-education about-link-outlined"
                 target="_blank"
                 rel="noopener noreferrer"
-                onClick={(e) => { e.preventDefault(); openModal("upenn"); }}
+                onClick={(e) => { e.preventDefault(); openModal("upenn", e.currentTarget as HTMLElement); }}
               >
                 UPenn
               </Link>
@@ -519,12 +600,13 @@ export default function About() {
               <span className="about-connector-dot end-dot"></span>
             </span>
             <span
+              data-company-id="upenn"
               className="about-hover-card about-card-education left-side about-company-card"
-              onClick={() => openModal("upenn")}
+              onClick={(e) => openModal("upenn", e.currentTarget as HTMLElement)}
               role="button"
               tabIndex={0}
               aria-label="Open UPenn IPD details"
-              onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") openModal("upenn"); }}
+              onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") openModal("upenn", e.currentTarget as HTMLElement); }}
             >
               <span className="about-hover-card-inner">
                 <span className="about-hover-card-label">UPenn</span>
@@ -559,6 +641,7 @@ export default function About() {
         >
           <div
             className={`company-modal${modalVisible ? " company-modal--visible" : ""}${company.type === "education" ? " company-modal--education" : ""}`}
+            style={getModalStyle()}
             onClick={(e) => e.stopPropagation()}
             role="dialog"
             aria-modal="true"
