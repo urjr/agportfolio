@@ -3,17 +3,17 @@
 import Link from "next/link";
 import { useEffect } from "react";
 
-// Hand-crafted organic float timings, amplitudes, sways, and 3D parallax scroll speeds for each card.
+// Hand-crafted organic float timings, amplitudes, sways, and highly pronounced 3D parallax scroll speeds for each card.
 // Positive speeds drift scroll faster than text, negative speeds drift scroll slower than text.
 const FLOAT_PARAMS = [
-  { duration: "6.8s", delay: "0.2s", y: "-7px", x: "-2px", speed: -0.06 },   // Google (left)
-  { duration: "8.4s", delay: "1.5s", y: "6px",  x: "3px",  speed: 0.08 },    // Notarize (right)
-  { duration: "5.6s", delay: "0.8s", y: "-5px", x: "1.5px", speed: -0.05 },  // $640B (left)
-  { duration: "9.2s", delay: "2.3s", y: "-8px", x: "-1.5px", speed: 0.07 },   // Smarking (left)
-  { duration: "7.1s", delay: "1.1s", y: "7px",  x: "-3px",  speed: -0.08 },   // AdHawk (right)
-  { duration: "6.3s", delay: "0.4s", y: "5px",  x: "2px",  speed: 0.05 },    // Parkhub (right)
-  { duration: "8.0s", delay: "1.9s", y: "-6px", x: "-2px", speed: -0.07 },   // Cyncly (left)
-  { duration: "7.5s", delay: "1.0s", y: "-8px", x: "2.5px", speed: 0.06 },    // UPenn (left)
+  { duration: "6.8s", delay: "0.2s", y: "-7px", x: "-2px", speed: -0.35 },   // Google (left)
+  { duration: "8.4s", delay: "1.5s", y: "6px",  x: "3px",  speed: 0.40 },    // Notarize (right)
+  { duration: "5.6s", delay: "0.8s", y: "-5px", x: "1.5px", speed: -0.30 },  // $640B (left)
+  { duration: "9.2s", delay: "2.3s", y: "-8px", x: "-1.5px", speed: 0.38 },   // Smarking (left)
+  { duration: "7.1s", delay: "1.1s", y: "7px",  x: "-3px",  speed: -0.45 },   // AdHawk (right)
+  { duration: "6.3s", delay: "0.4s", y: "5px",  x: "2px",  speed: 0.32 },    // Parkhub (right)
+  { duration: "8.0s", delay: "1.9s", y: "-6px", x: "-2px", speed: -0.38 },   // Cyncly (left)
+  { duration: "7.5s", delay: "1.0s", y: "-8px", x: "2.5px", speed: 0.35 },    // UPenn (left)
 ];
 
 export default function About() {
