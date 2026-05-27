@@ -16,7 +16,7 @@ export default function About() {
       const contentCenter = contentRect.left + contentRect.width / 2;
 
       groups.forEach((group) => {
-        const link = group.querySelector(".about-link-outlined") as HTMLElement;
+        const link = group.querySelector(".about-bold-link") as HTMLElement;
         const card = group.querySelector(".about-hover-card") as HTMLElement;
         const connector = group.querySelector(".about-hover-connector") as HTMLElement;
         if (!link || !card) return;
@@ -139,7 +139,7 @@ export default function About() {
           </Link>
           ), creating the mortgage notarization platform from the ground up, on the world’s first online notarization service. Since its launch, Proof has closed on{" "}
           <span className="about-link-group">
-            <Link href="#" className="about-bold-link about-link-geography about-link-outlined">
+            <Link href="#" className="about-bold-link about-link-geography">
               $640B
             </Link>
             <span className="about-hover-connector about-connector-geography">
@@ -196,7 +196,7 @@ export default function About() {
           </span>{" "}
           (Techstars Boulder 2015). At both companies, I helped establish the early branding, product, and vision, playing a key role in securing admission to both accelerator programs, and over $5MM in total of seed funding. Smarking was{" "}
           <span className="about-link-group">
-            <Link href="#" className="about-bold-link about-link-geography about-link-outlined">
+            <Link href="#" className="about-bold-link about-link-geography">
               acquired by Parkhub
             </Link>
             <span className="about-hover-connector about-connector-geography">
@@ -217,7 +217,7 @@ export default function About() {
           </span>{" "}
           in 2022, and Broadlume (formerly AdHawk) was{" "}
           <span className="about-link-group">
-            <Link href="#" className="about-bold-link about-link-geography about-link-outlined">
+            <Link href="#" className="about-bold-link about-link-geography">
               acquired by Cyncly
             </Link>
             <span className="about-hover-connector about-connector-geography">
