@@ -3,16 +3,17 @@
 import Link from "next/link";
 import { useEffect } from "react";
 
-// Hand-crafted organic float timings, amplitudes, and sways for each card to ensure they float individually and out-of-phase.
+// Hand-crafted organic float timings, amplitudes, sways, and 3D parallax scroll speeds for each card.
+// Positive speeds drift scroll faster than text, negative speeds drift scroll slower than text.
 const FLOAT_PARAMS = [
-  { duration: "6.8s", delay: "0.2s", y: "-7px", x: "-2px" },   // Google (left)
-  { duration: "8.4s", delay: "1.5s", y: "6px",  x: "3px" },    // Notarize (right)
-  { duration: "5.6s", delay: "0.8s", y: "-5px", x: "1.5px" },  // $640B (left)
-  { duration: "9.2s", delay: "2.3s", y: "-8px", x: "-1.5px" }, // Smarking (left)
-  { duration: "7.1s", delay: "1.1s", y: "7px",  x: "-3px" },   // AdHawk (right)
-  { duration: "6.3s", delay: "0.4s", y: "5px",  x: "2px" },    // Parkhub (right)
-  { duration: "8.0s", delay: "1.9s", y: "-6px", x: "-2px" },   // Cyncly (left)
-  { duration: "7.5s", delay: "1.0s", y: "-8px", x: "2.5px" },  // UPenn (left)
+  { duration: "6.8s", delay: "0.2s", y: "-7px", x: "-2px", speed: -0.06 },   // Google (left)
+  { duration: "8.4s", delay: "1.5s", y: "6px",  x: "3px",  speed: 0.08 },    // Notarize (right)
+  { duration: "5.6s", delay: "0.8s", y: "-5px", x: "1.5px", speed: -0.05 },  // $640B (left)
+  { duration: "9.2s", delay: "2.3s", y: "-8px", x: "-1.5px", speed: 0.07 },   // Smarking (left)
+  { duration: "7.1s", delay: "1.1s", y: "7px",  x: "-3px",  speed: -0.08 },   // AdHawk (right)
+  { duration: "6.3s", delay: "0.4s", y: "5px",  x: "2px",  speed: 0.05 },    // Parkhub (right)
+  { duration: "8.0s", delay: "1.9s", y: "-6px", x: "-2px", speed: -0.07 },   // Cyncly (left)
+  { duration: "7.5s", delay: "1.0s", y: "-8px", x: "2.5px", speed: 0.06 },    // UPenn (left)
 ];
 
 export default function About() {
@@ -26,6 +27,7 @@ export default function About() {
       const containerRect = container.getBoundingClientRect();
       const contentRect = content.getBoundingClientRect();
       const contentCenter = contentRect.left + contentRect.width / 2;
+      const scrollY = window.scrollY;
 
       groups.forEach((group, index) => {
         const link = group.querySelector(".about-bold-link") as HTMLElement;
@@ -45,12 +47,16 @@ export default function About() {
           card.classList.add("right-side");
         }
 
-        // Apply hand-crafted organic float duration, delay, amplitude (y), and horizontal sway (x)
-        const params = FLOAT_PARAMS[index] || { duration: "6.0s", delay: "0.0s", y: "-6px", x: "0px" };
+        // Apply hand-crafted organic float duration, delay, amplitude (y), horizontal sway (x)
+        const params = FLOAT_PARAMS[index] || { duration: "6.0s", delay: "0.0s", y: "-6px", x: "0px", speed: 0 };
         card.style.animationDuration = params.duration;
         card.style.animationDelay = params.delay;
         card.style.setProperty("--float-y", params.y);
         card.style.setProperty("--float-x", params.x);
+
+        // Apply real-time parallax offset based on active scroll position
+        const parallaxY = scrollY * params.speed;
+        card.style.setProperty("--parallax-y", `${parallaxY.toFixed(1)}px`);
 
         if (connector) {
           // 1. Get true, live centers of link and card relative to container
@@ -63,10 +69,10 @@ export default function About() {
           // Horizontal center of card relative to container
           const cardX = isLeft ? (-170 + cardWidth / 2) : (containerRect.width + 170 - cardWidth / 2);
           
-          // Vertical center of card relative to container
+          // Vertical center of card relative to container (which dynamically shifts with scroll parallax!)
           const cardY = cardRect.top - containerRect.top + cardRect.height / 2;
 
-          // 2. Perform trigonometry for diagonal line
+          // 2. Perform trigonometry for diagonal line to keep it perfectly connected
           const dx = cardX - linkX;
           const dy = cardY - linkY;
           const distance = Math.sqrt(dx * dx + dy * dy);
@@ -95,11 +101,25 @@ export default function About() {
     // Run adjustment after brief load pass to ensure settled dimensions, then fade in smoothly
     const timer = setTimeout(() => adjustHoverCardSides(true), 100);
 
-    const handleResize = () => adjustHoverCardSides(true);
-    window.addEventListener("resize", handleResize);
+    // High performance frame-throttled scroll and resize scheduler
+    let ticked = false;
+    const handleScrollOrResize = () => {
+      if (!ticked) {
+        window.requestAnimationFrame(() => {
+          adjustHoverCardSides(true);
+          ticked = false;
+        });
+        ticked = true;
+      }
+    };
+
+    window.addEventListener("scroll", handleScrollOrResize, { passive: true });
+    window.addEventListener("resize", handleScrollOrResize);
+
     return () => {
       clearTimeout(timer);
-      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("scroll", handleScrollOrResize);
+      window.removeEventListener("resize", handleScrollOrResize);
     };
   }, []);
 

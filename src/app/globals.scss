@@ -1036,17 +1036,17 @@ a {
   }
 }
 
-// Dynamic bobbing and organic swaying keyframes centered on the text line baseline
+// Dynamic bobbing, organic swaying, and scroll parallax keyframes centered on the text line baseline
 @keyframes hover-bob-left {
-  0% { transform: translateY(-50%) translate(0px, 0px); }
-  50% { transform: translateY(-50%) translate(var(--float-x, 0px), var(--float-y, -6px)); }
-  100% { transform: translateY(-50%) translate(0px, 0px); }
+  0% { transform: translateY(-50%) translate(0px, var(--parallax-y, 0px)); }
+  50% { transform: translateY(-50%) translate(var(--float-x, 0px), calc(var(--float-y, -6px) + var(--parallax-y, 0px))); }
+  100% { transform: translateY(-50%) translate(0px, var(--parallax-y, 0px)); }
 }
 
 @keyframes hover-bob-right {
-  0% { transform: translateY(-50%) translate(0px, 0px); }
-  50% { transform: translateY(-50%) translate(var(--float-x, 0px), var(--float-y, 4px)); }
-  100% { transform: translateY(-50%) translate(0px, 0px); }
+  0% { transform: translateY(-50%) translate(0px, var(--parallax-y, 0px)); }
+  50% { transform: translateY(-50%) translate(var(--float-x, 0px), calc(var(--float-y, 4px) + var(--parallax-y, 0px))); }
+  100% { transform: translateY(-50%) translate(0px, var(--parallax-y, 0px)); }
 }
 
 // Diagrammatic Hover Connectors
