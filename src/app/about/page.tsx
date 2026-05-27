@@ -34,18 +34,31 @@ export default function About() {
         }
 
         if (connector) {
+          // 1. Get true, live centers of link and card relative to container
+          const linkX = linkRect.left - containerRect.left + linkRect.width / 2;
+          const linkY = linkRect.top - containerRect.top + linkRect.height / 2;
+
           const cardRect = card.getBoundingClientRect();
           const cardWidth = cardRect.width || 130;
-          const cardCenter = isLeft ? (-170 + cardWidth / 2) : (containerRect.width + 170 - cardWidth / 2);
-          const linkCenterInContainer = linkRect.left - containerRect.left + linkRect.width / 2;
-          const leftPoint = Math.min(cardCenter, linkCenterInContainer);
-          const rightPoint = Math.max(cardCenter, linkCenterInContainer);
-          const width = rightPoint - leftPoint;
-          const topOffset = linkRect.top - containerRect.top + linkRect.height / 2;
 
-          connector.style.left = `${leftPoint}px`;
-          connector.style.width = `${width}px`;
-          connector.style.top = `${topOffset}px`;
+          // Horizontal center of card relative to container
+          const cardX = isLeft ? (-170 + cardWidth / 2) : (containerRect.width + 170 - cardWidth / 2);
+          
+          // Vertical center of card relative to container
+          const cardY = cardRect.top - containerRect.top + cardRect.height / 2;
+
+          // 2. Perform trigonometry for diagonal line
+          const dx = cardX - linkX;
+          const dy = cardY - linkY;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          const angleRad = Math.atan2(dy, dx);
+          const angleDeg = angleRad * (180 / Math.PI);
+
+          // 3. Apply style properties
+          connector.style.left = `${linkX}px`;
+          connector.style.top = `${linkY}px`;
+          connector.style.width = `${distance}px`;
+          connector.style.transform = `rotate(${angleDeg}deg)`;
         }
 
         if (markAligned) {

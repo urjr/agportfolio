@@ -1069,11 +1069,12 @@ a {
     pointer-events: none;
     z-index: 20;
     opacity: 0;
-    transform: translateY(-50%); // Centered vertically relative to the top offset
+    transform-origin: 0 50% !important; // Force rotation around left center!
     transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1),
                 left 0.8s cubic-bezier(0.16, 1, 0.3, 1),
                 width 0.8s cubic-bezier(0.16, 1, 0.3, 1),
                 top 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.8s cubic-bezier(0.16, 1, 0.3, 1),
                 color 0.15s ease;
   }
 }
