@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 
 // Hand-crafted organic float timings, amplitudes, sways, and unified negative parallax scroll speeds.
 // By keeping all speeds negative (between -0.08 and -0.18), all cards float slightly slower than the text
@@ -17,8 +17,116 @@ const FLOAT_PARAMS = [
   { duration: "7.5s", delay: "1.0s", y: "-8px", x: "2.5px", speed: -0.09 },   // UPenn (left)
 ];
 
+// Company data for work cards — to be fleshed out by user
+interface CompanyData {
+  id: string;
+  type: "work" | "education";
+  name: string;
+  role: string;
+  dates: string;
+  chips: string[];
+  summary: string;
+  url: string;
+  urlLabel: string;
+}
+
+const COMPANY_DATA: Record<string, CompanyData> = {
+  google: {
+    id: "google",
+    type: "work",
+    name: "Google",
+    role: "Senior Product Designer, Measurement",
+    dates: "2021 — Present",
+    chips: ["AI/ML", "Ads", "Analytics", "Enterprise"],
+    summary:
+      "Designing AI-first measurement experiences across Google Ads, Analytics, and Marketing Platform — helping billions of advertisers understand and act on their performance data.",
+    url: "https://google.com",
+    urlLabel: "Visit Google",
+  },
+  notarize: {
+    id: "notarize",
+    type: "work",
+    name: "Notarize (now Proof)",
+    role: "Lead Product Designer",
+    dates: "2018 — 2021",
+    chips: ["FinTech", "LegalTech", "Mobile", "Founding Team"],
+    summary:
+      "Built the mortgage notarization platform from the ground up on the world's first online notarization service. Since launch, Proof has facilitated over $640B in fully-remote real estate transactions.",
+    url: "https://proof.com",
+    urlLabel: "Visit Proof",
+  },
+  smarking: {
+    id: "smarking",
+    type: "work",
+    name: "Smarking",
+    role: "Co-Founder & Head of Design",
+    dates: "2015 — 2018",
+    chips: ["YC W2015", "Parking Analytics", "SaaS", "Early Stage"],
+    summary:
+      "Helped establish early branding, product vision, and design at this YC-backed parking analytics startup. Played a key role in securing $5M+ in seed funding. Smarking was acquired by Parkhub in 2022.",
+    url: "https://parkhub.com",
+    urlLabel: "Visit Parkhub",
+  },
+  adhawk: {
+    id: "adhawk",
+    type: "work",
+    name: "AdHawk",
+    role: "Co-Founder & Head of Design",
+    dates: "2015 — 2018",
+    chips: ["Techstars Boulder 2015", "AdTech", "SaaS", "Early Stage"],
+    summary:
+      "Built product and brand for this Techstars-backed advertising automation startup. Helped secure $5M+ in seed funding. AdHawk became Broadlume, later acquired by Cyncly in 2024.",
+    url: "https://cyncly.com",
+    urlLabel: "Visit Cyncly",
+  },
+  upenn: {
+    id: "upenn",
+    type: "education",
+    name: "UPenn IPD",
+    role: "Adjunct Professor, Integrated Product Design",
+    dates: "2022 — Present",
+    chips: ["Education", "Product Design", "UX", "Interdisciplinary"],
+    summary:
+      "Teaching graduate students at Penn's Integrated Product Design program — blending design, engineering, and business to develop interdisciplinary methods for creating physical and digital products.",
+    url: "https://ipd.me.upenn.edu/about/",
+    urlLabel: "Visit IPD at UPenn",
+  },
+};
+
 export default function About() {
   const layoutCache = useRef<{ linkX: number; linkY: number; cardX: number; cardY: number; }[]>([]);
+  const [activeCompany, setActiveCompany] = useState<string | null>(null);
+  const [modalVisible, setModalVisible] = useState(false);
+  const animationFrameRef = useRef<number>(0);
+
+  const openModal = useCallback((companyId: string) => {
+    setActiveCompany(companyId);
+    // Tiny delay so the element is mounted before we trigger the CSS transition
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => setModalVisible(true));
+    });
+    document.body.style.overflow = "hidden";
+  }, []);
+
+  const closeModal = useCallback(() => {
+    setModalVisible(false);
+    // Wait for CSS transition to finish before unmounting
+    const t = setTimeout(() => {
+      setActiveCompany(null);
+      document.body.style.overflow = "";
+    }, 380);
+    return () => clearTimeout(t);
+  }, []);
+
+  // Close modal on Escape key
+  useEffect(() => {
+    if (!activeCompany) return;
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeModal();
+    };
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [activeCompany, closeModal]);
 
   useEffect(() => {
     const container = document.querySelector(".about-container") as HTMLElement;
@@ -152,6 +260,7 @@ export default function About() {
       cacheStaticCoordinates();
       // Start high-performance frame animation loop
       animationFrameId = window.requestAnimationFrame(frameUpdate);
+      animationFrameRef.current = animationFrameId;
     }, 100);
 
     // Re-cache static bounds on resize
@@ -166,6 +275,8 @@ export default function About() {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
+
+  const company = activeCompany ? COMPANY_DATA[activeCompany] : null;
 
   return (
     <main className="about-container">
@@ -189,17 +300,28 @@ export default function About() {
           I currently work as a product designer for{" "}
           <span className="about-link-group">
             <span className="about-nowrap-group">
-              <Link href="#" className="about-bold-link about-link-work about-link-outlined">
+              <Link
+                href="#"
+                className="about-bold-link about-link-work about-link-outlined"
+                onClick={(e) => { e.preventDefault(); openModal("google"); }}
+              >
                 Google
               </Link>
-              ’s
+              's
             </span>
             <span className="about-hover-connector about-connector-work">
               <span className="about-connector-dot start-dot"></span>
               <span className="about-connector-line"></span>
               <span className="about-connector-dot end-dot"></span>
             </span>
-            <span className="about-hover-card about-card-work left-side">
+            <span
+              className="about-hover-card about-card-work left-side about-company-card"
+              onClick={() => openModal("google")}
+              role="button"
+              tabIndex={0}
+              aria-label="Open Google company details"
+              onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") openModal("google"); }}
+            >
               <span className="about-hover-card-inner">
                 <span className="about-hover-card-label">Google</span>
               </span>
@@ -217,13 +339,17 @@ export default function About() {
           <Link href="#" className="about-bold-link about-link-work">
             Marketing platform
           </Link>{" "}
-          products. Previously at Google, I worked for the Connect team, building internal tools for Google’s sales, service, and support teams.
+          products. Previously at Google, I worked for the Connect team, building internal tools for Google's sales, service, and support teams.
         </p>
 
         <p className="about-paragraph">
           Before Google, I worked as lead product designer at{" "}
           <span className="about-link-group">
-            <Link href="#" className="about-bold-link about-link-work about-link-outlined">
+            <Link
+              href="#"
+              className="about-bold-link about-link-work about-link-outlined"
+              onClick={(e) => { e.preventDefault(); openModal("notarize"); }}
+            >
               Notarize
             </Link>
             <span className="about-hover-connector about-connector-work">
@@ -231,7 +357,14 @@ export default function About() {
               <span className="about-connector-line"></span>
               <span className="about-connector-dot end-dot"></span>
             </span>
-            <span className="about-hover-card about-card-work right-side">
+            <span
+              className="about-hover-card about-card-work right-side about-company-card"
+              onClick={() => openModal("notarize")}
+              role="button"
+              tabIndex={0}
+              aria-label="Open Notarize company details"
+              onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") openModal("notarize"); }}
+            >
               <span className="about-hover-card-inner">
                 <span className="about-hover-card-label">Notarize</span>
               </span>
@@ -241,7 +374,7 @@ export default function About() {
           <Link href="#" className="about-bold-link about-link-work">
             Proof
           </Link>
-          ), creating the mortgage notarization platform from the ground up, on the world’s first online notarization service. Since its launch, Proof has closed on{" "}
+          ), creating the mortgage notarization platform from the ground up, on the world's first online notarization service. Since its launch, Proof has closed on{" "}
           <span className="about-link-group">
             <Link href="#" className="about-bold-link about-link-geography">
               $640B
@@ -268,7 +401,11 @@ export default function About() {
         <p className="about-paragraph">
           Previously, I served on the founding teams of two early stage startups;{" "}
           <span className="about-link-group">
-            <Link href="#" className="about-bold-link about-link-work about-link-outlined">
+            <Link
+              href="#"
+              className="about-bold-link about-link-work about-link-outlined"
+              onClick={(e) => { e.preventDefault(); openModal("smarking"); }}
+            >
               Smarking
             </Link>
             <span className="about-hover-connector about-connector-work">
@@ -276,7 +413,14 @@ export default function About() {
               <span className="about-connector-line"></span>
               <span className="about-connector-dot end-dot"></span>
             </span>
-            <span className="about-hover-card about-card-work left-side">
+            <span
+              className="about-hover-card about-card-work left-side about-company-card"
+              onClick={() => openModal("smarking")}
+              role="button"
+              tabIndex={0}
+              aria-label="Open Smarking company details"
+              onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") openModal("smarking"); }}
+            >
               <span className="about-hover-card-inner">
                 <span className="about-hover-card-label">Smarking</span>
               </span>
@@ -284,7 +428,11 @@ export default function About() {
           </span>{" "}
           (YC W2015) and{" "}
           <span className="about-link-group">
-            <Link href="#" className="about-bold-link about-link-work about-link-outlined">
+            <Link
+              href="#"
+              className="about-bold-link about-link-work about-link-outlined"
+              onClick={(e) => { e.preventDefault(); openModal("adhawk"); }}
+            >
               AdHawk
             </Link>
             <span className="about-hover-connector about-connector-work">
@@ -292,7 +440,14 @@ export default function About() {
               <span className="about-connector-line"></span>
               <span className="about-connector-dot end-dot"></span>
             </span>
-            <span className="about-hover-card about-card-work right-side">
+            <span
+              className="about-hover-card about-card-work right-side about-company-card"
+              onClick={() => openModal("adhawk")}
+              role="button"
+              tabIndex={0}
+              aria-label="Open AdHawk company details"
+              onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") openModal("adhawk"); }}
+            >
               <span className="about-hover-card-inner">
                 <span className="about-hover-card-label">AdHawk</span>
               </span>
@@ -347,17 +502,30 @@ export default function About() {
           Outside of designing for tech companies, I am a professor at{" "}
           <span className="about-link-group">
             <span className="about-nowrap-group">
-              <Link href="https://ipd.me.upenn.edu/about/" className="about-bold-link about-link-education about-link-outlined" target="_blank" rel="noopener noreferrer">
+              <Link
+                href="https://ipd.me.upenn.edu/about/"
+                className="about-bold-link about-link-education about-link-outlined"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => { e.preventDefault(); openModal("upenn"); }}
+              >
                 UPenn
               </Link>
-              ’s
+              's
             </span>
             <span className="about-hover-connector about-connector-education">
               <span className="about-connector-dot start-dot"></span>
               <span className="about-connector-line"></span>
               <span className="about-connector-dot end-dot"></span>
             </span>
-            <span className="about-hover-card about-card-education left-side">
+            <span
+              className="about-hover-card about-card-education left-side about-company-card"
+              onClick={() => openModal("upenn")}
+              role="button"
+              tabIndex={0}
+              aria-label="Open UPenn IPD details"
+              onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") openModal("upenn"); }}
+            >
               <span className="about-hover-card-inner">
                 <span className="about-hover-card-label">UPenn</span>
               </span>
@@ -381,6 +549,70 @@ export default function About() {
           !
         </p>
       </div>
+
+      {/* Company Modal */}
+      {activeCompany && company && (
+        <div
+          className={`company-modal-scrim${modalVisible ? " company-modal-scrim--visible" : ""}`}
+          onClick={closeModal}
+          aria-hidden="true"
+        >
+          <div
+            className={`company-modal${modalVisible ? " company-modal--visible" : ""}${company.type === "education" ? " company-modal--education" : ""}`}
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-label={`${company.name} details`}
+          >
+            {/* Close button */}
+            <button
+              className="company-modal-close"
+              onClick={closeModal}
+              aria-label="Close modal"
+            >
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M1 1L15 15M15 1L1 15" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
+              </svg>
+            </button>
+
+            {/* Image placeholder (left column) */}
+            <div className="company-modal-image">
+              <div className="company-modal-image-inner">
+                <span className="company-modal-image-label">{company.name}</span>
+              </div>
+            </div>
+
+            {/* Details (right column) */}
+            <div className="company-modal-details">
+              <div className="company-modal-header">
+                <h2 className="company-modal-name">{company.name}</h2>
+                <p className="company-modal-role">{company.role}</p>
+                <p className="company-modal-dates">{company.dates}</p>
+              </div>
+
+              <div className="company-modal-chips">
+                {company.chips.map((chip) => (
+                  <span key={chip} className="company-modal-chip">{chip}</span>
+                ))}
+              </div>
+
+              <p className="company-modal-summary">{company.summary}</p>
+
+              <a
+                href={company.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="company-modal-cta"
+              >
+                {company.urlLabel}
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M2 12L12 2M12 2H5M12 2V9" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }

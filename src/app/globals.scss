@@ -1176,3 +1176,435 @@ a {
     }
   }
 }
+
+// ============================================================
+// Company Card Clickable Enhancement
+// ============================================================
+
+// Work cards with modal behavior get a distinct pointer + active state
+.about-company-card {
+  cursor: url("/assets/cursors/link.svg") 18 0, pointer !important;
+
+  &:active .about-hover-card-inner {
+    transform: scale(0.96) translateY(-2px) !important;
+  }
+
+  // Slightly elevated hover state to hint clickability
+  &:hover .about-hover-card-inner {
+    transform: scale(1.08) translateY(-5px) !important;
+    box-shadow: 0 16px 48px rgba(43, 32, 23, 0.18) !important;
+    border-color: rgba(#203A6F, 0.4) !important;
+  }
+}
+
+// ============================================================
+// Company Modal Scrim
+// ============================================================
+
+.company-modal-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(#FAF8F5, 0.72);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  opacity: 0;
+  transition: opacity 0.36s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity;
+
+  &.company-modal-scrim--visible {
+    opacity: 1;
+  }
+
+  body.theme-dark & {
+    background: rgba(#10161F, 0.78);
+  }
+}
+
+// ============================================================
+// Company Modal Card
+// ============================================================
+
+.company-modal {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  gap: 0;
+  width: min(860px, 100%);
+  max-height: min(540px, 90vh);
+  border-radius: 20px;
+  overflow: hidden;
+  background: rgba(#FAF8F5, 0.96);
+  border: 1.5px solid rgba(#2B2017, 0.09);
+  box-shadow:
+    0 2px 4px rgba(43, 32, 23, 0.04),
+    0 8px 24px rgba(43, 32, 23, 0.08),
+    0 32px 80px rgba(43, 32, 23, 0.14);
+  opacity: 0;
+  transform: scale(0.92) translateY(12px);
+  transition:
+    opacity 0.36s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.36s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+
+  &.company-modal--visible {
+    opacity: 1;
+    transform: scale(1) translateY(0px);
+  }
+
+  body.theme-dark & {
+    background: rgba(#1A1410, 0.96);
+    border-color: rgba(#FAF8F5, 0.08);
+    box-shadow:
+      0 2px 4px rgba(0, 0, 0, 0.12),
+      0 8px 24px rgba(0, 0, 0, 0.2),
+      0 32px 80px rgba(0, 0, 0, 0.35);
+  }
+
+  @media (max-width: 600px) {
+    flex-direction: column;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+}
+
+// ============================================================
+// Modal Close Button
+// ============================================================
+
+.company-modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 10;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(#2B2017, 0.12);
+  background: rgba(#FAF8F5, 0.85);
+  color: rgba(#2B2017, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+
+  &:hover {
+    background: rgba(#2B2017, 0.07);
+    border-color: rgba(#2B2017, 0.25);
+    color: rgba(#2B2017, 0.85);
+    transform: scale(1.08);
+  }
+
+  &:active {
+    transform: scale(0.94);
+  }
+
+  body.theme-dark & {
+    border-color: rgba(#FAF8F5, 0.12);
+    background: rgba(#2B2017, 0.5);
+    color: rgba(#FAF8F5, 0.55);
+
+    &:hover {
+      background: rgba(#FAF8F5, 0.1);
+      border-color: rgba(#FAF8F5, 0.25);
+      color: rgba(#FAF8F5, 0.85);
+    }
+  }
+}
+
+// ============================================================
+// Modal Image (Left Column)
+// ============================================================
+
+.company-modal-image {
+  width: 280px;
+  flex-shrink: 0;
+  background: linear-gradient(145deg, rgba(#DFE8F9, 0.6), rgba(#EEF3FB, 0.3));
+  border-right: 1.5px solid rgba(#203A6F, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+
+  body.theme-dark & {
+    background: linear-gradient(145deg, rgba(#203A6F, 0.3), rgba(#13264F, 0.15));
+    border-right-color: rgba(#A7C2ED, 0.12);
+  }
+
+  @media (max-width: 600px) {
+    width: 100%;
+    height: 180px;
+    border-right: none;
+    border-bottom: 1.5px solid rgba(#203A6F, 0.1);
+  }
+}
+
+.company-modal-image-inner {
+  width: calc(100% - 32px);
+  height: calc(100% - 32px);
+  border-radius: 12px;
+  border: 1.5px dashed rgba(#203A6F, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 16px;
+
+  body.theme-dark & {
+    border-color: rgba(#A7C2ED, 0.2);
+  }
+}
+
+.company-modal-image-label {
+  font-family: 'Gabarito', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(#203A6F, 0.45);
+
+  body.theme-dark & {
+    color: rgba(#A7C2ED, 0.45);
+  }
+}
+
+// Education (yellow/amber) theme variant — used for UPenn
+.company-modal--education {
+  .company-modal-image {
+    background: linear-gradient(145deg, rgba(#F9F0DB, 0.65), rgba(#FDF7EC, 0.35));
+    border-right-color: rgba(#5C481A, 0.1);
+
+    body.theme-dark & {
+      background: linear-gradient(145deg, rgba(#5C481A, 0.3), rgba(#42320E, 0.15));
+      border-right-color: rgba(#E3C18E, 0.12);
+    }
+
+    @media (max-width: 600px) {
+      border-bottom-color: rgba(#5C481A, 0.1);
+    }
+  }
+
+  .company-modal-image-inner {
+    border-color: rgba(#5C481A, 0.2);
+
+    body.theme-dark & {
+      border-color: rgba(#E3C18E, 0.2);
+    }
+  }
+
+  .company-modal-image-label {
+    color: rgba(#5C481A, 0.5);
+
+    body.theme-dark & {
+      color: rgba(#E3C18E, 0.5);
+    }
+  }
+
+  .company-modal-role {
+    color: #5C481A;
+
+    body.theme-dark & {
+      color: #E3C18E;
+    }
+  }
+
+  .company-modal-chip {
+    color: #5C481A;
+    background: rgba(#F9F0DB, 0.75);
+    border-color: rgba(#5C481A, 0.15);
+
+    body.theme-dark & {
+      color: #E3C18E;
+      background: rgba(#5C481A, 0.3);
+      border-color: rgba(#E3C18E, 0.2);
+    }
+  }
+
+  .company-modal-cta {
+    background: #5C481A;
+
+    &:hover {
+      background: #7A6022;
+      box-shadow: 0 6px 20px rgba(#5C481A, 0.35);
+    }
+
+    body.theme-dark & {
+      background: #E3C18E;
+      color: #2B1A05 !important;
+
+      &:hover {
+        background: #EDD09E;
+        box-shadow: 0 6px 20px rgba(#E3C18E, 0.3);
+        color: #2B1A05 !important;
+      }
+    }
+  }
+}
+
+// ============================================================
+// Modal Details (Right Column)
+// ============================================================
+
+.company-modal-details {
+  flex: 1;
+  padding: 36px 40px 36px 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  overflow-y: auto;
+
+  @media (max-width: 600px) {
+    padding: 24px;
+  }
+}
+
+.company-modal-header {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.company-modal-name {
+  font-family: 'Gabarito', sans-serif;
+  font-size: 1.7rem;
+  font-weight: 600;
+  color: #10161F;
+  line-height: 1.15;
+  margin: 0;
+  padding: 0;
+
+  body.theme-dark & {
+    color: #FAF8F5;
+  }
+}
+
+.company-modal-role {
+  font-family: 'Gabarito', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #203A6F;
+  margin: 0;
+  padding: 0;
+  margin-top: 4px;
+
+  body.theme-dark & {
+    color: #A7C2ED;
+  }
+}
+
+.company-modal-dates {
+  font-family: 'Gabarito', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 400;
+  color: rgba(#2B2017, 0.45);
+  margin: 0;
+  padding: 0;
+
+  body.theme-dark & {
+    color: rgba(#FAF8F5, 0.4);
+  }
+}
+
+// ============================================================
+// Modal Metadata Chips
+// ============================================================
+
+.company-modal-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.company-modal-chip {
+  font-family: 'Gabarito', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: #203A6F;
+  background: rgba(#DFE8F9, 0.7);
+  border: 1px solid rgba(#203A6F, 0.15);
+  border-radius: 100px;
+  padding: 4px 11px;
+  white-space: nowrap;
+
+  body.theme-dark & {
+    color: #A7C2ED;
+    background: rgba(#203A6F, 0.3);
+    border-color: rgba(#A7C2ED, 0.2);
+  }
+}
+
+// ============================================================
+// Modal Summary Text
+// ============================================================
+
+.company-modal-summary {
+  font-family: 'Gabarito', sans-serif;
+  font-size: 0.92rem;
+  font-weight: 400;
+  line-height: 1.65;
+  color: rgba(#10161F, 0.7);
+  margin: 0;
+  flex: 1;
+
+  body.theme-dark & {
+    color: rgba(#FAF8F5, 0.65);
+  }
+}
+
+// ============================================================
+// Modal CTA Button
+// ============================================================
+
+.company-modal-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 11px 22px;
+  border-radius: 100px;
+  background: #203A6F;
+  color: #FAF8F5 !important;
+  font-family: 'Gabarito', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-decoration: none !important;
+  border: none;
+  cursor: pointer;
+  align-self: flex-start;
+  transition:
+    background 0.22s ease,
+    transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.22s ease;
+
+  &:hover {
+    background: #2C4E96;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(#203A6F, 0.35);
+    color: #FAF8F5 !important;
+  }
+
+  &:active {
+    transform: translateY(0px);
+    box-shadow: none;
+  }
+
+  body.theme-dark & {
+    background: #A7C2ED;
+    color: #10161F !important;
+
+    &:hover {
+      background: #C0D4F5;
+      box-shadow: 0 6px 20px rgba(#A7C2ED, 0.3);
+      color: #10161F !important;
+    }
+  }
+}
