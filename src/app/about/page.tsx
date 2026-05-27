@@ -5,7 +5,7 @@ import { useEffect } from "react";
 
 export default function About() {
   useEffect(() => {
-    const adjustHoverCardSides = () => {
+    const adjustHoverCardSides = (markAligned = false) => {
       const container = document.querySelector(".about-container") as HTMLElement;
       const content = document.querySelector(".about-content");
       const groups = document.querySelectorAll(".about-link-group");
@@ -48,20 +48,23 @@ export default function About() {
           connector.style.top = `${topOffset}px`;
         }
 
-        card.classList.add("aligned");
+        if (markAligned) {
+          card.classList.add("aligned");
+        }
       });
     };
 
-    // Run immediately on client mount
-    adjustHoverCardSides();
+    // Run immediately on client mount to pre-position while invisible
+    adjustHoverCardSides(false);
 
-    // Run adjustment after brief load pass to ensure settled dimensions (e.g. after font layout settling)
-    const timer = setTimeout(adjustHoverCardSides, 100);
+    // Run adjustment after brief load pass to ensure settled dimensions, then fade in smoothly
+    const timer = setTimeout(() => adjustHoverCardSides(true), 100);
 
-    window.addEventListener("resize", adjustHoverCardSides);
+    const handleResize = () => adjustHoverCardSides(true);
+    window.addEventListener("resize", handleResize);
     return () => {
       clearTimeout(timer);
-      window.removeEventListener("resize", adjustHoverCardSides);
+      window.removeEventListener("resize", handleResize);
     };
   }, []);
 
