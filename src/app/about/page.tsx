@@ -34,7 +34,9 @@ export default function About() {
         }
 
         if (connector) {
-          const cardCenter = isLeft ? -105 : containerRect.width + 105;
+          const cardRect = card.getBoundingClientRect();
+          const cardWidth = cardRect.width || 130;
+          const cardCenter = isLeft ? (-170 + cardWidth / 2) : (containerRect.width + 170 - cardWidth / 2);
           const linkCenterInContainer = linkRect.left - containerRect.left + linkRect.width / 2;
           const leftPoint = Math.min(cardCenter, linkCenterInContainer);
           const rightPoint = Math.max(cardCenter, linkCenterInContainer);
@@ -136,9 +138,26 @@ export default function About() {
             Proof
           </Link>
           ), creating the mortgage notarization platform from the ground up, on the world’s first online notarization service. Since its launch, Proof has closed on{" "}
-          <Link href="#" className="about-bold-link about-link-geography">
-            $640B
-          </Link>{" "}
+          <span className="about-link-group">
+            <Link href="#" className="about-bold-link about-link-geography about-link-outlined">
+              $640B
+            </Link>
+            <span className="about-hover-connector about-connector-geography">
+              <span className="about-connector-dot start-dot"></span>
+              <span className="about-connector-line"></span>
+              <span className="about-connector-dot end-dot"></span>
+            </span>
+            <span className="about-hover-card about-card-geography left-side">
+              <span className="about-hover-card-inner">
+                <span className="about-geography-pill-text">
+                  Proof has secured over $640B in remote online transactions as the world's leading eNotary system.
+                </span>
+                <Link href="https://www.proof.com" target="_blank" rel="noopener noreferrer" className="about-geography-read-more">
+                  Read more
+                </Link>
+              </span>
+            </span>
+          </span>{" "}
           in fully-remote online real estate transactions.
         </p>
 
@@ -176,13 +195,47 @@ export default function About() {
             </span>
           </span>{" "}
           (Techstars Boulder 2015). At both companies, I helped establish the early branding, product, and vision, playing a key role in securing admission to both accelerator programs, and over $5MM in total of seed funding. Smarking was{" "}
-          <Link href="#" className="about-bold-link about-link-geography">
-            acquired by Parkhub
-          </Link>{" "}
+          <span className="about-link-group">
+            <Link href="#" className="about-bold-link about-link-geography about-link-outlined">
+              acquired by Parkhub
+            </Link>
+            <span className="about-hover-connector about-connector-geography">
+              <span className="about-connector-dot start-dot"></span>
+              <span className="about-connector-line"></span>
+              <span className="about-connector-dot end-dot"></span>
+            </span>
+            <span className="about-hover-card about-card-geography right-side">
+              <span className="about-hover-card-inner">
+                <span className="about-geography-pill-text">
+                  Smarking merged with Parkhub to integrate real-time parking analytics with modern venue operations.
+                </span>
+                <Link href="https://www.parkhub.com" target="_blank" rel="noopener noreferrer" className="about-geography-read-more">
+                  Read more
+                </Link>
+              </span>
+            </span>
+          </span>{" "}
           in 2022, and Broadlume (formerly AdHawk) was{" "}
-          <Link href="#" className="about-bold-link about-link-geography">
-            acquired by Cyncly
-          </Link>{" "}
+          <span className="about-link-group">
+            <Link href="#" className="about-bold-link about-link-geography about-link-outlined">
+              acquired by Cyncly
+            </Link>
+            <span className="about-hover-connector about-connector-geography">
+              <span className="about-connector-dot start-dot"></span>
+              <span className="about-connector-line"></span>
+              <span className="about-connector-dot end-dot"></span>
+            </span>
+            <span className="about-hover-card about-card-geography left-side">
+              <span className="about-hover-card-inner">
+                <span className="about-geography-pill-text">
+                  Broadlume partnered with Cyncly to expand retail sales and digital marketing tools globally.
+                </span>
+                <Link href="https://www.cyncly.com" target="_blank" rel="noopener noreferrer" className="about-geography-read-more">
+                  Read more
+                </Link>
+              </span>
+            </span>
+          </span>{" "}
           in 2024.
         </p>
 
