@@ -3,6 +3,18 @@
 import Link from "next/link";
 import { useEffect } from "react";
 
+// Hand-crafted organic float timings, amplitudes, and sways for each card to ensure they float individually and out-of-phase.
+const FLOAT_PARAMS = [
+  { duration: "6.8s", delay: "0.2s", y: "-7px", x: "-2px" },   // Google (left)
+  { duration: "8.4s", delay: "1.5s", y: "6px",  x: "3px" },    // Notarize (right)
+  { duration: "5.6s", delay: "0.8s", y: "-5px", x: "1.5px" },  // $640B (left)
+  { duration: "9.2s", delay: "2.3s", y: "-8px", x: "-1.5px" }, // Smarking (left)
+  { duration: "7.1s", delay: "1.1s", y: "7px",  x: "-3px" },   // AdHawk (right)
+  { duration: "6.3s", delay: "0.4s", y: "5px",  x: "2px" },    // Parkhub (right)
+  { duration: "8.0s", delay: "1.9s", y: "-6px", x: "-2px" },   // Cyncly (left)
+  { duration: "7.5s", delay: "1.0s", y: "-8px", x: "2.5px" },  // UPenn (left)
+];
+
 export default function About() {
   useEffect(() => {
     const adjustHoverCardSides = (markAligned = false) => {
@@ -15,7 +27,7 @@ export default function About() {
       const contentRect = content.getBoundingClientRect();
       const contentCenter = contentRect.left + contentRect.width / 2;
 
-      groups.forEach((group) => {
+      groups.forEach((group, index) => {
         const link = group.querySelector(".about-bold-link") as HTMLElement;
         const card = group.querySelector(".about-hover-card") as HTMLElement;
         const connector = group.querySelector(".about-hover-connector") as HTMLElement;
@@ -32,6 +44,13 @@ export default function About() {
           card.classList.remove("left-side");
           card.classList.add("right-side");
         }
+
+        // Apply hand-crafted organic float duration, delay, amplitude (y), and horizontal sway (x)
+        const params = FLOAT_PARAMS[index] || { duration: "6.0s", delay: "0.0s", y: "-6px", x: "0px" };
+        card.style.animationDuration = params.duration;
+        card.style.animationDelay = params.delay;
+        card.style.setProperty("--float-y", params.y);
+        card.style.setProperty("--float-x", params.x);
 
         if (connector) {
           // 1. Get true, live centers of link and card relative to container

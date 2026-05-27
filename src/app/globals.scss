@@ -885,20 +885,11 @@ a {
     &.left-side {
       left: -170px;
       animation: hover-bob-left 6s ease-in-out infinite;
-
-      // Slight stagger offsets for out-of-sync fluid motion
-      &:nth-of-type(odd) {
-        animation: hover-bob-left 5.5s ease-in-out infinite 0.3s;
-      }
     }
 
     &.right-side {
       right: -170px;
-      animation: hover-bob-right 6.2s ease-in-out infinite 0.6s;
-
-      &:nth-of-type(even) {
-        animation: hover-bob-right 5.8s ease-in-out infinite 0.9s;
-      }
+      animation: hover-bob-right 6s ease-in-out infinite;
     }
   }
 }
@@ -1045,17 +1036,17 @@ a {
   }
 }
 
-// Dynamic bobbing keyframes centered on the text line baseline
+// Dynamic bobbing and organic swaying keyframes centered on the text line baseline
 @keyframes hover-bob-left {
-  0% { transform: translateY(-50%) translateY(0px); }
-  50% { transform: translateY(-50%) translateY(-6px); }
-  100% { transform: translateY(-50%) translateY(0px); }
+  0% { transform: translateY(-50%) translate(0px, 0px); }
+  50% { transform: translateY(-50%) translate(var(--float-x, 0px), var(--float-y, -6px)); }
+  100% { transform: translateY(-50%) translate(0px, 0px); }
 }
 
 @keyframes hover-bob-right {
-  0% { transform: translateY(-50%) translateY(0px); }
-  50% { transform: translateY(-50%) translateY(4px); }
-  100% { transform: translateY(-50%) translateY(0px); }
+  0% { transform: translateY(-50%) translate(0px, 0px); }
+  50% { transform: translateY(-50%) translate(var(--float-x, 0px), var(--float-y, 4px)); }
+  100% { transform: translateY(-50%) translate(0px, 0px); }
 }
 
 // Diagrammatic Hover Connectors
