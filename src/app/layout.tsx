@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
-import TransitionProvider from "./components/TransitionProvider";
 import "./globals.scss";
 
 export const metadata: Metadata = {
@@ -18,9 +17,7 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <Navbar />
-        <TransitionProvider>
-          {children}
-        </TransitionProvider>
+        {children}
         <Footer />
       </body>
     </html>

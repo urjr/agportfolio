@@ -49,8 +49,8 @@
 }
 
 // Brand Identity Variables
-$color-bg: #ffffff;
-$color-text: #000000;
+$color-bg: #FAF8F5;
+$color-text: #2B2017;
 $font-family: 'Gabarito', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 $header-height: 60px;
 $footer-height: 60px;
@@ -75,11 +75,19 @@ html, body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   transition: background-color 0.8s cubic-bezier(0.16, 1, 0.3, 1), color 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+
+  // Custom Enlarged Mac OS pointer cursor (hotspot 0 0 at pointer tip)
+  cursor: url('/assets/cursors/pointer.svg') 0 0, auto;
 }
 
 body.theme-dark {
-  background-color: #000000;
-  color: #ffffff;
+  background-color: #2B2017;
+  color: #FAF8F5;
+}
+
+a, button, [role="button"], input[type="submit"], input[type="button"], input[type="reset"], select, label {
+  // Custom Enlarged Mac OS link hand cursor (hotspot 18 0 at pointing index finger tip)
+  cursor: url('/assets/cursors/link.svg') 18 0, pointer;
 }
 
 a {
@@ -101,7 +109,7 @@ a {
   height: $header-height;
   background-color: rgba($color-bg, 0.85);
   backdrop-filter: blur(8px);
-  z-index: 100;
+  z-index: 200;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -109,8 +117,8 @@ a {
   transition: background-color 0.8s cubic-bezier(0.16, 1, 0.3, 1), color 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 
   body.theme-dark & {
-    background-color: rgba(#000000, 0.85);
-    color: #ffffff;
+    background-color: rgba(#2B2017, 0.85);
+    color: #FAF8F5;
   }
 
   .nav-brand {
@@ -151,15 +159,15 @@ a {
   height: $footer-height;
   background-color: rgba($color-bg, 0.85);
   backdrop-filter: blur(8px);
-  z-index: 100;
+  z-index: 200;
   display: flex;
   justify-content: center;
   align-items: center;
   transition: background-color 0.8s cubic-bezier(0.16, 1, 0.3, 1), color 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 
   body.theme-dark & {
-    background-color: rgba(#000000, 0.85);
-    color: #ffffff;
+    background-color: rgba(#2B2017, 0.85);
+    color: #FAF8F5;
   }
 
   .footer-links {
@@ -172,49 +180,36 @@ a {
     font-weight: 500; // Medium weight
 
     a {
-      transition: color 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.2s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      border-bottom: none !important; // Hide any default link border for social icons
+      opacity: 1; // Pre-hover matches cursive links (fully opaque)
+
+      &:hover {
+        opacity: 0.5; // Post-hover matches cursive links (dimmed to 0.5)
+        .footer-icon {
+          transform: translateY(-2px) scale(1.1);
+        }
+      }
+    }
+
+    .footer-icon {
+      width: 36px;
+      height: 36px;
+      opacity: 1; // Fully opaque pre-hover
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease, filter 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+      vertical-align: middle;
+
+      body.theme-dark & {
+        filter: invert(1) brightness(1.2); // Graceful color inversion for dark theme compatibility
+      }
     }
   }
 }
 
-// Staggered Transitions Styling
-.transition-word, .transition-row {
-  display: inline-block;
-  opacity: 0;
-  transform: translateY(50px); // Increased to make floating upward entry highly obvious
-  transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 1.2s ease;
-  transition-fill-mode: forwards;
-}
 
-.transition-row {
-  display: block; // Rows must behave as block elements
-}
-
-// Entering Animation State (Triggered when path completes loading)
-.transition-container-active {
-  .transition-word, .transition-row {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-// Exiting Animation State (Triggered on link clicks)
-.transition-container-exiting {
-  .transition-word, .transition-row, .glitch-canvas-container {
-    opacity: 0 !important;
-    transform: translateY(-50px) !important; // Sleek upward slide
-    transition-property: transform, opacity !important;
-    transition-duration: 0.6s !important;
-    transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1), ease !important;
-    // Keeps inline transition-delay untouched so elements naturally stagger out!
-  }
-}
-
-// Pending resting state (prevents any flash of text prior to transition split)
-.transition-container-pending {
-  opacity: 0 !important;
-  pointer-events: none !important;
-}
 
 // Main Content Section
 .main-content {
@@ -259,12 +254,91 @@ a {
       font-size: $pecita-scale; // Driven by the scale variable at the top
       font-weight: normal;
       letter-spacing: 0;
-      border-bottom: 2px solid currentColor;
-      padding-bottom: 2px;
-      transition: opacity 0.2s ease, border-color 0.2s ease;
+      border-bottom: none !important; // Hide underlines everywhere
+      padding: 2px 8px;
+      margin: -2px -8px;
+      transition: background-color 0.3s cubic-bezier(0.16, 1, 0.3, 1), color 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease, box-shadow 0.3s ease;
+      display: inline-block;
+      vertical-align: baseline;
 
-      &:hover {
-        opacity: 0.5;
+      // Theme highlights in resting (pre-hover) state (with inset shadow as an inner border)
+      &.highlight-name {
+        background-color: #FCDCD3; // Pastel peach
+        color: #6B3B2B; // Dark terracotta
+        box-shadow: inset 0 -3px 0 0 $color-bg;
+      }
+
+      &.highlight-work {
+        background-color: #DFE8F9; // Pastel periwinkle (swapped)
+        color: #203A6F; // Dark periwinkle navy (swapped)
+        box-shadow: inset 0 -3px 0 0 $color-bg;
+      }
+
+      &.highlight-education {
+        background-color: #F9F0DB; // Pastel warm yellow (swapped)
+        color: #5C481A; // Dark amber gold (swapped)
+        box-shadow: inset 0 -3px 0 0 $color-bg;
+      }
+
+      &.highlight-geography {
+        background-color: #DDEFEA; // Pastel mint/sage green (swapped)
+        color: #1C4E43; // Dark teal/forest green (swapped)
+        box-shadow: inset 0 -3px 0 0 $color-bg;
+      }
+
+      // 1. Non-glitch hovers (go darker and apply unique subtle jiggle animations for one cycle)
+      &.highlight-name:hover {
+        background-color: #F6BDAE !important; // Deeper warm peach
+        color: #562719 !important; // Deeper terracotta
+        opacity: 1 !important;
+        @media (prefers-reduced-motion: no-preference) {
+          animation: jiggle-pivot 0.3s ease-in-out;
+        }
+      }
+
+      &.highlight-work:hover {
+        background-color: #BDCFF3 !important; // Deeper periwinkle (swapped)
+        color: #13264F !important; // Deeper periwinkle navy (swapped)
+        opacity: 1 !important;
+        @media (prefers-reduced-motion: no-preference) {
+          animation: jiggle-pulse 0.3s ease-in-out;
+        }
+      }
+
+      &.highlight-education:hover {
+        background-color: #F3DFB4 !important; // Deeper warm yellow (swapped)
+        color: #42320E !important; // Deeper amber gold (swapped)
+        opacity: 1 !important;
+        @media (prefers-reduced-motion: no-preference) {
+          animation: jiggle-horizontal 0.3s ease-in-out;
+        }
+      }
+
+      &.highlight-geography:hover {
+        background-color: #BDDFD5 !important; // Deeper mint/sage green
+        color: #133E35 !important; // Deeper forest green
+        opacity: 1 !important;
+        @media (prefers-reduced-motion: no-preference) {
+          animation: jiggle-vertical 0.3s ease-in-out;
+        }
+      }
+
+      // 2. Glitch-enabled links hover (remove highlight background and shadow)
+      &.google-svg-link:hover, 
+      &.analytics-svg-link:hover, 
+      &.upenn-svg-link:hover {
+        background-color: transparent !important;
+        box-shadow: none !important;
+        opacity: 1 !important;
+      }
+    }
+
+    // Dark theme support for the inset highlight truncation border
+    body.theme-dark & {
+      a {
+        &.highlight-name, &.highlight-work, &.highlight-education, &.highlight-geography {
+          box-shadow: inset 0 -3px 0 0 #2B2017; // Matches the dark cocoa background
+        }
       }
     }
 
@@ -272,30 +346,30 @@ a {
       white-space: nowrap;
     }
 
-    .philly-svg-link, .google-svg-link, .upenn-svg-link, .analytics-svg-link {
+    .google-svg-link, .upenn-svg-link, .analytics-svg-link {
       display: inline-block;
       position: relative;
       border-bottom: none !important; // Hide default link border on the parent container
       vertical-align: baseline;
       padding-bottom: 0;
 
-      .philly-text, .google-text, .upenn-text, .analytics-text {
+      .google-text, .upenn-text, .analytics-text {
         display: inline-block;
         font-family: 'Pecita', cursive, serif;
         font-size: inherit; // Prevent compounding sizing by inheriting the parent link's 1.15em font scale
         font-weight: normal;
         letter-spacing: 0;
-        border-bottom: 2px solid currentColor; // Renders the underline on the text itself
-        padding-bottom: 2px;
+        border-bottom: none !important; // Remove the underline on the text itself
+        padding-bottom: 0;
         transition: opacity 0.15s ease-out; // Snappy fade-out transition
         opacity: 1;
       }
 
-      .philly-svg, .google-svg, .upenn-svg, .analytics-svg {
+      .google-svg, .upenn-svg, .analytics-svg {
         position: absolute;
-        left: 0;
+        left: 8px; // Offset parent 8px left padding to center vector outline exactly over text
         top: -0.11em; // Nudges the SVG up relative to parent font size to align non-descending character baselines perfectly with the Pecita text
-        width: 100%;
+        width: calc(100% - 16px); // Exclude the 16px parent horizontal padding (8px left, 8px right)
         height: calc(100% - 4px); // Excludes padding (2px) and border (2px) to align vector baseline perfectly with text
         object-fit: contain; // Proportionally fits inside the exact layout box of the text
         opacity: 0;
@@ -310,12 +384,12 @@ a {
 
       // Exit animations only run once the element has actually been hovered to avoid load-time glitching
       &.has-hovered {
-        .philly-text, .google-text, .upenn-text, .analytics-text {
+        .google-text, .upenn-text, .analytics-text {
           @media (prefers-reduced-motion: no-preference) {
             animation: glitch-text-anim 0.3s step-end forwards;
           }
         }
-        .philly-svg, .google-svg, .upenn-svg, .analytics-svg {
+        .google-svg, .upenn-svg, .analytics-svg {
           @media (prefers-reduced-motion: no-preference) {
             animation: glitch-svg-anim 0.6s step-end forwards;
           }
@@ -325,11 +399,11 @@ a {
       &:hover {
         opacity: 1 !important; // Override default link dimming
 
-        .philly-text, .google-text, .upenn-text, .analytics-text {
+        .google-text, .upenn-text, .analytics-text {
           opacity: 0;
         }
 
-        .philly-svg, .google-svg, .upenn-svg, .analytics-svg {
+        .google-svg, .upenn-svg, .analytics-svg {
           opacity: 1;
         }
       }
@@ -337,14 +411,14 @@ a {
 
     // Accessible glitch-art transition choreography on hover
     @media (prefers-reduced-motion: no-preference) {
-      .philly-svg-link, .google-svg-link, .upenn-svg-link, .analytics-svg-link {
+      .google-svg-link, .upenn-svg-link, .analytics-svg-link {
         &:hover {
-          .philly-text, .google-text, .upenn-text, .analytics-text {
+          .google-text, .upenn-text, .analytics-text {
             animation: glitch-text-leave 0.1s step-end forwards; // Swapped to low-jitter keyframes for hover
             text-shadow: -2px 0 #00fff0, 2px 0 #ff00c1; // Cyan and magenta chromatic shift
           }
 
-          .philly-svg, .google-svg, .upenn-svg, .analytics-svg {
+          .google-svg, .upenn-svg, .analytics-svg {
             animation: glitch-svg-leave 0.2s step-end 0.04s forwards; // Swapped to low-jitter keyframes for hover
           }
         }
@@ -508,4 +582,542 @@ a {
   flex-direction: column;
   gap: 1.5rem; // Spacing between the stacked statement blocks
   text-align: left;
+}
+
+// Unique subtle jiggle keyframes for standard hovers
+@keyframes jiggle-pivot {
+  0% { transform: rotate(0deg); }
+  25% { transform: rotate(-0.88deg); }
+  75% { transform: rotate(0.88deg); }
+  100% { transform: rotate(0deg); }
+}
+
+@keyframes jiggle-pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.033); }
+  100% { transform: scale(1); }
+}
+
+@keyframes jiggle-horizontal {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-1.65px); }
+  75% { transform: translateX(1.65px); }
+  100% { transform: translateX(0); }
+}
+
+@keyframes jiggle-vertical {
+  0% { transform: translateY(0); }
+  25% { transform: translateY(-1.65px); }
+  75% { transform: translateY(1.65px); }
+  100% { transform: translateY(0); }
+}
+
+// About Page Typography & Reading Layout
+.about-container {
+  max-width: 680px; // Mobile reading layout constraint
+  margin: 0 auto;
+  padding: 120px 24px 80px 24px;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+
+  @media (min-width: 581px) {
+    max-width: 720px; // 25% reduction from 960px to perfectly balance line length
+  }
+
+  @media (max-width: 580px) {
+    padding: 100px 20px 60px 20px;
+  }
+}
+
+.about-title {
+  font-size: clamp(2.4rem, 5vw, 3.8rem);
+  font-weight: 500;
+  color: $color-text;
+  line-height: 1.15;
+  margin-bottom: 2.5rem;
+  letter-spacing: -0.02em;
+
+  body.theme-dark & {
+    color: #FAF8F5;
+  }
+}
+
+.about-paragraph {
+  font-size: clamp(1.08rem, 4.5vw, 1.2rem);
+  font-weight: 500;
+  line-height: 1.75;
+  color: rgba($color-text, 0.85);
+  margin-bottom: 1.8rem;
+  letter-spacing: -0.01em;
+
+  @media (min-width: 581px) {
+    font-size: clamp(1.58rem, 2.85vw, 1.88rem); // 25% reduction from 2.5rem display size
+    font-weight: 400; // Immersive editorial regular weight
+    line-height: 1.6; // High-fidelity editorial reading line height
+    margin-bottom: 2.2rem;
+  }
+
+  body.theme-dark & {
+    color: rgba(#FAF8F5, 0.85);
+  }
+}
+
+// Non-wrapping inline parent group to prevent punctuation/apostrophes ('s) from breaking onto a new line by themselves
+.about-nowrap-group {
+  white-space: nowrap !important;
+  display: inline-block !important;
+  vertical-align: baseline !important;
+}
+
+// // Mapped bold interactive links styling (Filled background states matching the homepage)
+.about-bold-link {
+  font-weight: 600; // Original bold weight (in Gabarito sans-serif)
+  font-family: inherit; // Retain original font family
+  border-bottom: none !important; // Hide underlines completely
+  vertical-align: baseline;
+  line-height: 1.25;
+
+  &:hover {
+    opacity: 1 !important; // Overrides default global link dimming
+  }
+
+  // Delegated highlight styles for standard wrapping inline links
+  &:not(.about-link-outlined) {
+    display: inline-block !important;
+    vertical-align: baseline !important;
+    white-space: nowrap !important;
+    word-wrap: normal !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
+    
+    // Constant padding and margin to completely eliminate any baseline shifts and text jiggles!
+    padding: 1px 6px !important;
+    margin: -1px -4px !important;
+    border-bottom: 1.5px dotted currentColor !important; // Beautiful continuous dotted underline
+    border-radius: 4px !important;
+    
+    // By default (resting and direct page loads/refreshes), standard links are fully visible in place!
+    opacity: 1;
+    transform: translateY(0);
+    transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+
+    &:hover {
+      padding: 1px 6px !important; // Stays perfectly constant to guarantee a 100% jiggle-free hover
+      margin: -1px -4px !important;
+      border-bottom: 1.5px solid transparent !important; // Smoothly fades out the dotted underline as background fills
+      border-radius: 4px !important;
+    }
+
+    &.about-link-work {
+      color: #203A6F;
+
+      body.theme-dark & {
+        color: #DFE8F9;
+      }
+
+      &:hover {
+        background-color: #A7C2ED !important; // Rich periwinkle hover background
+        color: #13264F !important;
+
+        body.theme-dark & {
+          background-color: #A7C2ED !important;
+          color: #13264F !important;
+        }
+      }
+    }
+
+    &.about-link-education {
+      color: #5C481A;
+
+      body.theme-dark & {
+        color: #F9F0DB;
+      }
+
+      &:hover {
+        background-color: #E3C18E !important; // Rich gold-yellow hover background
+        color: #42320E !important;
+
+        body.theme-dark & {
+          background-color: #E3C18E !important;
+          color: #42320E !important;
+        }
+      }
+    }
+
+    &.about-link-special {
+      color: #6B3B2B;
+
+      body.theme-dark & {
+        color: #FCDCD3;
+      }
+
+      &:hover {
+        background-color: #E69A88 !important; // Rich peach hover background
+        color: #562719 !important;
+
+        body.theme-dark & {
+          background-color: #E69A88 !important;
+          color: #562719 !important;
+        }
+      }
+    }
+
+    &.about-link-geography {
+      color: #1C4E43;
+
+      body.theme-dark & {
+        color: #DDEFEA;
+      }
+
+      &:hover {
+        background-color: #9DCEBC !important; // Rich mint green hover background
+        color: #133E35 !important;
+
+        body.theme-dark & {
+          background-color: #9DCEBC !important;
+          color: #133E35 !important;
+        }
+      }
+    }
+  }
+
+  // Outlined brand stamp links (Google, Smarking, AdHawk, Notarize, and UPenn)
+  &.about-link-outlined {
+    display: inline-block !important;
+    white-space: nowrap !important;
+    border-radius: 6px !important;
+    box-shadow: none !important;
+    margin: 0 2px !important; // Overrides negative margins to prevent collision/overlap with punctuation and text siblings
+    padding: 2px 8px;
+    transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease, border-style 0.15s ease;
+
+    &.about-link-work {
+      background-color: #DFE8F9 !important; // Maintain the colored periwinkle fill
+      border: 2.5px dotted #203A6F !important; // Thicker dotted border outline
+      color: #203A6F !important;
+
+      body.theme-dark & {
+        background-color: #DFE8F9 !important;
+        color: #203A6F !important;
+        border-color: #203A6F !important;
+      }
+
+      &:hover {
+        background-color: #A7C2ED !important; // Richer periwinkle on hover
+        color: #13264F !important;
+        border: 2.5px solid #A7C2ED !important; // Keep constant 2.5px border on hover
+        box-shadow: none !important;
+        animation: none !important; // Remove bounce and movement animations
+
+        body.theme-dark & {
+          background-color: #A7C2ED !important;
+          color: #13264F !important;
+          border-color: #A7C2ED !important;
+        }
+      }
+    }
+
+    &.about-link-education {
+      background-color: #F9F0DB !important; // Maintain the colored yellow fill
+      border: 2.5px dotted #5C481A !important; // Thicker dotted border outline
+      color: #5C481A !important;
+
+      body.theme-dark & {
+        background-color: #F9F0DB !important;
+        color: #5C481A !important;
+        border-color: #5C481A !important;
+      }
+
+      &:hover {
+        background-color: #E3C18E !important; // Richer yellow on hover
+        color: #42320E !important;
+        border: 2.5px solid #E3C18E !important; // Keep constant 2.5px border on hover
+        box-shadow: none !important;
+        animation: none !important; // Remove bounce and movement animations
+
+        body.theme-dark & {
+          background-color: #E3C18E !important;
+          color: #42320E !important;
+          border-color: #E3C18E !important;
+        }
+      }
+    }
+  }
+}
+
+// Floating Hover Cards in Margins (Non-mobile Sizes)
+.about-link-group {
+  display: inline;
+  position: static; // Keep static so child coordinates look up to .about-container
+}
+
+// Enable relative horizontal anchoring on the centered column
+.about-container {
+  position: relative;
+}
+
+// Float Card Styles
+.about-hover-card {
+  display: none; // Hidden on mobile viewports by default
+
+  @media (min-width: 1025px) {
+    display: block;
+    position: absolute;
+    width: 130px;
+    height: 170px;
+    pointer-events: auto; // Allow mouse interaction and hover delegation on the card itself
+    z-index: 10;
+    opacity: 1;
+    transition: opacity 0.4s ease,
+                transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
+                box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
+                border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+
+    &.left-side {
+      left: -170px;
+      animation: hover-bob-left 6s ease-in-out infinite;
+
+      // Slight stagger offsets for out-of-sync fluid motion
+      &:nth-of-type(odd) {
+        animation: hover-bob-left 5.5s ease-in-out infinite 0.3s;
+      }
+    }
+
+    &.right-side {
+      right: -170px;
+      animation: hover-bob-right 6.2s ease-in-out infinite 0.6s;
+
+      &:nth-of-type(even) {
+        animation: hover-bob-right 5.8s ease-in-out infinite 0.9s;
+      }
+    }
+  }
+}
+
+// Inner aesthetic details
+.about-hover-card-inner {
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  position: relative;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 8px 30px rgba(43, 32, 23, 0.06);
+  border: 1.5px solid rgba(#2B2017, 0.1);
+  background: linear-gradient(135deg, rgba(#FAF8F5, 0.8), rgba(#FAF8F5, 0.5));
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+
+  body.theme-dark & {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+    border-color: rgba(#FAF8F5, 0.1);
+    background: linear-gradient(135deg, rgba(#2B2017, 0.8), rgba(#2B2017, 0.5));
+  }
+
+  // Inner dashed drawing to look like a premium placeholder slot
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 8px;
+    border-radius: 8px;
+    border: 1.5px dashed rgba(#2B2017, 0.15);
+    pointer-events: none;
+
+    body.theme-dark & {
+      border-color: rgba(#FAF8F5, 0.15);
+    }
+  }
+}
+
+.about-hover-card-label {
+  font-family: $font-family; // Gabarito sans-serif
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(#2B2017, 0.5);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  body.theme-dark & {
+    color: rgba(#FAF8F5, 0.5);
+  }
+
+  &::after {
+    content: '[Slot]';
+    font-size: 0.65rem;
+    opacity: 0.7;
+    font-weight: 400;
+  }
+}
+
+// Thematic coloring matching Work (Blue) and Education (Yellow) link colors
+.about-hover-card {
+  &.about-card-work {
+    .about-hover-card-inner {
+      border-color: rgba(#203A6F, 0.15);
+      background: linear-gradient(135deg, rgba(#DFE8F9, 0.75), rgba(#DFE8F9, 0.45));
+
+      body.theme-dark & {
+        border-color: rgba(#A7C2ED, 0.2);
+        background: linear-gradient(135deg, rgba(#203A6F, 0.45), rgba(#13264F, 0.25));
+      }
+
+      &::before {
+        border-color: rgba(#203A6F, 0.2);
+
+        body.theme-dark & {
+          border-color: rgba(#A7C2ED, 0.3);
+        }
+      }
+    }
+
+    .about-hover-card-label {
+      color: #203A6F;
+
+      body.theme-dark & {
+        color: #A7C2ED;
+      }
+    }
+  }
+
+  &.about-card-education {
+    .about-hover-card-inner {
+      border-color: rgba(#5C481A, 0.15);
+      background: linear-gradient(135deg, rgba(#F9F0DB, 0.75), rgba(#F9F0DB, 0.45));
+
+      body.theme-dark & {
+        border-color: rgba(#E3C18E, 0.2);
+        background: linear-gradient(135deg, rgba(#5C481A, 0.45), rgba(#42320E, 0.25));
+      }
+
+      &::before {
+        border-color: rgba(#5C481A, 0.2);
+
+        body.theme-dark & {
+          border-color: rgba(#E3C18E, 0.3);
+        }
+      }
+    }
+
+    .about-hover-card-label {
+      color: #5C481A;
+
+      body.theme-dark & {
+        color: #E3C18E;
+      }
+    }
+  }
+}
+
+// Hover Interaction (Card responds when parent group is hovered!)
+.about-link-group {
+  &:hover {
+    .about-hover-card {
+      z-index: 15;
+
+      .about-hover-card-inner {
+        transform: scale(1.06) translateY(-4px);
+        box-shadow: 0 12px 40px rgba(43, 32, 23, 0.14);
+        border-color: rgba(#2B2017, 0.3);
+
+        body.theme-dark & {
+          box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+          border-color: rgba(#FAF8F5, 0.35);
+        }
+      }
+    }
+  }
+}
+
+// Dynamic bobbing keyframes centered on the text line baseline
+@keyframes hover-bob-left {
+  0% { transform: translateY(-50%) translateY(0px); }
+  50% { transform: translateY(-50%) translateY(-6px); }
+  100% { transform: translateY(-50%) translateY(0px); }
+}
+
+@keyframes hover-bob-right {
+  0% { transform: translateY(-50%) translateY(-3px); }
+  50% { transform: translateY(-50%) translateY(3px); }
+  100% { transform: translateY(-50%) translateY(-3px); }
+}
+
+// Diagrammatic Hover Connectors
+.about-hover-connector {
+  display: none; // Hidden on mobile by default
+
+  @media (min-width: 1025px) {
+    display: block;
+    position: absolute;
+    height: 8px;
+    pointer-events: none;
+    z-index: 20;
+    opacity: 0;
+    transform: translateY(-50%); // Centered vertically relative to the top offset
+    transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), color 0.15s ease;
+  }
+}
+
+.about-connector-line {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1.5px;
+  transform: translateY(-50%);
+  border-top: 1.5px dashed currentColor; // Dashed connector line
+}
+
+.about-connector-dot {
+  position: absolute;
+  top: 50%;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background-color: currentColor; // Solid filled circle
+  transform: translate(-50%, -50%);
+
+  &.start-dot {
+    left: 0;
+  }
+
+  &.end-dot {
+    left: 100%;
+  }
+}
+
+// Hover Interaction (Dashed line fades in on hover over link or card)
+.about-link-group {
+  &:hover {
+    .about-hover-connector {
+      opacity: 0.2; // Render lines at low opacity (.2) only on hover!
+    }
+  }
+
+  // Color mappings
+  .about-hover-connector {
+    &.about-connector-work {
+      color: #203A6F;
+
+      body.theme-dark & {
+        color: #A7C2ED;
+      }
+    }
+
+    &.about-connector-education {
+      color: #5C481A;
+
+      body.theme-dark & {
+        color: #E3C18E;
+      }
+    }
+  }
 }

@@ -16,17 +16,34 @@ export default function Footer() {
         <ul className="footer-links">
           <li>
             <a
-              href="https://linkedin.com"
+              href="https://www.linkedin.com/in/ulirey/"
               target="_blank"
               rel="noopener noreferrer"
               id="footer-linkedin"
+              aria-label="LinkedIn"
             >
-              LinkedIn
+              <img
+                src="/assets/home/socials/linkedin_cute_re.svg"
+                alt="LinkedIn"
+                className="footer-icon"
+                width={36}
+                height={36}
+              />
             </a>
           </li>
           <li>
-            <a href="mailto:hello@example.com" id="footer-email">
-              Email
+            <a 
+              href="mailto:hello@example.com" 
+              id="footer-email"
+              aria-label="Email"
+            >
+              <img
+                src="/assets/home/socials/email.svg"
+                alt="Email"
+                className="footer-icon"
+                width={36}
+                height={36}
+              />
             </a>
           </li>
         </ul>
@@ -34,3 +51,4 @@ export default function Footer() {
     </footer>
   );
 }
+

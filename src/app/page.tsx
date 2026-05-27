@@ -6,30 +6,38 @@ export default function Home() {
       <div className="bio-container">
         <h1 className="hero-title intro-title first-line" id="hero-title">
           My name is{" "}
-          <Link href="#" className="nowrap-link" id="link-ulises">
+          <Link href="/about" className="nowrap-link highlight-name" id="link-ulises">
             Ulises Reyes-Kaura
           </Link>
           . I am a{" "}
-          <Link href="#" className="nowrap-link" id="link-product-designer">
+          <Link href="#" className="nowrap-link highlight-work" id="link-product-designer">
             product designer
           </Link>{" "}
           and{" "}
-          <Link href="#" id="link-educator">
+          <Link href="#" className="highlight-education" id="link-educator">
             educator
           </Link>{" "}
           based in{" "}
-          <Link href="#" id="link-philadelphia" className="philly-svg-link">
-            <span className="philly-text">Philadelphia</span>
-            <img
-              src="/assets/home/philly-kelly.svg"
-              alt="Philadelphia"
-              className="philly-svg"
-            />
+          <Link 
+            href="https://en.wikipedia.org/wiki/Philadelphia" 
+            id="link-philadelphia" 
+            className="highlight-geography"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Philadelphia
           </Link>
+          .
         </h1>
         <p className="hero-title intro-title second-line" id="hero-subtitle">
           Currently, I work at{" "}
-          <Link href="#" id="link-google" className="google-svg-link">
+          <Link 
+            href="https://about.google" 
+            id="link-google" 
+            className="google-svg-link highlight-work"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             <span className="google-text">Google</span>
             <img
               src="/assets/home/google-logo.svg"
@@ -38,7 +46,13 @@ export default function Home() {
             />
           </Link>
           , designing agentic experiences for{" "}
-          <Link href="#" id="link-analytics" className="analytics-svg-link">
+          <Link 
+            href="https://marketingplatform.google.com/about/analytics/" 
+            id="link-analytics" 
+            className="analytics-svg-link highlight-work"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             <span className="analytics-text">Analytics</span>
             <img
               src="/assets/home/analytics.svg"
@@ -47,7 +61,13 @@ export default function Home() {
             />
           </Link>
           , and teach design at{" "}
-          <Link href="#" id="link-upenn" className="upenn-svg-link">
+          <Link 
+            href="https://ipd.me.upenn.edu/about/" 
+            id="link-upenn" 
+            className="upenn-svg-link highlight-education"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             <span className="upenn-text">UPenn</span>
             <img
               src="/assets/home/penn.svg"

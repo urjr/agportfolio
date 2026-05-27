@@ -183,12 +183,12 @@ export default function NotFound() {
         dangerouslySetInnerHTML={{
           __html: `
             body {
-              background-color: #000000 !important;
-              color: #ffffff !important;
+              background-color: #2B2017 !important;
+              color: #FAF8F5 !important;
             }
             .navbar, .footer {
-              background-color: rgba(0, 0, 0, 0.85) !important;
-              color: #ffffff !important;
+              background-color: rgba(43, 32, 23, 0.85) !important;
+              color: #FAF8F5 !important;
             }
           `,
         }}
