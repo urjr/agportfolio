@@ -1129,11 +1129,6 @@ a {
 
     &.about-connector-geography {
       color: #10161F;
-      opacity: 0.08 !important; // Low opacity black line resting
-
-      .about-link-group:hover & {
-        opacity: 0.25 !important; // Darkens slightly on hover
-      }
 
       body.theme-dark & {
         color: #FAF8F5;
