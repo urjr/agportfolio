@@ -47,6 +47,8 @@ export default function About() {
           connector.style.width = `${width}px`;
           connector.style.top = `${topOffset}px`;
         }
+
+        card.classList.add("aligned");
       });
     };
 

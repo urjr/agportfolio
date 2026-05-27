@@ -869,14 +869,18 @@ a {
     pointer-events: auto; // Allow mouse interaction and hover delegation on the card itself
     cursor: url("/assets/cursors/link.svg") 18 0, pointer; // Retro voxel pointing hand!
     z-index: 10;
-    opacity: 1;
-    transition: opacity 0.4s ease,
+    opacity: 0;
+    transition: opacity 0.8s ease-in-out,
                 left 0.8s cubic-bezier(0.16, 1, 0.3, 1),
                 right 0.8s cubic-bezier(0.16, 1, 0.3, 1),
                 top 0.8s cubic-bezier(0.16, 1, 0.3, 1),
                 transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
                 box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
                 border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+
+    &.aligned {
+      opacity: 1;
+    }
 
     &.left-side {
       left: -170px;
