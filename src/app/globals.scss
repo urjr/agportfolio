@@ -285,10 +285,10 @@ $lw-distance:        0.85em; // clip travel distance
     animation-delay: calc(var(--row-index, 0) * #{$row-stagger});
   }
 
-  // Enter under FLIP transition: fade in only (no vertical translation to prevent coordinate offsets)
+  // Enter under FLIP transition: row itself is instantly fully visible so cards can fly uninterrupted
   &.page-row--enter-flip {
-    animation: fade-in-only $row-enter-duration cubic-bezier(0.16, 1, 0.3, 1) both;
-    animation-delay: calc(var(--row-index, 0) * #{$row-stagger});
+    opacity: 1 !important;
+    animation: none !important;
   }
 
   // Enter for About page: fade in only (no vertical translation to prevent coordinate offsets)
@@ -1113,6 +1113,22 @@ $lw-distance:        0.85em; // clip travel distance
 // Enable relative horizontal anchoring on the centered column
 .about-container {
   position: relative;
+
+  @media (min-width: 1025px) {
+    // Smooth staggered reveals for FLIP transition landing
+    .about-paragraph,
+    #hero-title {
+      transition: color 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+      transition-delay: calc(var(--row-index, 0) * 0.08s);
+    }
+
+    .about-paragraph a:not(.about-link-outlined),
+    .about-link-outlined,
+    .about-hover-connector {
+      transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+      transition-delay: calc(var(--row-index, 0) * 0.08s);
+    }
+  }
 }
 
 // Float Card Styles
@@ -2243,12 +2259,6 @@ $lw-distance:        0.85em; // clip travel distance
 }
 
 .about-container.is-flipping {
-  // Force all page rows to be fully visible so that the cards flying inside them are visible
-  .page-row {
-    animation: none !important;
-    opacity: 1 !important;
-  }
-
   // Keep the cards themselves opaque and override color inheritance for their label text
   .about-hover-card {
     opacity: 1 !important;

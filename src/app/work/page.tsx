@@ -1,12 +1,15 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import CompanyCard from "../components/CompanyCard";
 import { COMPANY_DATA, WORK_PAGE_ORDER } from "../data/companies";
 import { usePageTransition } from "../components/TransitionProvider";
 
 export default function Work() {
   const { isExiting, transitionType, sharedCardCoords, clearSharedCoords } = usePageTransition();
+  const [wasFlipEntered] = useState(() => {
+    return transitionType === "about-to-work" && !!sharedCardCoords;
+  });
   const hasAnimated = useRef(false);
 
   useEffect(() => {
@@ -70,7 +73,7 @@ export default function Work() {
   const getExitClass = () => {
     if (isFlipExit) return "page-row--exit-flip";
     if (isExiting) return "page-row--exit";
-    if (isFlipEnter) return "page-row--enter-flip";
+    if (isFlipEnter || wasFlipEntered) return "page-row--enter-flip";
     return "page-row--enter";
   };
 

@@ -26,6 +26,9 @@ export default function About() {
   const [isFlipping, setIsFlipping] = useState(() => {
     return transitionType === "work-to-about" && !!sharedCardCoords;
   });
+  const [wasFlipEntered] = useState(() => {
+    return transitionType === "work-to-about" && !!sharedCardCoords;
+  });
   const isFlippingRef = useRef(isFlipping);
   useEffect(() => {
     isFlippingRef.current = isFlipping;
@@ -402,7 +405,7 @@ export default function About() {
   const getExitClass = () => {
     if (isFlipExit) return "page-row--exit-flip";
     if (isExiting) return "page-row--exit-about";
-    if (isFlipEnter) return "page-row--enter-flip";
+    if (isFlipEnter || wasFlipEntered) return "page-row--enter-flip";
     return "page-row--enter-about";
   };
 
