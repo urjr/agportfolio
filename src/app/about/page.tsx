@@ -52,7 +52,10 @@ export default function About() {
 
         const lastRect = cardEl.getBoundingClientRect();
 
-        const dx = firstRect.left - lastRect.left;
+        const isLeft = companyId === "google" || companyId === "smarking" || companyId === "upenn";
+        const slideOffset = isLeft ? -465 : 465;
+
+        const dx = firstRect.left + slideOffset - lastRect.left;
         const dy = firstRect.top - lastRect.top;
         const scaleX = firstRect.width / lastRect.width;
         const scaleY = firstRect.height / lastRect.height;
@@ -407,7 +410,7 @@ export default function About() {
   };
 
   return (
-    <main className="about-container">
+    <main className={`about-container${isFlipping ? " is-flipping" : ""}`}>
       <div className="about-content">
         <div
           className={`page-row ${getExitClass()}`}

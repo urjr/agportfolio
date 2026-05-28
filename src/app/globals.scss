@@ -355,7 +355,22 @@ $lw-distance:        0.85em; // clip travel distance
       // Morph Work card details out snappily, leaving only the card base & name image
       .company-card-details {
         opacity: 0 !important;
-        transition: opacity 0.3s cubic-bezier(0.4, 0, 1, 1) !important;
+        transition: opacity 0.28s cubic-bezier(0.4, 0, 1, 1) !important;
+      }
+
+      // Slide and scale cards on the Work page towards their About page margin slots!
+      transition: transform 0.38s cubic-bezier(0.16, 1, 0.3, 1) !important;
+      transform-origin: center center !important;
+      
+      &[data-company-id="google"],
+      &[data-company-id="smarking"],
+      &[data-company-id="upenn"] {
+        transform: translateX(-465px) scale(0.23) !important;
+      }
+      
+      &[data-company-id="notarize"],
+      &[data-company-id="adhawk"] {
+        transform: translateX(465px) scale(0.23) !important;
       }
     }
   }
@@ -890,6 +905,7 @@ $lw-distance:        0.85em; // clip travel distance
   color: rgba($color-text, 0.85);
   margin-bottom: 1.8rem;
   letter-spacing: -0.01em;
+  transition: color 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 
   @media (min-width: 581px) {
     font-size: clamp(1.58rem, 2.85vw, 1.88rem); // 25% reduction from 2.5rem display size
@@ -942,7 +958,7 @@ $lw-distance:        0.85em; // clip travel distance
     // By default (resting and direct page loads/refreshes), standard links are fully visible in place!
     opacity: 1;
     transform: translateY(0);
-    transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+    transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease, opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 
     &:hover {
       padding: 1px 6px !important; // Stays perfectly constant to guarantee a 100% jiggle-free hover
@@ -1032,7 +1048,7 @@ $lw-distance:        0.85em; // clip travel distance
     box-shadow: none !important;
     margin: 0 2px !important; // Overrides negative margins to prevent collision/overlap with punctuation and text siblings
     padding: 2px 8px;
-    transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease, border-style 0.15s ease;
+    transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease, border-style 0.15s ease, opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 
     &.about-link-work {
       background-color: #DFE8F9 !important; // Maintain the colored periwinkle fill
@@ -2222,6 +2238,35 @@ $lw-distance:        0.85em; // clip travel distance
         box-shadow: 0 6px 20px rgba(#E3C18E, 0.28);
         color: #2B1A05 !important;
       }
+    }
+  }
+}
+
+// ============================================================
+// About Page Flipping Flight Morph State
+// ============================================================
+.about-container.is-flipping {
+  // Hide all standard text and triggers during card flight
+  .about-paragraph,
+  #hero-title {
+    color: transparent !important;
+    
+    // Hide standard links
+    a:not(.about-link-outlined) {
+      opacity: 0 !important;
+      pointer-events: none;
+    }
+    
+    // Hide outlined link triggers
+    .about-link-outlined {
+      opacity: 0 !important;
+      pointer-events: none;
+    }
+
+    // Hide connector lines
+    .about-hover-connector {
+      opacity: 0 !important;
+      pointer-events: none;
     }
   }
 }
