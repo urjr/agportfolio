@@ -257,6 +257,15 @@ $lw-distance:        0.85em; // clip travel distance
   }
 }
 
+@keyframes fade-out-only {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
 // Word slide-up from below (clip reveal)
 @keyframes lw-enter {
   from {
@@ -294,9 +303,14 @@ $lw-distance:        0.85em; // clip travel distance
     animation-delay: calc(var(--row-index, 0) * #{$row-stagger});
   }
 
+  // Exit for About page: fade out only (no vertical translation to prevent coordinate offsets)
+  &.page-row--exit-about {
+    animation: fade-out-only $row-exit-duration cubic-bezier(0.4, 0, 1, 1) both;
+    animation-delay: calc(var(--row-index, 0) * #{$row-stagger});
+  }
+
   // Custom Exit for FLIP Transitions between About and Work
   &.page-row--exit-flip {
-    position: relative;
     pointer-events: none; // Disable pointer interactions during exit phase
 
     // --- About Page Exit Morphing ---

@@ -34,6 +34,7 @@ export default function About() {
   const hasAnimated = useRef(false);
 
   useEffect(() => {
+    console.log("FLIP useEffect triggered:", { transitionType, hasCoords: !!sharedCardCoords, hasAnimated: hasAnimated.current });
     if (transitionType === "work-to-about" && sharedCardCoords && !hasAnimated.current) {
       hasAnimated.current = true;
 
@@ -78,13 +79,18 @@ export default function About() {
         cardEl.addEventListener("transitionend", handleTransitionEnd);
       });
 
+      console.log("FLIP useEffect: scheduling 600ms timer to clear isFlipping");
       const timer = setTimeout(() => {
+        console.log("FLIP timer fired: setting isFlipping to false");
         setIsFlipping(false);
+        clearSharedCoords();
       }, 600);
 
-      clearSharedCoords();
-
-      return () => clearTimeout(timer);
+      return () => {
+        console.log("FLIP useEffect cleanup: clearing timeout and resetting hasAnimated");
+        hasAnimated.current = false;
+        clearTimeout(timer);
+      };
     }
   }, [transitionType, sharedCardCoords, clearSharedCoords]);
 
@@ -211,12 +217,15 @@ export default function About() {
       const contentRect = content.getBoundingClientRect();
       const contentCenter = contentRect.left + contentRect.width / 2;
 
-      // Temporarily clear inline transforms to measure static positions accurately
+      // Temporarily clear inline transforms and transitions to measure static positions accurately
       const originalTransforms: string[] = [];
+      const originalTransitions: string[] = [];
       groups.forEach((group, index) => {
         const card = group.querySelector(".about-hover-card") as HTMLElement;
         if (card) {
           originalTransforms[index] = card.style.transform;
+          originalTransitions[index] = card.style.transition;
+          card.style.transition = "none";
           card.style.transform = "translateY(-50%) translate(0px, 0px)";
         }
       });
@@ -250,10 +259,11 @@ export default function About() {
         layoutCache.current[index] = { linkX, linkY, cardX, cardY };
       });
 
-      // Restore original transforms instantly
+      // Restore original transitions and transforms instantly
       groups.forEach((group, index) => {
         const card = group.querySelector(".about-hover-card") as HTMLElement;
         if (card && originalTransforms[index] !== undefined) {
+          card.style.transition = originalTransitions[index];
           card.style.transform = originalTransforms[index];
         }
       });
@@ -264,10 +274,16 @@ export default function About() {
 
     const startTime = Date.now();
     let animationFrameId: number;
+    let lastIsFlipping = true;
 
     const frameUpdate = () => {
       const scrollY = document.body.scrollTop || window.scrollY || document.documentElement.scrollTop || 0;
       const elapsed = (Date.now() - startTime) / 1000;
+
+      if (lastIsFlipping !== isFlippingRef.current) {
+        console.log("Animation loop: isFlippingRef.current changed to", isFlippingRef.current);
+        lastIsFlipping = isFlippingRef.current;
+      }
 
       groups.forEach((group, index) => {
         const card = group.querySelector(".about-hover-card") as HTMLElement;
@@ -282,7 +298,7 @@ export default function About() {
           }
           return;
         } else {
-          if (connector && connector.style.opacity === "0") {
+          if (connector && connector.style.opacity !== "") {
             connector.style.opacity = "";
             connector.style.pointerEvents = "";
           }
@@ -385,7 +401,7 @@ export default function About() {
   const isFlipEnter = !isExiting && transitionType === "work-to-about";
   const getExitClass = () => {
     if (isFlipExit) return "page-row--exit-flip";
-    if (isExiting) return "page-row--exit";
+    if (isExiting) return "page-row--exit-about";
     if (isFlipEnter) return "page-row--enter-flip";
     return "page-row--enter-about";
   };
