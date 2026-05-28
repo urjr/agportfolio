@@ -10,7 +10,7 @@ export default function Work() {
   const hasAnimated = useRef(false);
 
   useEffect(() => {
-    if (transitionType === "about-to-work" && sharedCardCoords && !hasAnimated.current) {
+    if (!isExiting && transitionType === "about-to-work" && sharedCardCoords && !hasAnimated.current) {
       hasAnimated.current = true;
 
       // Find all company card containers rendered on the page
@@ -63,7 +63,7 @@ export default function Work() {
       // Clear cached coordinates in transition provider
       clearSharedCoords();
     }
-  }, [transitionType, sharedCardCoords, clearSharedCoords]);
+  }, [transitionType, sharedCardCoords, clearSharedCoords, isExiting]);
 
   const isFlipExit = isExiting && transitionType === "work-to-about";
   const isFlipEnter = !isExiting && transitionType === "about-to-work";

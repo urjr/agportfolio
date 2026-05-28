@@ -34,8 +34,8 @@ export default function About() {
   const hasAnimated = useRef(false);
 
   useEffect(() => {
-    console.log("FLIP useEffect triggered:", { transitionType, hasCoords: !!sharedCardCoords, hasAnimated: hasAnimated.current });
-    if (transitionType === "work-to-about" && sharedCardCoords && !hasAnimated.current) {
+    console.log("FLIP useEffect triggered:", { transitionType, hasCoords: !!sharedCardCoords, hasAnimated: hasAnimated.current, isExiting });
+    if (!isExiting && transitionType === "work-to-about" && sharedCardCoords && !hasAnimated.current) {
       hasAnimated.current = true;
 
       const cards = document.querySelectorAll<HTMLElement>(".about-content [data-company-id]");
@@ -52,11 +52,8 @@ export default function About() {
 
         const lastRect = cardEl.getBoundingClientRect();
 
-        const isLeft = companyId === "google" || companyId === "smarking" || companyId === "upenn";
-        const slideOffset = isLeft ? -465 : 465;
-
-        const dx = firstRect.left + slideOffset - lastRect.left;
-        const dy = firstRect.top - lastRect.top;
+        const dx = firstRect.left - lastRect.left;
+        const dy = (firstRect.top - lastRect.top) + 0.5 * (firstRect.height - lastRect.height);
         const scaleX = firstRect.width / lastRect.width;
         const scaleY = firstRect.height / lastRect.height;
 
@@ -95,7 +92,7 @@ export default function About() {
         clearTimeout(timer);
       };
     }
-  }, [transitionType, sharedCardCoords, clearSharedCoords]);
+  }, [transitionType, sharedCardCoords, clearSharedCoords, isExiting]);
 
   const layoutCache = useRef<{ linkX: number; linkY: number; cardX: number; cardY: number; }[]>([]);
   const [activeCompany, setActiveCompany] = useState<string | null>(null);

@@ -352,25 +352,25 @@ $lw-distance:        0.85em; // clip travel distance
 
     // --- Work Page Exit Morphing ---
     .company-card {
+      border-radius: 12px !important;
+      box-shadow: 0 8px 30px rgba(43, 32, 23, 0.06) !important;
+      border: 1.5px solid rgba(#2B2017, 0.1) !important;
+      background: linear-gradient(135deg, rgba(#FAF8F5, 0.8), rgba(#FAF8F5, 0.5)) !important;
+      transition: border-radius 0.3s cubic-bezier(0.4, 0, 1, 1),
+                  box-shadow 0.3s cubic-bezier(0.4, 0, 1, 1),
+                  border-color 0.3s cubic-bezier(0.4, 0, 1, 1),
+                  background 0.3s cubic-bezier(0.4, 0, 1, 1) !important;
+
+      body.theme-dark & {
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25) !important;
+        border-color: rgba(#FAF8F5, 0.1) !important;
+        background: linear-gradient(135deg, rgba(#2B2017, 0.8), rgba(#2B2017, 0.5)) !important;
+      }
+
       // Morph Work card details out snappily, leaving only the card base & name image
       .company-card-details {
         opacity: 0 !important;
-        transition: opacity 0.28s cubic-bezier(0.4, 0, 1, 1) !important;
-      }
-
-      // Slide and scale cards on the Work page towards their About page margin slots!
-      transition: transform 0.38s cubic-bezier(0.16, 1, 0.3, 1) !important;
-      transform-origin: center center !important;
-      
-      &[data-company-id="google"],
-      &[data-company-id="smarking"],
-      &[data-company-id="upenn"] {
-        transform: translateX(-465px) scale(0.23) !important;
-      }
-      
-      &[data-company-id="notarize"],
-      &[data-company-id="adhawk"] {
-        transform: translateX(465px) scale(0.23) !important;
+        transition: opacity 0.3s cubic-bezier(0.4, 0, 1, 1) !important;
       }
     }
   }
@@ -2242,10 +2242,26 @@ $lw-distance:        0.85em; // clip travel distance
   }
 }
 
-// ============================================================
-// About Page Flipping Flight Morph State
-// ============================================================
 .about-container.is-flipping {
+  // Force all page rows to be fully visible so that the cards flying inside them are visible
+  .page-row {
+    animation: none !important;
+    opacity: 1 !important;
+  }
+
+  // Keep the cards themselves opaque and override color inheritance for their label text
+  .about-hover-card {
+    opacity: 1 !important;
+    display: block !important;
+    
+    .about-hover-card-label {
+      color: #2B2017 !important;
+      body.theme-dark & {
+        color: #FAF8F5 !important;
+      }
+    }
+  }
+
   // Hide all standard text and triggers during card flight
   .about-paragraph,
   #hero-title {
