@@ -11,6 +11,7 @@ export default function CompanyCard({ company, inline = false }: CompanyCardProp
 
   return (
     <div
+      data-company-id={company.id}
       className={[
         "company-card",
         isEducation ? "company-card--education" : "company-card--work",

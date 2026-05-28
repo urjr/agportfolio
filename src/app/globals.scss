@@ -220,6 +220,12 @@ $row-exit-duration:  0.32s;
 $row-stagger:        0.09s;  // delay added per row index
 $row-distance:       28px;   // vertical travel on enter/exit
 
+// ── Line-by-line reveal timings ─────────────────────────────
+$lw-duration:        0.72s;  // duration per word slide-up
+$lw-line-stagger:    0.10s;  // extra delay per visual line (reduced from 0.18s)
+$lw-word-stagger:    0.015s; // extra delay per word within a line (reduced from 0.03s)
+$lw-distance:        0.85em; // clip travel distance
+
 @keyframes row-enter {
   from {
     opacity: 0;
@@ -242,6 +248,27 @@ $row-distance:       28px;   // vertical travel on enter/exit
   }
 }
 
+@keyframes fade-in-only {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+// Word slide-up from below (clip reveal)
+@keyframes lw-enter {
+  from {
+    opacity: 0;
+    transform: translateY($lw-distance);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .page-row {
   // Enter: fade + rise in, staggered by index
   &.page-row--enter {
@@ -249,10 +276,158 @@ $row-distance:       28px;   // vertical travel on enter/exit
     animation-delay: calc(var(--row-index, 0) * #{$row-stagger});
   }
 
+  // Enter under FLIP transition: fade in only (no vertical translation to prevent coordinate offsets)
+  &.page-row--enter-flip {
+    animation: fade-in-only $row-enter-duration cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-delay: calc(var(--row-index, 0) * #{$row-stagger});
+  }
+
   // Exit: fade + rise out, staggered by index (top rows exit first)
   &.page-row--exit {
     animation: row-exit $row-exit-duration cubic-bezier(0.4, 0, 1, 1) both;
     animation-delay: calc(var(--row-index, 0) * #{$row-stagger});
+  }
+
+  // Custom Exit for FLIP Transitions between About and Work
+  &.page-row--exit-flip {
+    position: relative;
+    pointer-events: none; // Disable pointer interactions during exit phase
+
+    // --- About Page Exit Morphing ---
+    &.about-paragraph,
+    .about-paragraph {
+      color: rgba(#2B2017, 0) !important; // Fade standard text to transparent
+      transition: color 0.3s cubic-bezier(0.4, 0, 1, 1) !important;
+
+      body.theme-dark & {
+        color: rgba(#FAF8F5, 0) !important;
+      }
+
+      // Hide non-card inline links
+      a:not(.about-link-outlined) {
+        opacity: 0 !important;
+        transition: opacity 0.3s cubic-bezier(0.4, 0, 1, 1) !important;
+      }
+
+      // Hide trigger outlines and connector lines
+      .about-link-outlined,
+      .about-hover-connector {
+        opacity: 0 !important;
+        transition: opacity 0.3s cubic-bezier(0.4, 0, 1, 1) !important;
+      }
+
+      // Force the floating hover card itself to remain fully opaque!
+      .about-hover-card {
+        opacity: 1 !important;
+        display: block !important;
+        // Keep text inside the card visible
+        .about-hover-card-label {
+          color: #2B2017 !important;
+          body.theme-dark & {
+            color: #FAF8F5 !important;
+          }
+        }
+      }
+    }
+
+    // --- Work Page Exit Morphing ---
+    .company-card {
+      // Morph Work card details out snappily, leaving only the card base & name image
+      .company-card-details {
+        opacity: 0 !important;
+        transition: opacity 0.3s cubic-bezier(0.4, 0, 1, 1) !important;
+      }
+    }
+  }
+}
+
+// Morphing class applied to CompanyCard during the active FLIP transition
+.company-card--flip {
+  border-radius: 12px !important;
+  box-shadow: 0 8px 30px rgba(43, 32, 23, 0.06) !important;
+  border: 1.5px solid rgba(#2B2017, 0.1) !important;
+  background: linear-gradient(135deg, rgba(#FAF8F5, 0.8), rgba(#FAF8F5, 0.5)) !important;
+
+  body.theme-dark & {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25) !important;
+    border-color: rgba(#FAF8F5, 0.1) !important;
+    background: linear-gradient(135deg, rgba(#2B2017, 0.8), rgba(#2B2017, 0.5)) !important;
+  }
+
+  // Hide details so it appears exactly like a compact float card
+  .company-card-details {
+    opacity: 0 !important;
+  }
+}
+
+// ── LineReveal component ─────────────────────────────────────
+// .line-reveal starts invisible; once JS measures lines it adds
+// .page-row--enter-done and marks each [data-lw].lw--animate
+// with --line-index and --word-index for precise staggering.
+
+.line-reveal {
+  // Hidden until JS is ready (avoids flash of un-animated content)
+  opacity: 0;
+  transition: none;
+  // Prevent mouse hover from triggering during the invisible phase
+  pointer-events: none;
+  // Permanently anchor a stacking context so z-index comparisons between
+  // word spans (z-index:2) and link pills (z-index:1) are always scoped
+  // within this container — even after opacity returns to 1.
+  // Without this, the Google/Analytics/UPenn links (which have
+  // position:relative from their own CSS) can paint above sibling spans.
+  isolation: isolate;
+
+  // Ensure that plain text and punctuation spans are always positioned relative
+  // so they paint on top of link background pills after the animation completes.
+  > span {
+    position: relative;
+    z-index: 2;
+  }
+
+  // JS marks lw--animate with per-word/per-link line/word index vars.
+  // 'both' fill mode: backwards keeps element at 'from' state during delay,
+  // forwards keeps it at 'to' state until animationend cleans up the class.
+  [data-lw].lw--animate {
+    display: inline-block;
+    position: relative;
+    pointer-events: none;          // Disables hover states while animating
+    transition: none !important;   // Prevents inherited 'transition: opacity' from
+                                   // fighting the animation's backwards fill mode
+    will-change: opacity, transform;
+    z-index: 2;                    // Non-link word spans layer above link backgrounds
+    animation: lw-enter $lw-duration cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-delay: calc(
+      var(--line-index, 0) * #{$lw-line-stagger} +
+      var(--word-index, 0) * #{$lw-word-stagger}
+    );
+  }
+
+  // Link elements go beneath regular word spans (their background pills
+  // should appear behind adjacent plain text during the reveal).
+  a[data-lw].lw--animate {
+    z-index: 1;
+  }
+
+  // Once ready, make the container visible; words/links animate in themselves.
+  // Also restore pointer-events so hover works once elements start appearing.
+  &.page-row--enter-done {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  // Exit: fall back to block-level fade out (keeps things clean)
+  &.page-row--exit {
+    opacity: 1;
+    animation: row-exit $row-exit-duration cubic-bezier(0.4, 0, 1, 1) both;
+    animation-delay: calc(var(--row-index, 0) * #{$row-stagger});
+
+    // Reset word animations during exit so everything is visible
+    [data-lw].lw--animate {
+      animation: none;
+      opacity: 1;
+      transform: none;
+    }
   }
 }
 
@@ -332,7 +507,7 @@ $row-distance:       28px;   // vertical travel on enter/exit
       }
 
       // 1. Non-glitch hovers (go darker and apply unique subtle jiggle animations for one cycle)
-      &.highlight-name:hover {
+      &.highlight-name:hover, &.highlight-name.active-hover {
         background-color: #F6BDAE !important; // Deeper warm peach
         color: #562719 !important; // Deeper terracotta
         opacity: 1 !important;
@@ -341,7 +516,7 @@ $row-distance:       28px;   // vertical travel on enter/exit
         }
       }
 
-      &.highlight-work:hover {
+      &.highlight-work:hover, &.highlight-work.active-hover {
         background-color: #BDCFF3 !important; // Deeper periwinkle (swapped)
         color: #13264F !important; // Deeper periwinkle navy (swapped)
         opacity: 1 !important;
@@ -350,7 +525,7 @@ $row-distance:       28px;   // vertical travel on enter/exit
         }
       }
 
-      &.highlight-education:hover {
+      &.highlight-education:hover, &.highlight-education.active-hover {
         background-color: #F3DFB4 !important; // Deeper warm yellow (swapped)
         color: #42320E !important; // Deeper amber gold (swapped)
         opacity: 1 !important;
@@ -359,7 +534,7 @@ $row-distance:       28px;   // vertical travel on enter/exit
         }
       }
 
-      &.highlight-geography:hover {
+      &.highlight-geography:hover, &.highlight-geography.active-hover {
         background-color: #BDDFD5 !important; // Deeper mint/sage green
         color: #133E35 !important; // Deeper forest green
         opacity: 1 !important;
@@ -369,9 +544,9 @@ $row-distance:       28px;   // vertical travel on enter/exit
       }
 
       // 2. Glitch-enabled links hover (remove highlight background and shadow)
-      &.google-svg-link:hover, 
-      &.analytics-svg-link:hover, 
-      &.upenn-svg-link:hover {
+      &.google-svg-link:hover, &.google-svg-link.active-hover,
+      &.analytics-svg-link:hover, &.analytics-svg-link.active-hover,
+      &.upenn-svg-link:hover, &.upenn-svg-link.active-hover {
         background-color: transparent !important;
         box-shadow: none !important;
         opacity: 1 !important;
@@ -441,7 +616,7 @@ $row-distance:       28px;   // vertical travel on enter/exit
         }
       }
 
-      &:hover {
+      &:hover, &.active-hover {
         opacity: 1 !important; // Override default link dimming
 
         .google-text, .upenn-text, .analytics-text {
@@ -457,7 +632,7 @@ $row-distance:       28px;   // vertical travel on enter/exit
     // Accessible glitch-art transition choreography on hover
     @media (prefers-reduced-motion: no-preference) {
       .google-svg-link, .upenn-svg-link, .analytics-svg-link {
-        &:hover {
+        &:hover, &.active-hover {
           .google-text, .upenn-text, .analytics-text {
             animation: glitch-text-leave 0.1s step-end forwards; // Swapped to low-jitter keyframes for hover
             text-shadow: -2px 0 #00fff0, 2px 0 #ff00c1; // Cyan and magenta chromatic shift
@@ -729,10 +904,12 @@ $row-distance:       28px;   // vertical travel on enter/exit
 
   // Delegated highlight styles for standard wrapping inline links
   &:not(.about-link-outlined) {
-    display: inline-block !important;
+    display: inline !important;
     vertical-align: baseline !important;
-    white-space: nowrap !important;
-    word-wrap: normal !important;
+    white-space: normal !important;
+    word-wrap: break-word !important;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
     background-color: transparent !important;
     box-shadow: none !important;
     
