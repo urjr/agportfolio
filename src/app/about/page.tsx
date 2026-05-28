@@ -339,18 +339,30 @@ export default function About() {
       animationFrameId = window.requestAnimationFrame(frameUpdate);
     };
 
-    // Run adjustment after brief load pass to ensure settled dimensions
+    // Run adjustment immediately on mount to ensure 0ms lag time for connector lines and cards
     const timer = setTimeout(() => {
       cacheStaticCoordinates();
       // Start high-performance frame animation loop
       animationFrameId = window.requestAnimationFrame(frameUpdate);
       animationFrameRef.current = animationFrameId;
-    }, 100);
+    }, 0);
 
     // Re-run caching after enter animation completes to ensure perfect alignment
     const correctionTimer = setTimeout(() => {
       cacheStaticCoordinates();
     }, 1200);
+
+    // Remove enter animation classes once completed to clear active transforms (which prevent absolute positioning from referencing .about-container!)
+    const animationCleanupTimer = setTimeout(() => {
+      const rows = document.querySelectorAll(".page-row");
+      rows.forEach((row) => {
+        row.classList.remove("page-row--enter");
+        row.classList.remove("page-row--enter-about");
+        row.classList.remove("page-row--enter-flip");
+      });
+      // Re-cache static coordinates now that all transforms are cleared!
+      cacheStaticCoordinates();
+    }, 1500);
 
     // Re-cache static bounds on resize
     const handleResize = () => {
@@ -361,6 +373,7 @@ export default function About() {
     return () => {
       clearTimeout(timer);
       clearTimeout(correctionTimer);
+      clearTimeout(animationCleanupTimer);
       window.cancelAnimationFrame(animationFrameId);
       window.removeEventListener("resize", handleResize);
     };
@@ -374,7 +387,7 @@ export default function About() {
     if (isFlipExit) return "page-row--exit-flip";
     if (isExiting) return "page-row--exit";
     if (isFlipEnter) return "page-row--enter-flip";
-    return "page-row--enter";
+    return "page-row--enter-about";
   };
 
   return (

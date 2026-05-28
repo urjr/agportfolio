@@ -282,6 +282,12 @@ $lw-distance:        0.85em; // clip travel distance
     animation-delay: calc(var(--row-index, 0) * #{$row-stagger});
   }
 
+  // Enter for About page: fade in only (no vertical translation to prevent coordinate offsets)
+  &.page-row--enter-about {
+    animation: fade-in-only $row-enter-duration cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-delay: calc(var(--row-index, 0) * #{$row-stagger});
+  }
+
   // Exit: fade + rise out, staggered by index (top rows exit first)
   &.page-row--exit {
     animation: row-exit $row-exit-duration cubic-bezier(0.4, 0, 1, 1) both;
