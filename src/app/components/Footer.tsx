@@ -1,9 +1,11 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import { usePageTransition } from "../components/TransitionProvider";
 
 export default function Footer() {
   const pathname = usePathname();
+  const { isExiting } = usePageTransition();
 
   // Only render the social links bar on the homepage
   if (pathname !== "/") {
@@ -11,7 +13,11 @@ export default function Footer() {
   }
 
   return (
-    <footer className="footer" id="footer">
+    <footer
+      className={`footer page-row ${isExiting ? "page-row--exit" : "page-row--enter"}`}
+      id="footer"
+      style={{ "--row-index": 2 } as React.CSSProperties}
+    >
       <nav aria-label="Social and Contact Links">
         <ul className="footer-links">
           <li>
@@ -32,8 +38,8 @@ export default function Footer() {
             </a>
           </li>
           <li>
-            <a 
-              href="mailto:hello@example.com" 
+            <a
+              href="mailto:hello@example.com"
               id="footer-email"
               aria-label="Email"
             >
@@ -51,4 +57,3 @@ export default function Footer() {
     </footer>
   );
 }
-

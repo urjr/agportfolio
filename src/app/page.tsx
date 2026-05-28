@@ -1,14 +1,25 @@
+"use client";
+
 import Link from "next/link";
+import { usePageTransition } from "./components/TransitionProvider";
+import TransitionLink from "./components/TransitionLink";
 
 export default function Home() {
+  const { isExiting } = usePageTransition();
+
   return (
     <main className="main-content">
       <div className="bio-container">
-        <h1 className="hero-title intro-title first-line" id="hero-title">
+        {/* Row 1 — intro line */}
+        <h1
+          className={`hero-title intro-title first-line page-row ${isExiting ? "page-row--exit" : "page-row--enter"}`}
+          id="hero-title"
+          style={{ "--row-index": 0 } as React.CSSProperties}
+        >
           My name is{" "}
-          <Link href="/about" className="nowrap-link highlight-name" id="link-ulises">
+          <TransitionLink href="/about" className="nowrap-link highlight-name" id="link-ulises">
             Ulises Reyes-Kaura
-          </Link>
+          </TransitionLink>
           . I am a{" "}
           <Link href="#" className="nowrap-link highlight-work" id="link-product-designer">
             product designer
@@ -18,9 +29,9 @@ export default function Home() {
             educator
           </Link>{" "}
           based in{" "}
-          <Link 
-            href="https://en.wikipedia.org/wiki/Philadelphia" 
-            id="link-philadelphia" 
+          <Link
+            href="https://en.wikipedia.org/wiki/Philadelphia"
+            id="link-philadelphia"
             className="highlight-geography"
             target="_blank"
             rel="noopener noreferrer"
@@ -29,11 +40,17 @@ export default function Home() {
           </Link>
           .
         </h1>
-        <p className="hero-title intro-title second-line" id="hero-subtitle">
+
+        {/* Row 2 — current role line */}
+        <p
+          className={`hero-title intro-title second-line page-row ${isExiting ? "page-row--exit" : "page-row--enter"}`}
+          id="hero-subtitle"
+          style={{ "--row-index": 1 } as React.CSSProperties}
+        >
           Currently, I work at{" "}
-          <Link 
-            href="https://about.google" 
-            id="link-google" 
+          <Link
+            href="https://about.google"
+            id="link-google"
             className="google-svg-link highlight-work"
             target="_blank"
             rel="noopener noreferrer"
@@ -46,9 +63,9 @@ export default function Home() {
             />
           </Link>
           , designing agentic experiences for{" "}
-          <Link 
-            href="https://marketingplatform.google.com/about/analytics/" 
-            id="link-analytics" 
+          <Link
+            href="https://marketingplatform.google.com/about/analytics/"
+            id="link-analytics"
             className="analytics-svg-link highlight-work"
             target="_blank"
             rel="noopener noreferrer"
@@ -61,9 +78,9 @@ export default function Home() {
             />
           </Link>
           , and teach design at{" "}
-          <Link 
-            href="https://ipd.me.upenn.edu/about/" 
-            id="link-upenn" 
+          <Link
+            href="https://ipd.me.upenn.edu/about/"
+            id="link-upenn"
             className="upenn-svg-link highlight-education"
             target="_blank"
             rel="noopener noreferrer"

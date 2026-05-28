@@ -1,24 +1,26 @@
-import Link from "next/link";
+"use client";
+
+import TransitionLink from "./TransitionLink";
 
 export default function Navbar() {
   return (
     <header className="navbar" id="navbar">
       <div className="nav-brand">
-        <Link href="/" id="nav-home">
+        <TransitionLink href="/" id="nav-home">
           U R-K
-        </Link>
+        </TransitionLink>
       </div>
       <nav aria-label="Main Navigation">
         <ul className="nav-links">
           <li>
-            <Link href="/work" id="nav-work">
+            <TransitionLink href="/work" id="nav-work">
               Work
-            </Link>
+            </TransitionLink>
           </li>
           <li>
-            <Link href="/about" id="nav-about">
+            <TransitionLink href="/about" id="nav-about">
               About
-            </Link>
+            </TransitionLink>
           </li>
         </ul>
       </nav>

@@ -2,11 +2,13 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { usePageTransition } from "./components/TransitionProvider";
 
 export default function NotFound() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState(false);
+  const { isExiting } = usePageTransition();
 
   // Set theme-dark globally on mount and revert on unmount
   useEffect(() => {
@@ -193,68 +195,77 @@ export default function NotFound() {
           `,
         }}
       />
-      {/* Full-width glitch viewport container */}
       <div
-        ref={containerRef}
-        className="glitch-canvas-container"
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-        style={{
-          cursor: "pointer",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          minHeight: "320px",
-          width: "100%", // Span full width of screen
-          userSelect: "none",
-          position: "relative",
-          overflow: "hidden", // Prevents horizontal scrollbars during canvas horizontal jitter
-        }}
+        className={`page-row ${isExiting ? "page-row--exit" : "page-row--enter"}`}
+        style={{ "--row-index": 0 } as React.CSSProperties}
       >
-        <link rel="preload" href="/404.png" as="image" />
-        <Link 
-          href="/" 
-          style={{ 
-            display: "block", 
-            width: "100%", 
-            height: "100%", 
-            outline: "none",
-            opacity: isHovered ? 1 : 0.6, // Dim (60% opacity) by default, shifts to solid brightness (100%) on hover
-            transition: "opacity 0.2s ease", // Smooth glow fade effect on hover
+        <div
+          ref={containerRef}
+          className="glitch-canvas-container"
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          style={{
+            cursor: "pointer",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            minHeight: "320px",
+            width: "100%",
+            userSelect: "none",
+            position: "relative",
+            overflow: "hidden",
           }}
         >
-          <canvas 
-            ref={canvasRef} 
-            style={{ 
-              width: "100%", 
-              height: "100%", 
-              display: "block" 
-            }} 
-          />
-        </Link>
+          <link rel="preload" href="/404.png" as="image" />
+          <Link
+            href="/"
+            style={{
+              display: "block",
+              width: "100%",
+              height: "100%",
+              outline: "none",
+              opacity: isHovered ? 1 : 0.6,
+              transition: "opacity 0.2s ease",
+            }}
+          >
+            <canvas
+              ref={canvasRef}
+              style={{
+                width: "100%",
+                height: "100%",
+                display: "block",
+              }}
+            />
+          </Link>
+        </div>
       </div>
 
-      <p
-        style={{
-          marginTop: "1.5rem",
-          fontSize: "0.68rem",
-          color: "#aaaaaa", // Lighter grey for readability
-          letterSpacing: "0.03em",
-          textAlign: "center",
-          fontFamily: "'Gabarito', sans-serif",
-          fontWeight: 400,
-        }}
+      <div
+        className={`page-row ${isExiting ? "page-row--exit" : "page-row--enter"}`}
+        style={{ "--row-index": 1 } as React.CSSProperties}
       >
-        Shoutout to{" "}
-        <a
-          href="https://codepen.io/tmrDevelops/pen/jqqmOw"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ textDecoration: "underline", color: "inherit", fontWeight: 500 }}
+        <p
+          style={{
+            marginTop: "1.5rem",
+            fontSize: "0.68rem",
+            color: "#aaaaaa",
+            letterSpacing: "0.03em",
+            textAlign: "center",
+            fontFamily: "'Gabarito', sans-serif",
+            fontWeight: 400,
+          }}
         >
-          Tiffany Rayside
-        </a>
-      </p>
+          Shoutout to{" "}
+          <a
+            href="https://codepen.io/tmrDevelops/pen/jqqmOw"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ textDecoration: "underline", color: "inherit", fontWeight: 500 }}
+          >
+            Tiffany Rayside
+          </a>
+        </p>
+      </div>
 
 
     </main>

@@ -210,6 +210,51 @@ a {
 }
 
 
+// ============================================================
+// Page Transition System
+// .page-row uses --row-index (set as inline style) to stagger
+// ============================================================
+
+$row-enter-duration: 0.52s;
+$row-exit-duration:  0.32s;
+$row-stagger:        0.09s;  // delay added per row index
+$row-distance:       28px;   // vertical travel on enter/exit
+
+@keyframes row-enter {
+  from {
+    opacity: 0;
+    transform: translateY($row-distance);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes row-exit {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-$row-distance);
+  }
+}
+
+.page-row {
+  // Enter: fade + rise in, staggered by index
+  &.page-row--enter {
+    animation: row-enter $row-enter-duration cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-delay: calc(var(--row-index, 0) * #{$row-stagger});
+  }
+
+  // Exit: fade + rise out, staggered by index (top rows exit first)
+  &.page-row--exit {
+    animation: row-exit $row-exit-duration cubic-bezier(0.4, 0, 1, 1) both;
+    animation-delay: calc(var(--row-index, 0) * #{$row-stagger});
+  }
+}
 
 // Main Content Section
 .main-content {
@@ -1616,6 +1661,370 @@ a {
       background: #C0D4F5;
       box-shadow: 0 6px 20px rgba(#A7C2ED, 0.3);
       color: #10161F !important;
+    }
+  }
+}
+
+// ============================================================
+// Work Page Layout
+// ============================================================
+
+.work-container {
+  min-height: 100vh;
+  padding: $header-height 0 $footer-height;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.work-content {
+  width: 100%;
+  max-width: 900px;
+  padding: 4rem 1.5rem 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+// ============================================================
+// Shared CompanyCard Component
+// (Used by About modal AND Work page inline list)
+// ============================================================
+
+.company-card {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  overflow: hidden;
+  background: transparent;
+
+  // Inline (Work page) variant: outlined card with gap spacing
+  &.company-card--inline {
+    padding: 2.5rem;
+    border-radius: 16px;
+    border: 1.5px solid rgba(#2B2017, 0.1);
+    background: #FFFFFF;
+    transition:
+      background 0.22s ease,
+      border-color 0.22s ease,
+      box-shadow 0.22s ease;
+
+    body.theme-dark & {
+      border-color: rgba(#FAF8F5, 0.09);
+      background: rgba(#FAF8F5, 0.05);
+    }
+
+    &:hover {
+      background: #FFFFFF;
+      border-color: rgba(#2B2017, 0.18);
+      box-shadow: 0 4px 24px rgba(43, 32, 23, 0.07);
+
+      body.theme-dark & {
+        background: rgba(#FAF8F5, 0.08);
+        border-color: rgba(#FAF8F5, 0.16);
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+      }
+    }
+
+    .company-card-image {
+      width: 200px;
+      min-height: 190px;
+      flex-shrink: 0;
+      border-radius: 10px;
+
+      @media (max-width: 680px) {
+        display: none;
+      }
+    }
+
+    .company-card-details {
+      padding: 0 0 0 2.25rem;
+
+      @media (max-width: 680px) {
+        padding: 0;
+      }
+    }
+  }
+
+  @media (max-width: 600px) {
+    flex-direction: column;
+  }
+}
+
+// ============================================================
+// CompanyCard: Image Column
+// ============================================================
+
+.company-card-image {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  overflow: hidden;
+
+  // Work (blue) default
+  background: linear-gradient(145deg, rgba(#DFE8F9, 0.55), rgba(#EEF3FB, 0.28));
+  border: 1.5px solid rgba(#203A6F, 0.09);
+
+  body.theme-dark & {
+    background: linear-gradient(145deg, rgba(#203A6F, 0.28), rgba(#13264F, 0.14));
+    border-color: rgba(#A7C2ED, 0.1);
+  }
+
+  // Education (amber) override
+  .company-card--education & {
+    background: linear-gradient(145deg, rgba(#F9F0DB, 0.6), rgba(#FDF7EC, 0.32));
+    border-color: rgba(#5C481A, 0.09);
+
+    body.theme-dark & {
+      background: linear-gradient(145deg, rgba(#5C481A, 0.28), rgba(#42320E, 0.14));
+      border-color: rgba(#E3C18E, 0.1);
+    }
+  }
+}
+
+.company-card-image-inner {
+  width: calc(100% - 24px);
+  height: calc(100% - 24px);
+  border-radius: 8px;
+  border: 1.5px dashed rgba(#203A6F, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 12px;
+
+  body.theme-dark & {
+    border-color: rgba(#A7C2ED, 0.18);
+  }
+
+  .company-card--education & {
+    border-color: rgba(#5C481A, 0.18);
+
+    body.theme-dark & {
+      border-color: rgba(#E3C18E, 0.18);
+    }
+  }
+}
+
+.company-card-image-label {
+  font-family: 'Gabarito', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(#203A6F, 0.4);
+
+  body.theme-dark & {
+    color: rgba(#A7C2ED, 0.4);
+  }
+
+  .company-card--education & {
+    color: rgba(#5C481A, 0.42);
+
+    body.theme-dark & {
+      color: rgba(#E3C18E, 0.42);
+    }
+  }
+}
+
+// ============================================================
+// CompanyCard: Details Column
+// ============================================================
+
+.company-card-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+.company-card-header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.company-card-name {
+  font-family: 'Gabarito', sans-serif;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 600;
+  color: #10161F;
+  line-height: 1.1;
+  margin: 0;
+  padding: 0;
+  letter-spacing: -0.02em;
+
+  body.theme-dark & {
+    color: #FAF8F5;
+  }
+}
+
+.company-card-role {
+  font-family: 'Gabarito', sans-serif;
+  font-size: 0.92rem;
+  font-weight: 500;
+  margin: 0;
+  padding: 0;
+  margin-top: 5px;
+
+  // Work (blue)
+  color: #203A6F;
+  body.theme-dark & { color: #A7C2ED; }
+
+  // Education (amber)
+  .company-card--education & {
+    color: #5C481A;
+    body.theme-dark & { color: #E3C18E; }
+  }
+}
+
+.company-card-dates {
+  font-family: 'Gabarito', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: rgba(#2B2017, 0.42);
+  margin: 0;
+  padding: 0;
+
+  body.theme-dark & {
+    color: rgba(#FAF8F5, 0.38);
+  }
+}
+
+// ============================================================
+// CompanyCard: Chips
+// ============================================================
+
+.company-card-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.company-card-chip {
+  font-family: 'Gabarito', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  border-radius: 100px;
+  padding: 3px 10px;
+  white-space: nowrap;
+
+  // Work (blue)
+  color: #203A6F;
+  background: rgba(#DFE8F9, 0.7);
+  border: 1px solid rgba(#203A6F, 0.14);
+
+  body.theme-dark & {
+    color: #A7C2ED;
+    background: rgba(#203A6F, 0.28);
+    border-color: rgba(#A7C2ED, 0.18);
+  }
+
+  // Education (amber)
+  .company-card--education & {
+    color: #5C481A;
+    background: rgba(#F9F0DB, 0.75);
+    border-color: rgba(#5C481A, 0.14);
+
+    body.theme-dark & {
+      color: #E3C18E;
+      background: rgba(#5C481A, 0.28);
+      border-color: rgba(#E3C18E, 0.18);
+    }
+  }
+}
+
+// ============================================================
+// CompanyCard: Summary
+// ============================================================
+
+.company-card-summary {
+  font-family: 'Gabarito', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 400;
+  line-height: 1.65;
+  color: rgba(#10161F, 0.65);
+  margin: 0;
+  flex: 1;
+
+  body.theme-dark & {
+    color: rgba(#FAF8F5, 0.62);
+  }
+}
+
+// ============================================================
+// CompanyCard: CTA Button
+// ============================================================
+
+.company-card-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 18px;
+  border-radius: 100px;
+  font-family: 'Gabarito', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-decoration: none !important;
+  border: none;
+  cursor: pointer;
+  align-self: flex-start;
+  transition:
+    background 0.22s ease,
+    transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.22s ease;
+
+  // Work (blue)
+  background: #203A6F;
+  color: #FAF8F5 !important;
+
+  &:hover {
+    background: #2C4E96;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(#203A6F, 0.32);
+    color: #FAF8F5 !important;
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow: none;
+  }
+
+  body.theme-dark & {
+    background: #A7C2ED;
+    color: #10161F !important;
+
+    &:hover {
+      background: #C0D4F5;
+      box-shadow: 0 6px 20px rgba(#A7C2ED, 0.28);
+      color: #10161F !important;
+    }
+  }
+
+  // Education (amber)
+  .company-card--education & {
+    background: #5C481A;
+    color: #FAF8F5 !important;
+
+    &:hover {
+      background: #7A6022;
+      box-shadow: 0 6px 20px rgba(#5C481A, 0.32);
+      color: #FAF8F5 !important;
+    }
+
+    body.theme-dark & {
+      background: #E3C18E;
+      color: #2B1A05 !important;
+
+      &:hover {
+        background: #EDD09E;
+        box-shadow: 0 6px 20px rgba(#E3C18E, 0.28);
+        color: #2B1A05 !important;
+      }
     }
   }
 }
