@@ -355,6 +355,49 @@ export default function About() {
         }
       });
 
+      // Portrait image placeholder scroll parallax effect (rises up to meet the bottom of the text exactly at scroll bottom)
+      // To make the effect look highly deliberate and dramatic, the parallax translation only begins once the bottom
+      // of the last text row crosses the bottom of the viewport. Before that point, the image is consistently shifted
+      // down by its maximum offset (180px) and stays completely static relative to the page text.
+      // The progress of the rise is calculated dynamically using the image's own height as the active scroll range,
+      // guaranteeing a perfectly smooth, state-free interpolation that completes exactly at the bottom of the page.
+      const docHeight = document.documentElement.scrollHeight || document.body.scrollHeight || 0;
+      const winHeight = window.innerHeight;
+      const maxScroll = Math.max(1, docHeight - winHeight);
+      
+      const imageEl = document.querySelector(".about-image-placeholder") as HTMLElement | null;
+      const textRow = document.querySelector(".about-content .page-row:nth-last-child(2)") as HTMLElement | null;
+      
+      if (textRow && imageEl) {
+        const textRect = textRow.getBoundingClientRect();
+        const textBottom = textRect.bottom;
+        const viewportBottom = window.innerHeight;
+        
+        if (textBottom > viewportBottom) {
+          // Hold placeholder at maximum downward displacement offset (180px)
+          imageEl.style.transform = `translateY(180px)`;
+        } else {
+          // Calculate how far past the crossing point the text bottom has scrolled
+          const textBottomOffset = viewportBottom - textBottom;
+          
+          // Use the image height plus padding as the active scroll range for the glide
+          const imageHeight = imageEl.offsetHeight || 600;
+          const activeRange = Math.max(100, imageHeight + 80);
+          
+          // Smooth sine ease-out transition
+          const localProgress = Math.min(1, Math.max(0, textBottomOffset / activeRange));
+          const easeProgress = Math.sin(localProgress * Math.PI / 2); // Sine ease-out
+          const imageParallaxY = (1 - easeProgress) * 180; // 180px maximum displacement offset
+          
+          imageEl.style.transform = `translateY(${imageParallaxY.toFixed(2)}px)`;
+        }
+      } else if (imageEl) {
+        // Fallback simple parallax if text row is not found
+        const scrollProgress = Math.min(1, Math.max(0, scrollY / maxScroll));
+        const imageParallaxY = (1 - scrollProgress) * 120;
+        imageEl.style.transform = `translateY(${imageParallaxY.toFixed(2)}px)`;
+      }
+      
       animationFrameId = window.requestAnimationFrame(frameUpdate);
     };
 
@@ -719,6 +762,15 @@ export default function About() {
             </Link>
             !
           </p>
+        </div>
+
+        <div
+          className={`page-row ${getExitClass()}`}
+          style={{ "--row-index": 7 } as React.CSSProperties}
+        >
+          <div className="about-image-placeholder">
+            {/* Portrait placeholder */}
+          </div>
         </div>
       </div>
 

@@ -919,6 +919,61 @@ $lw-distance:        0.85em; // clip travel distance
   }
 }
 
+// Custom Premium Portrait Image Placeholder which scales height automatically
+.about-image-placeholder {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba($color-text, 0.08), rgba($color-text, 0.03));
+  border: 1.5px solid rgba($color-text, 0.08);
+  box-shadow: 0 12px 36px rgba($color-text, 0.06), 0 2px 8px rgba($color-text, 0.03);
+  backdrop-filter: blur(8px);
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 2.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+
+  body.theme-dark & {
+    background: linear-gradient(135deg, rgba(#FAF8F5, 0.06), rgba(#FAF8F5, 0.02));
+    border-color: rgba(#FAF8F5, 0.08);
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.28), 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  // Shimmering glow reflection sweep animation
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 200%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(#FAF8F5, 0.2),
+      transparent
+    );
+    animation: shimmer 2.5s infinite linear;
+
+    body.theme-dark & {
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(#FAF8F5, 0.05),
+        transparent
+      );
+    }
+  }
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(50%); }
+}
+
 // Non-wrapping inline parent group to prevent punctuation/apostrophes ('s) from breaking onto a new line by themselves
 .about-nowrap-group {
   white-space: nowrap !important;
@@ -1117,7 +1172,8 @@ $lw-distance:        0.85em; // clip travel distance
   @media (min-width: 1025px) {
     // Smooth staggered reveals for FLIP transition landing
     .about-paragraph,
-    #hero-title {
+    #hero-title,
+    .about-image-placeholder {
       transition: color 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
       transition-delay: calc(var(--row-index, 0) * 0.08s);
     }
@@ -2272,11 +2328,11 @@ $lw-distance:        0.85em; // clip travel distance
     }
   }
 
-  // Hide all standard text and triggers during card flight
+  // Hide all standard text, triggers, and image placeholder during card flight
   .about-paragraph,
   #hero-title {
     color: transparent !important;
-    
+
     // Hide standard links
     a:not(.about-link-outlined) {
       opacity: 0 !important;
@@ -2294,5 +2350,10 @@ $lw-distance:        0.85em; // clip travel distance
       opacity: 0 !important;
       pointer-events: none;
     }
+  }
+
+  .about-image-placeholder {
+    opacity: 0 !important;
+    pointer-events: none;
   }
 }
