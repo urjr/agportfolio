@@ -627,6 +627,14 @@ $lw-distance:        0.85em; // clip travel distance
     animation-delay: calc(var(--row-index, 0) * #{$row-stagger});
   }
 
+  // Custom exit override when leaving the 404 page for a slower, more dramatic transition
+  body.is-404-page & {
+    &.page-row--exit {
+      animation: row-exit 0.7s cubic-bezier(0.76, 0, 0.24, 1) both !important;
+      animation-delay: calc(var(--row-index, 0) * 0.15s) !important;
+    }
+  }
+
   // Exit for About page: fade out only (no vertical translation to prevent coordinate offsets)
   &.page-row--exit-about {
     animation: fade-out-only $row-exit-duration cubic-bezier(0.4, 0, 1, 1) both;

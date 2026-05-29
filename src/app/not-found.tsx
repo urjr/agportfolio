@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import TransitionLink from "./components/TransitionLink";
 import { useEffect, useRef, useState } from "react";
 import { usePageTransition } from "./components/TransitionProvider";
 
@@ -10,11 +10,13 @@ export default function NotFound() {
   const [isHovered, setIsHovered] = useState(false);
   const { isExiting } = usePageTransition();
 
-  // Set theme-dark globally on mount and revert on unmount
+  // Set theme-dark and is-404-page globally on mount and revert on unmount
   useEffect(() => {
     document.body.classList.add("theme-dark");
+    document.body.classList.add("is-404-page");
     return () => {
       document.body.classList.remove("theme-dark");
+      document.body.classList.remove("is-404-page");
     };
   }, []);
 
@@ -23,6 +25,12 @@ export default function NotFound() {
   useEffect(() => {
     isHoveredRef.current = isHovered;
   }, [isHovered]);
+
+  // Keep a ref of isExiting so the render loop can read it without re-running the mount hook
+  const isExitingRef = useRef(isExiting);
+  useEffect(() => {
+    isExitingRef.current = isExiting;
+  }, [isExiting]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -69,10 +77,39 @@ export default function NotFound() {
       window.addEventListener("resize", resize);
       cleanupResize = () => window.removeEventListener("resize", resize);
 
+      let exitStartTime: number | null = null;
+
       const render = () => {
         const w = canvas.width;
         const h = canvas.height;
         ctx.clearRect(0, 0, w, h);
+
+        let exitProgress = 0;
+        if (isExitingRef.current) {
+          if (!exitStartTime) {
+            exitStartTime = performance.now();
+          }
+          // The transition duration from 404 page is 900ms
+          exitProgress = Math.min(1, (performance.now() - exitStartTime) / 900);
+        }
+
+        // Calculate CRT screen collapse factors (starts at 55% of the exit duration)
+        let scaleY = 1;
+        let scaleX = 1;
+        if (exitProgress > 0.55) {
+          const collapseProgress = (exitProgress - 0.55) / 0.45; // 0 to 1
+          if (collapseProgress < 0.7) {
+            // Height collapses first
+            const t = collapseProgress / 0.7; // 0 to 1
+            scaleY = 1 - t;
+            scaleX = 1;
+          } else {
+            // Then width collapses
+            const t = (collapseProgress - 0.7) / 0.3; // 0 to 1
+            scaleY = 0.006; // extremely thin line
+            scaleX = 1 - t;
+          }
+        }
 
         // Slices the offscreen pre-rendered image into horizontal bands (125 slices for an extremely fine digital look)
         const sliceCount = 125;
@@ -84,7 +121,13 @@ export default function NotFound() {
           let jitter = 0;
           const rand = Math.random();
           
-          if (isHoveredRef.current) {
+          if (isExitingRef.current) {
+            // Glitch meltdown! Jitter grows exponentially as exit progresses
+            const exitJitterIntensity = exitProgress * 180;
+            if (rand > 0.1) {
+              jitter = (Math.random() - 0.5) * (16 + exitJitterIntensity);
+            }
+          } else if (isHoveredRef.current) {
             // Refined horizontal tearing / wave jitter when hovered (up to 16px displacement to prevent text overlapping)
             if (rand > 0.3) {
               jitter = (Math.random() - 0.5) * 16;
@@ -96,41 +139,80 @@ export default function NotFound() {
             }
           }
 
+          // Apply CRT collapse transformations
+          const destW = w * scaleX;
+          const destH = sliceHeight * scaleY;
+          const destX = (w / 2) + (jitter - (w / 2)) * scaleX;
+          const destY = (h / 2) + (sy - (h / 2)) * scaleY;
+
           ctx.drawImage(
             offscreen,
             0,
             sy,
             w,
             sliceHeight,
-            jitter,
-            sy,
-            w,
-            sliceHeight
+            destX,
+            destY,
+            destW,
+            destH
           );
         }
 
-        // High-frequency, ultra-fine digital static noise (1px high hair-thin lines for fine static feel)
-        const fineNoiseLineCount = isHoveredRef.current ? 16 : 5;
-        ctx.fillStyle = "rgba(255, 255, 255, 0.12)";
+        // High-frequency, ultra-fine digital static noise
+        const fineNoiseLineCount = isExitingRef.current
+          ? Math.floor(16 + exitProgress * 100)
+          : (isHoveredRef.current ? 16 : 5);
+
+        ctx.fillStyle = isExitingRef.current
+          ? `rgba(255, 255, 255, ${0.12 + exitProgress * 0.58})`
+          : "rgba(255, 255, 255, 0.12)";
+
         for (let j = 0; j < fineNoiseLineCount; j++) {
           if (Math.random() > 0.4) {
             ctx.fillRect(
               Math.random() * w,
               Math.random() * h,
-              Math.random() * (w * 0.25) + 10,
-              1 // Exactly 1px thick for maximum high-res fine detail
+              Math.random() * (w * (isExitingRef.current ? 0.75 : 0.25)) + 10,
+              isExitingRef.current ? Math.floor(Math.random() * 8 + 1) : 1
             );
           }
         }
 
-        // Occasional ultra-fine digital chromatic aberration split bars (max 3px height)
-        if (Math.random() > (isHoveredRef.current ? 0.45 : 0.96)) {
-          ctx.fillStyle = isHoveredRef.current ? "rgba(0, 255, 240, 0.45)" : "rgba(0, 255, 240, 0.25)"; // Cyan chromatic slice
-          ctx.fillRect(0, Math.random() * h, w, Math.random() * 2 + 1); // Shrunk height to 1px - 3px
+        // Occasional ultra-fine digital chromatic aberration split bars
+        const chromaticChance = isExitingRef.current ? (1 - exitProgress * 0.8) : (isHoveredRef.current ? 0.45 : 0.96);
+        if (Math.random() > chromaticChance) {
+          ctx.fillStyle = isExitingRef.current ? "rgba(0, 255, 240, 0.8)" : (isHoveredRef.current ? "rgba(0, 255, 240, 0.45)" : "rgba(0, 255, 240, 0.25)");
+          ctx.fillRect(0, Math.random() * h, w, Math.random() * (isExitingRef.current ? 25 : 2) + 1);
         }
-        if (Math.random() > (isHoveredRef.current ? 0.45 : 0.96)) {
-          ctx.fillStyle = isHoveredRef.current ? "rgba(255, 0, 193, 0.45)" : "rgba(255, 0, 193, 0.25)"; // Magenta chromatic slice
-          ctx.fillRect(0, Math.random() * h, w, Math.random() * 2 + 1); // Shrunk height to 1px - 3px
+        if (Math.random() > chromaticChance) {
+          ctx.fillStyle = isExitingRef.current ? "rgba(255, 0, 193, 0.8)" : (isHoveredRef.current ? "rgba(255, 0, 193, 0.45)" : "rgba(255, 0, 193, 0.25)");
+          ctx.fillRect(0, Math.random() * h, w, Math.random() * (isExitingRef.current ? 25 : 2) + 1);
+        }
+
+        // Draw glowing CRT phosphor beam center line / dot
+        if (exitProgress > 0.55) {
+          const collapseProgress = (exitProgress - 0.55) / 0.45;
+          ctx.fillStyle = "#FFFFFF";
+          ctx.shadowBlur = 15;
+          ctx.shadowColor = "#00fff0";
+
+          if (collapseProgress < 0.7) {
+            const beamWidth = w * (1 - (collapseProgress / 0.7));
+            ctx.fillRect(
+              (w / 2) - (beamWidth / 2),
+              (h / 2) - 1.5,
+              beamWidth,
+              3
+            );
+          } else {
+            const dotSize = Math.max(0, 6 * (1 - ((collapseProgress - 0.7) / 0.3)));
+            if (dotSize > 0) {
+              ctx.beginPath();
+              ctx.arc(w / 2, h / 2, dotSize, 0, Math.PI * 2);
+              ctx.fill();
+            }
+          }
+          ctx.shadowBlur = 0; // reset
         }
 
         animationId = requestAnimationFrame(render);
@@ -217,7 +299,7 @@ export default function NotFound() {
           }}
         >
           <link rel="preload" href="/404.png" as="image" />
-          <Link
+          <TransitionLink
             href="/"
             style={{
               display: "block",
@@ -236,7 +318,7 @@ export default function NotFound() {
                 display: "block",
               }}
             />
-          </Link>
+          </TransitionLink>
         </div>
       </div>
 

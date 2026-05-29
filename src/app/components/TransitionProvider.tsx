@@ -87,12 +87,15 @@ export function TransitionProvider({ children }: { children: React.ReactNode }) 
         setSharedCardCoords(null);
       }
 
+      const is404 = typeof document !== "undefined" && document.body.classList.contains("is-404-page");
+      const duration = is404 ? 900 : EXIT_DURATION;
+
       pendingHref.current = href;
       setIsExiting(true);
 
       setTimeout(() => {
         router.push(href);
-      }, EXIT_DURATION);
+      }, duration);
     },
     [pathname, router]
   );
