@@ -73,17 +73,6 @@ export default function Navbar() {
           </TransitionLink>
         </div>
 
-        <button
-          className={`hamburger${isMenuOpen ? " is-open" : ""}`}
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-          aria-label="Toggle Menu"
-          aria-expanded={isMenuOpen}
-        >
-          <span className="hamburger-line top"></span>
-          <span className="hamburger-line middle"></span>
-          <span className="hamburger-line bottom"></span>
-        </button>
-
         <nav aria-label="Main Navigation">
           <ul className="nav-links">
             <li>
@@ -118,6 +107,17 @@ export default function Navbar() {
       </header>
 
       {/* Full screen mobile navigation menu overlay (now a sibling to avoid containing-block constraint) */}
+      <button
+        className={`hamburger${isMenuOpen ? " is-open" : ""}`}
+        onClick={() => setIsMenuOpen(!isMenuOpen)}
+        aria-label="Toggle Menu"
+        aria-expanded={isMenuOpen}
+      >
+        <span className="hamburger-line top"></span>
+        <span className="hamburger-line middle"></span>
+        <span className="hamburger-line bottom"></span>
+      </button>
+
       <div className={`mobile-menu-overlay${isMenuOpen ? " is-visible" : ""}`} aria-hidden={!isMenuOpen}>
         <nav aria-label="Mobile Navigation">
           <ul className="mobile-menu-links">

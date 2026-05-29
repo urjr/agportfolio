@@ -125,10 +125,6 @@ a {
     }
   }
 
-  &.navbar--open {
-    z-index: 1005; // Layer above the mobile fullscreen overlay (z-index: 1000)
-  }
-
   body.theme-dark & {
     background-color: rgba(#2B2017, 0.85);
     color: #FAF8F5;
@@ -269,51 +265,52 @@ a {
       display: none;
     }
   }
+} // Close .navbar SASS block
 
-  .hamburger {
-    display: none;
+.hamburger {
+  display: none;
 
-    @media (max-width: 768px) {
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      width: 22px;
-      height: 16px;
-      background: transparent;
-      border: none;
-      cursor: pointer;
-      padding: 0;
-      z-index: 1002;
-      position: absolute;
-      right: 2rem;
-      outline: none;
+  @media (max-width: 768px) {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 22px;
+    height: 16px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    z-index: 1002;
+    position: fixed; // Fixed relative to viewport to stay above scrim overlay
+    top: 22px; // Centered inside 60px fixed header height (60 - 16) / 2
+    right: 2rem;
+    outline: none;
 
-      .hamburger-line {
-        width: 100%;
-        height: 2px;
-        background-color: $color-text;
-        border-radius: 2px;
-        transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease, background-color 0.8s ease;
+    .hamburger-line {
+      width: 100%;
+      height: 2px;
+      background-color: $color-text;
+      border-radius: 2px;
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease, background-color 0.8s ease;
 
-        body.theme-dark & {
-          background-color: #FAF8F5;
-        }
+      body.theme-dark & {
+        background-color: #FAF8F5;
       }
+    }
 
-      &.is-open {
-        .hamburger-line.top {
-          transform: translateY(7px) rotate(45deg);
-        }
-        .hamburger-line.middle {
-          opacity: 0;
-        }
-        .hamburger-line.bottom {
-          transform: translateY(-7px) rotate(-45deg);
-        }
+    &.is-open {
+      .hamburger-line.top {
+        transform: translateY(7px) rotate(45deg);
+      }
+      .hamburger-line.middle {
+        opacity: 0;
+      }
+      .hamburger-line.bottom {
+        transform: translateY(-7px) rotate(-45deg);
       }
     }
   }
-} // Close .navbar SASS block
+}
 
 .mobile-menu-overlay {
     display: none;
