@@ -460,7 +460,7 @@ export default function About() {
           style={{ "--row-index": 0 } as React.CSSProperties}
         >
           <h1 className="about-paragraph" id="hero-title" style={{ fontWeight: 500 }}>
-            Hi, my name is Ulises Reyes-Kaura.
+            Hi, my name is Ulises <span className="nowrap-name">Reyes-Kaura</span>.
           </h1>
         </div>
 
