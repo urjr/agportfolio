@@ -27,18 +27,51 @@ export default function Home() {
 
     const userAgent = navigator.userAgent || navigator.vendor || (window as any).opera;
     const isMobileUA = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent);
+    const isMaciPad = /macintosh/i.test(userAgent) && navigator.maxTouchPoints > 1;
     const isTouchDevice = "ontouchstart" in window || navigator.maxTouchPoints > 0;
     
-    // Only run on mobile/tablet devices
-    const isMobile = isMobileUA && isTouchDevice;
+    // Check if a mouse or trackpad is connected/active
+    const hasMouseOrPointer = window.matchMedia("(any-hover: hover)").matches;
+
+    // Only run on mobile/tablet touch devices that do NOT have a physical mouse or trackpad connected
+    const isMobile = (isMobileUA || isMaciPad) && isTouchDevice && !hasMouseOrPointer;
     if (!isMobile) return;
 
+    // Add CSS class to body for mobile/tablet device targeting
+    document.body.classList.add("is-mobile-device");
+
     let timeoutId: NodeJS.Timeout;
+    
+    // Shuffle queue management
+    const cycleQueue = [...LINK_IDS];
+    const shuffleArray = (array: string[]) => {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+    };
+
+    // Initial shuffle
+    shuffleArray(cycleQueue);
     let currentIndex = 0;
 
     const runShowcase = () => {
-      const nextId = LINK_IDS[currentIndex];
-      currentIndex = (currentIndex + 1) % LINK_IDS.length;
+      if (currentIndex >= cycleQueue.length) {
+        // Start a new cycle: shuffle the queue again and reset index
+        const lastTriggeredId = cycleQueue[cycleQueue.length - 1];
+        shuffleArray(cycleQueue);
+
+        // Prevent triggering the same element consecutively across cycles
+        if (cycleQueue[0] === lastTriggeredId && cycleQueue.length > 1) {
+          const swapIndex = 1 + Math.floor(Math.random() * (cycleQueue.length - 1));
+          [cycleQueue[0], cycleQueue[swapIndex]] = [cycleQueue[swapIndex], cycleQueue[0]];
+        }
+
+        currentIndex = 0;
+      }
+
+      const nextId = cycleQueue[currentIndex];
+      currentIndex++;
 
       // Trigger hover state and mark as hovered
       setActiveHoverId(nextId);
@@ -48,15 +81,15 @@ export default function Home() {
         return nextSet;
       });
 
-      // Keep active for a natural showcase duration (1.4s to 2.0s)
-      const hoverDuration = 1400 + Math.random() * 600;
+      // Keep active for a natural showcase duration (1.4s to 2.0s - cut in half to 0.7s to 1.0s for mobile)
+      const hoverDuration = (1400 + Math.random() * 600) * 0.5;
       
       timeoutId = setTimeout(() => {
         // Clear active hover state (triggering exit glitch/animations)
         setActiveHoverId(null);
 
-        // Rest/pause before highlighting the next link (1.1s to 1.9s - cut in half)
-        const restDuration = 1100 + Math.random() * 800;
+        // Rest/pause before highlighting the next link (1.1s to 1.9s - cut in half to 0.55s to 0.95s for mobile)
+        const restDuration = (1100 + Math.random() * 800) * 0.5;
         timeoutId = setTimeout(runShowcase, restDuration);
       }, hoverDuration);
     };
@@ -66,6 +99,7 @@ export default function Home() {
 
     return () => {
       clearTimeout(timeoutId);
+      document.body.classList.remove("is-mobile-device");
     };
   }, []);
 

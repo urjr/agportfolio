@@ -872,6 +872,9 @@ $lw-distance:        0.85em; // clip travel distance
         opacity: 1 !important;
         @media (prefers-reduced-motion: no-preference) {
           animation: jiggle-pivot 0.3s ease-in-out;
+          body.is-mobile-device & {
+            animation: jiggle-pivot-mobile 0.3s ease-in-out;
+          }
         }
       }
 
@@ -881,6 +884,9 @@ $lw-distance:        0.85em; // clip travel distance
         opacity: 1 !important;
         @media (prefers-reduced-motion: no-preference) {
           animation: jiggle-pulse 0.3s ease-in-out;
+          body.is-mobile-device & {
+            animation: jiggle-pulse-mobile 0.3s ease-in-out;
+          }
         }
       }
 
@@ -890,6 +896,9 @@ $lw-distance:        0.85em; // clip travel distance
         opacity: 1 !important;
         @media (prefers-reduced-motion: no-preference) {
           animation: jiggle-horizontal 0.3s ease-in-out;
+          body.is-mobile-device & {
+            animation: jiggle-horizontal-mobile 0.3s ease-in-out;
+          }
         }
       }
 
@@ -899,6 +908,9 @@ $lw-distance:        0.85em; // clip travel distance
         opacity: 1 !important;
         @media (prefers-reduced-motion: no-preference) {
           animation: jiggle-vertical 0.3s ease-in-out;
+          body.is-mobile-device & {
+            animation: jiggle-vertical-mobile 0.3s ease-in-out;
+          }
         }
       }
 
@@ -1171,9 +1183,22 @@ $lw-distance:        0.85em; // clip travel distance
   100% { transform: rotate(0deg); }
 }
 
+@keyframes jiggle-pivot-mobile {
+  0% { transform: rotate(0deg); }
+  25% { transform: rotate(-1.32deg); }
+  75% { transform: rotate(1.32deg); }
+  100% { transform: rotate(0deg); }
+}
+
 @keyframes jiggle-pulse {
   0% { transform: scale(1); }
   50% { transform: scale(1.033); }
+  100% { transform: scale(1); }
+}
+
+@keyframes jiggle-pulse-mobile {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.0495); }
   100% { transform: scale(1); }
 }
 
@@ -1184,10 +1209,24 @@ $lw-distance:        0.85em; // clip travel distance
   100% { transform: translateX(0); }
 }
 
+@keyframes jiggle-horizontal-mobile {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-2.475px); }
+  75% { transform: translateX(2.475px); }
+  100% { transform: translateX(0); }
+}
+
 @keyframes jiggle-vertical {
   0% { transform: translateY(0); }
   25% { transform: translateY(-1.65px); }
   75% { transform: translateY(1.65px); }
+  100% { transform: translateY(0); }
+}
+
+@keyframes jiggle-vertical-mobile {
+  0% { transform: translateY(0); }
+  25% { transform: translateY(-2.475px); }
+  75% { transform: translateY(2.475px); }
   100% { transform: translateY(0); }
 }
 
