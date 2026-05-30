@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import TransitionLink from "./components/TransitionLink";
 import LineReveal from "./components/LineReveal";
+import PhillyLobber from "./components/PhillyLobber";
 
 const LINK_IDS = [
   "link-ulises",
@@ -20,6 +21,76 @@ export default function Home() {
   const [activeHoverId, setActiveHoverId] = useState<string | null>(null);
   const [hasHoveredIds, setHasHoveredIds] = useState<Set<string>>(new Set());
   const [firstLineCount, setFirstLineCount] = useState(0);
+  const [phillyTriggerCount, setPhillyTriggerCount] = useState(0);
+  const [productTriggerCount, setProductTriggerCount] = useState(0);
+  const [educatorTriggerCount, setEducatorTriggerCount] = useState(0);
+
+  const [isGlobalCooldown, setIsGlobalCooldown] = useState(false);
+  const globalCooldownTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const lastTriggeredIdRef = useRef<string | null>(null);
+
+  // Clean up global cooldown timer on unmount
+  useEffect(() => {
+    return () => {
+      if (globalCooldownTimerRef.current) {
+        clearTimeout(globalCooldownTimerRef.current);
+      }
+    };
+  }, []);
+
+  // Trigger lob animations when themed links get hovered (with global cooldown and sustained hover checks)
+  useEffect(() => {
+    // If activeHoverId is null or not a lobbing link, reset lastTriggeredIdRef so it triggers on a fresh hover
+    const LOB_LINK_IDS = ["link-philadelphia", "link-product-designer", "link-educator"];
+    if (!activeHoverId || !LOB_LINK_IDS.includes(activeHoverId)) {
+      lastTriggeredIdRef.current = null;
+      return;
+    }
+
+    if (isGlobalCooldown) return;
+
+    // Block automatic retriggering if user remains hovered on the same link throughout the cooldown
+    if (activeHoverId === lastTriggeredIdRef.current) return;
+
+    if (activeHoverId === "link-philadelphia") {
+      setPhillyTriggerCount((prev) => prev + 1);
+      lastTriggeredIdRef.current = "link-philadelphia";
+      triggerGlobalCooldown();
+    } else if (activeHoverId === "link-product-designer") {
+      setProductTriggerCount((prev) => prev + 1);
+      lastTriggeredIdRef.current = "link-product-designer";
+      triggerGlobalCooldown();
+    } else if (activeHoverId === "link-educator") {
+      setEducatorTriggerCount((prev) => prev + 1);
+      lastTriggeredIdRef.current = "link-educator";
+      triggerGlobalCooldown();
+    }
+  }, [activeHoverId, isGlobalCooldown]);
+
+  const triggerGlobalCooldown = () => {
+    setIsGlobalCooldown(true);
+    if (globalCooldownTimerRef.current) {
+      clearTimeout(globalCooldownTimerRef.current);
+    }
+    globalCooldownTimerRef.current = setTimeout(() => {
+      setIsGlobalCooldown(false);
+      globalCooldownTimerRef.current = null;
+    }, 2800); // 2.8s global cooldown matching maximum animation flight time
+  };
+
+  const handleMouseEnter = (id: string) => {
+    setActiveHoverId(id);
+    setHasHoveredIds((prev) => {
+      if (prev.has(id)) return prev;
+      const nextSet = new Set(prev);
+      nextSet.add(id);
+      return nextSet;
+    });
+  };
+
+  const handleMouseLeave = (id: string) => {
+    setActiveHoverId((prev) => (prev === id ? null : prev));
+  };
 
   useEffect(() => {
     // 1. Device-based detection (User Agent + Touch capabilities)
@@ -88,8 +159,14 @@ export default function Home() {
         // Clear active hover state (triggering exit glitch/animations)
         setActiveHoverId(null);
 
-        // Rest/pause before highlighting the next link (1.1s to 1.9s - cut in half to 0.55s to 0.95s for mobile)
-        const restDuration = (1100 + Math.random() * 800) * 0.5;
+        // Rest/pause before highlighting the next link:
+        // Use a longer pause (2.2s to 3.0s) for lob animations to let particles finish their full arcing trajectory.
+        // Use a quick pause (0.55s to 0.95s) for snappy glitch effects.
+        const isLobTrigger = ["link-philadelphia", "link-product-designer", "link-educator"].includes(nextId);
+        const restDuration = isLobTrigger
+          ? 2200 + Math.random() * 800
+          : (1100 + Math.random() * 800) * 0.5;
+
         timeoutId = setTimeout(runShowcase, restDuration);
       }, hoverDuration);
     };
@@ -105,6 +182,9 @@ export default function Home() {
 
   return (
     <main className="main-content">
+      <PhillyLobber theme="philadelphia" triggerCount={phillyTriggerCount} />
+      <PhillyLobber theme="product" triggerCount={productTriggerCount} />
+      <PhillyLobber theme="educator" triggerCount={educatorTriggerCount} />
       <div className="bio-container">
         {/* Row 1 — intro line */}
         <LineReveal
@@ -127,6 +207,8 @@ export default function Home() {
             href="#"
             className={`nowrap-link highlight-work${activeHoverId === "link-product-designer" ? " active-hover" : ""}${hasHoveredIds.has("link-product-designer") ? " has-hovered" : ""}`}
             id="link-product-designer"
+            onMouseEnter={() => handleMouseEnter("link-product-designer")}
+            onMouseLeave={() => handleMouseLeave("link-product-designer")}
           >
             product designer
           </Link>{" "}
@@ -135,6 +217,8 @@ export default function Home() {
             href="#"
             className={`highlight-education${activeHoverId === "link-educator" ? " active-hover" : ""}${hasHoveredIds.has("link-educator") ? " has-hovered" : ""}`}
             id="link-educator"
+            onMouseEnter={() => handleMouseEnter("link-educator")}
+            onMouseLeave={() => handleMouseLeave("link-educator")}
           >
             educator
           </Link>{" "}
@@ -145,6 +229,8 @@ export default function Home() {
             className={`highlight-geography${activeHoverId === "link-philadelphia" ? " active-hover" : ""}${hasHoveredIds.has("link-philadelphia") ? " has-hovered" : ""}`}
             target="_blank"
             rel="noopener noreferrer"
+            onMouseEnter={() => handleMouseEnter("link-philadelphia")}
+            onMouseLeave={() => handleMouseLeave("link-philadelphia")}
           >
             Philadelphia
           </Link>

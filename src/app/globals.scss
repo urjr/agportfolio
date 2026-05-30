@@ -1178,6 +1178,8 @@ $lw-distance:        0.85em; // clip travel distance
   flex-direction: column;
   gap: 1.5rem; // Spacing between the stacked statement blocks
   text-align: left;
+  position: relative;
+  z-index: 2;
 }
 
 // Unique subtle jiggle keyframes for standard hovers
@@ -2753,3 +2755,212 @@ $lw-distance:        0.85em; // clip travel distance
     pointer-events: none;
   }
 }
+
+// ============================================================
+// Philly SVG Lobber Overlay & Particle Gravity Simulations
+// ============================================================
+
+.philly-lobber-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10; // Positioned on top of bio-container (z-index: 2) and all text layers
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.philly-particle {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  pointer-events: none;
+  will-change: transform;
+  
+  // Outer container handles horizontal movement (X) with both fill mode
+  animation: lob-x linear both;
+}
+
+.philly-particle-y {
+  will-change: transform, opacity;
+  opacity: 0; // Unconditionally hidden during stagger delay and after completion
+  // Middle container handles vertical gravity (Y) and fade-out with both fill mode
+  animation: lob-y both, lob-fade ease-in-out both;
+}
+
+.philly-particle-rot {
+  will-change: transform;
+  // Inner container handles rotational aerodynamic tilt wobble with both fill mode
+  animation: lob-spin linear both;
+}
+
+.philly-particle-img {
+  display: block;
+  // Advanced fluid responsive scaling:
+  // Math: clamp(MinSize, FluidVWRatio, MaxSize)
+  // - Min size is 25% of baseSize (ensures readable scale on tiny viewports)
+  // - Fluid scale is (baseSize / 14.40) * 1vw (scales perfectly in sync with screen size)
+  // - Max size is the baseSize in pixels
+  width: clamp(
+    calc(var(--size, 72) * 0.35 * 1px),
+    calc(var(--size, 72) / 14.40 * 1vw),
+    calc(var(--size, 72) * 1px)
+  );
+  height: auto;
+  aspect-ratio: 1 / 1; // Square proportions for SVGs
+  object-fit: contain;
+  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.12));
+  
+  body.theme-dark & {
+    filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.38)) brightness(0.9);
+  }
+}
+
+@keyframes lob-x {
+  0% {
+    transform: translateX(var(--start-x));
+  }
+  100% {
+    transform: translateX(var(--end-x));
+  }
+}
+
+@keyframes lob-y {
+  0% {
+    transform: translateY(12vh);
+    animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1); /* Decelerate to apex */
+  }
+  45%, 52% {
+    transform: translateY(calc(-1 * var(--peak-y, 75vh))); /* Fly UP into the viewport */
+    animation-timing-function: cubic-bezier(0.55, 0.055, 0.675, 0.19); /* Accelerate down */
+  }
+  100% {
+    transform: translateY(12vh);
+  }
+}
+
+@keyframes lob-spin {
+  0% {
+    transform: rotate(var(--start-rot, 0deg));
+  }
+  100% {
+    transform: rotate(var(--end-rot, 360deg));
+  }
+}
+
+@keyframes lob-fade {
+  0% {
+    opacity: 0;
+  }
+  8% {
+    opacity: 1;
+  }
+  58% {
+    opacity: 1;
+  }
+  80%, 100% {
+    opacity: 0;
+  }
+}
+
+// ============================================================
+// Philly Sprinkles Confetti Burst Animations (Layered Behind Text)
+// ============================================================
+
+.philly-sprinkles-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1; // Layered BEHIND the bio-container (z-index: 2) but above default bg
+  pointer-events: none;
+  overflow: hidden;
+  opacity: 0.25; /* Lock maximum absolute opacity to 25% as requested */
+
+  &.theme-philadelphia {
+    color: #1C4E43;
+  }
+  
+  &.theme-product {
+    color: #203A6F;
+  }
+  
+  &.theme-educator {
+    color: #5C481A;
+  }
+}
+
+.sprinkle-particle {
+  position: absolute;
+  pointer-events: none;
+  will-change: transform;
+  animation: sprinkle-x linear both;
+}
+
+.sprinkle-particle-y {
+  will-change: transform, opacity;
+  opacity: 0;
+  animation: sprinkle-y both, sprinkle-fade ease-in-out both;
+}
+
+.sprinkle-particle-rot {
+  will-change: transform;
+  animation: sprinkle-rot linear both;
+}
+
+.philly-sprinkle-img {
+  display: block;
+  width: clamp(
+    calc(var(--size, 16) * 0.35 * 1px),
+    calc(var(--size, 16) / 14.40 * 1vw),
+    calc(var(--size, 16) * 1px)
+  );
+  height: auto;
+  aspect-ratio: 1 / 1;
+  object-fit: contain;
+}
+
+@keyframes sprinkle-x {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(var(--end-x));
+  }
+}
+
+@keyframes sprinkle-y {
+  0% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Smooth deceleration to apex */
+  }
+  40% {
+    transform: translateY(var(--peak-y, -30vh)); /* Apex peak height under gravity */
+    animation-timing-function: cubic-bezier(0.55, 0.085, 0.68, 0.53); /* Smooth acceleration down */
+  }
+  100% {
+    transform: translateY(var(--end-y, 110vh)); /* Fall DOWN off-screen */
+  }
+}
+
+@keyframes sprinkle-rot {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(var(--spin-deg, 360deg));
+  }
+}
+
+@keyframes sprinkle-fade {
+  0% {
+    opacity: 0;
+  }
+  12% {
+    opacity: 1; /* Fades up to full available opacity (which is 0.5 absolute due to parent) */
+  }
+  75% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+
