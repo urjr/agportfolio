@@ -28,6 +28,8 @@ export default function Home() {
   const [isGlobalCooldown, setIsGlobalCooldown] = useState(false);
   const globalCooldownTimerRef = useRef<NodeJS.Timeout | null>(null);
   const lastTriggeredIdRef = useRef<string | null>(null);
+  const lastTriggeredTimesRef = useRef<Record<string, number>>({});
+  const [lockedLinks, setLockedLinks] = useState<Record<string, boolean>>({});
 
   // Clean up global cooldown timer on unmount
   useEffect(() => {
@@ -38,7 +40,14 @@ export default function Home() {
     };
   }, []);
 
-  // Trigger lob animations when themed links get hovered (with global cooldown and sustained hover checks)
+  const lockLink = (id: string) => {
+    setLockedLinks((prev) => ({ ...prev, [id]: true }));
+    setTimeout(() => {
+      setLockedLinks((prev) => ({ ...prev, [id]: false }));
+    }, 5600); // 5.6s individual lockout
+  };
+
+  // Trigger lob animations when themed links get hovered (with global cooldown, sustained hover, and individual link lockout checks)
   useEffect(() => {
     // If activeHoverId is null or not a lobbing link, reset lastTriggeredIdRef so it triggers on a fresh hover
     const LOB_LINK_IDS = ["link-philadelphia", "link-product-designer", "link-educator"];
@@ -52,17 +61,28 @@ export default function Home() {
     // Block automatic retriggering if user remains hovered on the same link throughout the cooldown
     if (activeHoverId === lastTriggeredIdRef.current) return;
 
+    // Enforce double-duration lockout (5.6s) specifically on the active link to encourage exploration of other hovers
+    const now = Date.now();
+    const lastTriggeredTime = lastTriggeredTimesRef.current[activeHoverId] || 0;
+    if (now - lastTriggeredTime < 5600) return;
+
     if (activeHoverId === "link-philadelphia") {
       setPhillyTriggerCount((prev) => prev + 1);
       lastTriggeredIdRef.current = "link-philadelphia";
+      lastTriggeredTimesRef.current[activeHoverId] = now;
+      lockLink(activeHoverId);
       triggerGlobalCooldown();
     } else if (activeHoverId === "link-product-designer") {
       setProductTriggerCount((prev) => prev + 1);
       lastTriggeredIdRef.current = "link-product-designer";
+      lastTriggeredTimesRef.current[activeHoverId] = now;
+      lockLink(activeHoverId);
       triggerGlobalCooldown();
     } else if (activeHoverId === "link-educator") {
       setEducatorTriggerCount((prev) => prev + 1);
       lastTriggeredIdRef.current = "link-educator";
+      lastTriggeredTimesRef.current[activeHoverId] = now;
+      lockLink(activeHoverId);
       triggerGlobalCooldown();
     }
   }, [activeHoverId, isGlobalCooldown]);
@@ -75,7 +95,7 @@ export default function Home() {
     globalCooldownTimerRef.current = setTimeout(() => {
       setIsGlobalCooldown(false);
       globalCooldownTimerRef.current = null;
-    }, 2800); // 2.8s global cooldown matching maximum animation flight time
+    }, 1867); // 1.87s global cooldown = 1/3 of the 5.6s individual link lockout
   };
 
   const handleMouseEnter = (id: string) => {
@@ -205,7 +225,7 @@ export default function Home() {
           . I am a{" "}
           <Link
             href="#"
-            className={`nowrap-link highlight-work${activeHoverId === "link-product-designer" ? " active-hover" : ""}${hasHoveredIds.has("link-product-designer") ? " has-hovered" : ""}`}
+            className={`nowrap-link highlight-work${activeHoverId === "link-product-designer" ? " active-hover" : ""}${hasHoveredIds.has("link-product-designer") ? " has-hovered" : ""}${lockedLinks["link-product-designer"] ? " is-locked" : ""}`}
             id="link-product-designer"
             onMouseEnter={() => handleMouseEnter("link-product-designer")}
             onMouseLeave={() => handleMouseLeave("link-product-designer")}
@@ -215,7 +235,7 @@ export default function Home() {
           and{" "}
           <Link
             href="#"
-            className={`highlight-education${activeHoverId === "link-educator" ? " active-hover" : ""}${hasHoveredIds.has("link-educator") ? " has-hovered" : ""}`}
+            className={`highlight-education${activeHoverId === "link-educator" ? " active-hover" : ""}${hasHoveredIds.has("link-educator") ? " has-hovered" : ""}${lockedLinks["link-educator"] ? " is-locked" : ""}`}
             id="link-educator"
             onMouseEnter={() => handleMouseEnter("link-educator")}
             onMouseLeave={() => handleMouseLeave("link-educator")}
@@ -226,7 +246,7 @@ export default function Home() {
           <Link
             href="https://en.wikipedia.org/wiki/Philadelphia"
             id="link-philadelphia"
-            className={`highlight-geography${activeHoverId === "link-philadelphia" ? " active-hover" : ""}${hasHoveredIds.has("link-philadelphia") ? " has-hovered" : ""}`}
+            className={`highlight-geography${activeHoverId === "link-philadelphia" ? " active-hover" : ""}${hasHoveredIds.has("link-philadelphia") ? " has-hovered" : ""}${lockedLinks["link-philadelphia"] ? " is-locked" : ""}`}
             target="_blank"
             rel="noopener noreferrer"
             onMouseEnter={() => handleMouseEnter("link-philadelphia")}

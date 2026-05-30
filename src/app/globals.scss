@@ -919,6 +919,35 @@ $lw-distance:        0.85em; // clip travel distance
         }
       }
 
+      // Cooldown indicator for individual locked links
+      &.is-locked {
+        position: relative;
+
+        // Mouse/pointer users only — touch users cannot hover so these cues are irrelevant
+        @media (hover: hover) {
+          cursor: url('/assets/cursors/link-wait.svg') 18 0, wait !important; /* Custom pixel-art wait cursor — link is recharging! */
+
+          &::after {
+            content: "";
+            position: absolute;
+            bottom: 3.5px;
+            left: 8px;
+            right: 8px;
+            height: 2px;
+            background-color: currentColor;
+            opacity: 0.25;
+            border-radius: 1px;
+            transform-origin: left;
+            animation: recharge-progress 5.6s linear forwards;
+          }
+
+          &:hover {
+            /* Muted visual background states when hovered while locked */
+            opacity: 0.85 !important;
+          }
+        }
+      }
+
       // 2. Glitch-enabled links hover (remove highlight background and shadow)
       &.google-svg-link:hover, &.google-svg-link.active-hover,
       &.analytics-svg-link:hover, &.analytics-svg-link.active-hover,
@@ -2858,6 +2887,15 @@ $lw-distance:        0.85em; // clip travel distance
   }
   80%, 100% {
     opacity: 0;
+  }
+}
+
+@keyframes recharge-progress {
+  0% {
+    transform: scaleX(0);
+  }
+  100% {
+    transform: scaleX(1);
   }
 }
 
