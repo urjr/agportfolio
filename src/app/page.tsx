@@ -25,10 +25,16 @@ export default function Home() {
   const [productTriggerCount, setProductTriggerCount] = useState(0);
   const [educatorTriggerCount, setEducatorTriggerCount] = useState(0);
 
+  const LOCKOUT_DURATION = 5600;                                          // Individual link lockout (ms)
+  const BASE_COOLDOWN    = Math.round(LOCKOUT_DURATION * 0.25);           // 1400ms — starting global cooldown (25% of lockout)
+  const COOLDOWN_STEP    = Math.round((LOCKOUT_DURATION - BASE_COOLDOWN) / 5); // 840ms — linear increment per rapid trigger
+
   const [isGlobalCooldown, setIsGlobalCooldown] = useState(false);
   const globalCooldownTimerRef = useRef<NodeJS.Timeout | null>(null);
   const lastTriggeredIdRef = useRef<string | null>(null);
   const lastTriggeredTimesRef = useRef<Record<string, number>>({});
+  const cooldownEndTimeRef = useRef<number>(0); // When the last global cooldown expired
+  const cooldownStepRef = useRef<number>(0);   // How many consecutive "immediate" triggers in a row
   const [lockedLinks, setLockedLinks] = useState<Record<string, boolean>>({});
 
   // Clean up global cooldown timer on unmount
@@ -44,7 +50,7 @@ export default function Home() {
     setLockedLinks((prev) => ({ ...prev, [id]: true }));
     setTimeout(() => {
       setLockedLinks((prev) => ({ ...prev, [id]: false }));
-    }, 5600); // 5.6s individual lockout
+    }, LOCKOUT_DURATION);
   };
 
   // Trigger lob animations when themed links get hovered (with global cooldown, sustained hover, and individual link lockout checks)
@@ -64,7 +70,16 @@ export default function Home() {
     // Enforce double-duration lockout (5.6s) specifically on the active link to encourage exploration of other hovers
     const now = Date.now();
     const lastTriggeredTime = lastTriggeredTimesRef.current[activeHoverId] || 0;
-    if (now - lastTriggeredTime < 5600) return;
+    if (now - lastTriggeredTime < LOCKOUT_DURATION) return;
+
+    // Progressive cooldown: if the user triggered immediately after cooldown expired, increase the step;
+    // if they allowed a natural gap (longer than BASE_COOLDOWN), reset back to base.
+    const timeSinceCooldownEnd = now - cooldownEndTimeRef.current;
+    if (timeSinceCooldownEnd <= BASE_COOLDOWN) {
+      cooldownStepRef.current = Math.min(cooldownStepRef.current + 1, 5); // cap at step 5 → 6th trigger = max cooldown
+    } else {
+      cooldownStepRef.current = 0; // gap detected — reset
+    }
 
     if (activeHoverId === "link-philadelphia") {
       setPhillyTriggerCount((prev) => prev + 1);
@@ -88,14 +103,17 @@ export default function Home() {
   }, [activeHoverId, isGlobalCooldown]);
 
   const triggerGlobalCooldown = () => {
+    // Linear ramp: 1400ms at step 0 → 5600ms at step 4 (each rapid trigger adds 1050ms)
+    const duration = BASE_COOLDOWN + cooldownStepRef.current * COOLDOWN_STEP;
     setIsGlobalCooldown(true);
     if (globalCooldownTimerRef.current) {
       clearTimeout(globalCooldownTimerRef.current);
     }
     globalCooldownTimerRef.current = setTimeout(() => {
       setIsGlobalCooldown(false);
+      cooldownEndTimeRef.current = Date.now(); // Record when this cooldown expired
       globalCooldownTimerRef.current = null;
-    }, 1867); // 1.87s global cooldown = 1/3 of the 5.6s individual link lockout
+    }, duration);
   };
 
   const handleMouseEnter = (id: string) => {

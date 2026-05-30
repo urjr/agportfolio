@@ -126,6 +126,7 @@ export default function Navbar() {
                 href="/"
                 id="nav-home-mobile"
                 className={pathname === "/" ? "active" : ""}
+                onClick={() => setIsMenuOpen(false)}
               >
                 Home
               </TransitionLink>
@@ -135,6 +136,7 @@ export default function Navbar() {
                 href="/work"
                 id="nav-work-mobile"
                 className={pathname === "/work" ? "active" : ""}
+                onClick={() => setIsMenuOpen(false)}
               >
                 Work
               </TransitionLink>
@@ -144,6 +146,7 @@ export default function Navbar() {
                 href="/about"
                 id="nav-about-mobile"
                 className={pathname === "/about" ? "active" : ""}
+                onClick={() => setIsMenuOpen(false)}
               >
                 About
               </TransitionLink>
