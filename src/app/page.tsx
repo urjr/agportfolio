@@ -59,10 +59,10 @@ export default function Home() {
   const fireLobTrigger = (id: string) => {
     const now = Date.now();
 
-    // Progressive cooldown step
+    // Progressive cooldown step: reset if user waits longer than 0.25s (250ms) after cooldown expires
     const timeSinceCooldownEnd = now - cooldownEndTimeRef.current;
-    if (timeSinceCooldownEnd <= BASE_COOLDOWN) {
-      cooldownStepRef.current = Math.min(cooldownStepRef.current + 1, 5);
+    if (timeSinceCooldownEnd <= 250) {
+      cooldownStepRef.current = Math.min(cooldownStepRef.current + 1, 6);
     } else {
       cooldownStepRef.current = 0;
     }
@@ -99,27 +99,22 @@ export default function Home() {
     const lastTriggeredTime = lastTriggeredTimesRef.current[activeHoverId] || 0;
     if (now - lastTriggeredTime < LOCKOUT_DURATION) return;
 
-    // First-ever trigger: apply a 150ms intent delay so incidental mouse-overs don't fire the animation.
-    // All subsequent triggers are already gated by the global cooldown, so no delay is needed.
-    if (!hasEverTriggeredRef.current) {
-      if (pendingFirstTriggerRef.current) return; // timer already running — wait for it
-      const capturedId = activeHoverId;
-      pendingFirstTriggerRef.current = setTimeout(() => {
-        pendingFirstTriggerRef.current = null;
-        // Only fire if the user is still hovering the same link
-        if (activeHoverIdRef.current === capturedId) {
-          fireLobTrigger(capturedId);
-        }
-      }, 150);
-      return;
-    }
-
-    fireLobTrigger(activeHoverId);
+    // Apply a 150ms intent delay to all animation hovers to avoid incidental mouseovers at all times
+    if (pendingFirstTriggerRef.current) return; // timer already running — wait for it
+    const capturedId = activeHoverId;
+    pendingFirstTriggerRef.current = setTimeout(() => {
+      pendingFirstTriggerRef.current = null;
+      // Only fire if the user is still hovering the same link
+      if (activeHoverIdRef.current === capturedId) {
+        fireLobTrigger(capturedId);
+      }
+    }, 150);
   }, [activeHoverId, isGlobalCooldown]);
 
   const triggerGlobalCooldown = () => {
-    // Linear ramp: 1400ms at step 0 → 5600ms at step 4 (each rapid trigger adds 1050ms)
-    const duration = BASE_COOLDOWN + cooldownStepRef.current * COOLDOWN_STEP;
+    // Make the first 2 cooldowns (step 0 and 1) 1.4 seconds, then scale linearly afterwards
+    const effectiveStep = Math.max(0, cooldownStepRef.current - 1);
+    const duration = BASE_COOLDOWN + effectiveStep * COOLDOWN_STEP;
     setIsGlobalCooldown(true);
     if (globalCooldownTimerRef.current) {
       clearTimeout(globalCooldownTimerRef.current);
