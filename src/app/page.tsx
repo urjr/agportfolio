@@ -33,16 +33,18 @@ export default function Home() {
   const globalCooldownTimerRef = useRef<NodeJS.Timeout | null>(null);
   const lastTriggeredIdRef = useRef<string | null>(null);
   const lastTriggeredTimesRef = useRef<Record<string, number>>({});
-  const cooldownEndTimeRef = useRef<number>(0); // When the last global cooldown expired
-  const cooldownStepRef = useRef<number>(0);   // How many consecutive "immediate" triggers in a row
+  const cooldownEndTimeRef = useRef<number>(0);         // When the last global cooldown expired
+  const cooldownStepRef = useRef<number>(0);             // How many consecutive "immediate" triggers in a row
+  const hasEverTriggeredRef = useRef<boolean>(false);    // Flips true after first animation fires — delay no longer needed
+  const activeHoverIdRef = useRef<string | null>(null);  // Mirror of activeHoverId for use inside timer callbacks
+  const pendingFirstTriggerRef = useRef<NodeJS.Timeout | null>(null); // 150ms intent-delay timer for first-ever trigger
   const [lockedLinks, setLockedLinks] = useState<Record<string, boolean>>({});
 
-  // Clean up global cooldown timer on unmount
+  // Clean up timers on unmount
   useEffect(() => {
     return () => {
-      if (globalCooldownTimerRef.current) {
-        clearTimeout(globalCooldownTimerRef.current);
-      }
+      if (globalCooldownTimerRef.current) clearTimeout(globalCooldownTimerRef.current);
+      if (pendingFirstTriggerRef.current) clearTimeout(pendingFirstTriggerRef.current);
     };
   }, []);
 
@@ -53,9 +55,37 @@ export default function Home() {
     }, LOCKOUT_DURATION);
   };
 
+  // Fires the lob animation for whichever link is currently hovered (shared by immediate and delayed paths)
+  const fireLobTrigger = (id: string) => {
+    const now = Date.now();
+
+    // Progressive cooldown step
+    const timeSinceCooldownEnd = now - cooldownEndTimeRef.current;
+    if (timeSinceCooldownEnd <= BASE_COOLDOWN) {
+      cooldownStepRef.current = Math.min(cooldownStepRef.current + 1, 5);
+    } else {
+      cooldownStepRef.current = 0;
+    }
+
+    lastTriggeredTimesRef.current[id] = now;
+    lockLink(id);
+    triggerGlobalCooldown();
+    hasEverTriggeredRef.current = true;
+
+    if (id === "link-philadelphia") {
+      setPhillyTriggerCount((prev) => prev + 1);
+      lastTriggeredIdRef.current = "link-philadelphia";
+    } else if (id === "link-product-designer") {
+      setProductTriggerCount((prev) => prev + 1);
+      lastTriggeredIdRef.current = "link-product-designer";
+    } else if (id === "link-educator") {
+      setEducatorTriggerCount((prev) => prev + 1);
+      lastTriggeredIdRef.current = "link-educator";
+    }
+  };
+
   // Trigger lob animations when themed links get hovered (with global cooldown, sustained hover, and individual link lockout checks)
   useEffect(() => {
-    // If activeHoverId is null or not a lobbing link, reset lastTriggeredIdRef so it triggers on a fresh hover
     const LOB_LINK_IDS = ["link-philadelphia", "link-product-designer", "link-educator"];
     if (!activeHoverId || !LOB_LINK_IDS.includes(activeHoverId)) {
       lastTriggeredIdRef.current = null;
@@ -63,43 +93,28 @@ export default function Home() {
     }
 
     if (isGlobalCooldown) return;
-
-    // Block automatic retriggering if user remains hovered on the same link throughout the cooldown
     if (activeHoverId === lastTriggeredIdRef.current) return;
 
-    // Enforce double-duration lockout (5.6s) specifically on the active link to encourage exploration of other hovers
     const now = Date.now();
     const lastTriggeredTime = lastTriggeredTimesRef.current[activeHoverId] || 0;
     if (now - lastTriggeredTime < LOCKOUT_DURATION) return;
 
-    // Progressive cooldown: if the user triggered immediately after cooldown expired, increase the step;
-    // if they allowed a natural gap (longer than BASE_COOLDOWN), reset back to base.
-    const timeSinceCooldownEnd = now - cooldownEndTimeRef.current;
-    if (timeSinceCooldownEnd <= BASE_COOLDOWN) {
-      cooldownStepRef.current = Math.min(cooldownStepRef.current + 1, 5); // cap at step 5 → 6th trigger = max cooldown
-    } else {
-      cooldownStepRef.current = 0; // gap detected — reset
+    // First-ever trigger: apply a 150ms intent delay so incidental mouse-overs don't fire the animation.
+    // All subsequent triggers are already gated by the global cooldown, so no delay is needed.
+    if (!hasEverTriggeredRef.current) {
+      if (pendingFirstTriggerRef.current) return; // timer already running — wait for it
+      const capturedId = activeHoverId;
+      pendingFirstTriggerRef.current = setTimeout(() => {
+        pendingFirstTriggerRef.current = null;
+        // Only fire if the user is still hovering the same link
+        if (activeHoverIdRef.current === capturedId) {
+          fireLobTrigger(capturedId);
+        }
+      }, 150);
+      return;
     }
 
-    if (activeHoverId === "link-philadelphia") {
-      setPhillyTriggerCount((prev) => prev + 1);
-      lastTriggeredIdRef.current = "link-philadelphia";
-      lastTriggeredTimesRef.current[activeHoverId] = now;
-      lockLink(activeHoverId);
-      triggerGlobalCooldown();
-    } else if (activeHoverId === "link-product-designer") {
-      setProductTriggerCount((prev) => prev + 1);
-      lastTriggeredIdRef.current = "link-product-designer";
-      lastTriggeredTimesRef.current[activeHoverId] = now;
-      lockLink(activeHoverId);
-      triggerGlobalCooldown();
-    } else if (activeHoverId === "link-educator") {
-      setEducatorTriggerCount((prev) => prev + 1);
-      lastTriggeredIdRef.current = "link-educator";
-      lastTriggeredTimesRef.current[activeHoverId] = now;
-      lockLink(activeHoverId);
-      triggerGlobalCooldown();
-    }
+    fireLobTrigger(activeHoverId);
   }, [activeHoverId, isGlobalCooldown]);
 
   const triggerGlobalCooldown = () => {
@@ -117,6 +132,7 @@ export default function Home() {
   };
 
   const handleMouseEnter = (id: string) => {
+    activeHoverIdRef.current = id;
     setActiveHoverId(id);
     setHasHoveredIds((prev) => {
       if (prev.has(id)) return prev;
@@ -127,6 +143,12 @@ export default function Home() {
   };
 
   const handleMouseLeave = (id: string) => {
+    activeHoverIdRef.current = null;
+    // Cancel the first-trigger intent delay if the user moved away before it fired
+    if (pendingFirstTriggerRef.current) {
+      clearTimeout(pendingFirstTriggerRef.current);
+      pendingFirstTriggerRef.current = null;
+    }
     setActiveHoverId((prev) => (prev === id ? null : prev));
   };
 
