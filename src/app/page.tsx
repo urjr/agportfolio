@@ -200,6 +200,7 @@ export default function Home() {
       currentIndex++;
 
       // Trigger hover state and mark as hovered
+      activeHoverIdRef.current = nextId;
       setActiveHoverId(nextId);
       setHasHoveredIds((prev) => {
         const nextSet = new Set(prev);
@@ -212,6 +213,7 @@ export default function Home() {
       
       timeoutId = setTimeout(() => {
         // Clear active hover state (triggering exit glitch/animations)
+        activeHoverIdRef.current = null;
         setActiveHoverId(null);
 
         // Rest/pause before highlighting the next link:
