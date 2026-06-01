@@ -48,6 +48,10 @@ export default function Home() {
     linkPos?: { x: number; y: number };
   } | null>(null);
 
+  const [isMobileDevice, setIsMobileDevice] = useState(false);
+  const [lastTouchClickedId, setLastTouchClickedId] = useState<string | null>(null);
+  const touchResetTimerRef = useRef<NodeJS.Timeout | null>(null);
+
   const [pendingRetroWindow, setPendingRetroWindow] = useState<{
     id: string;
     url: string;
@@ -75,6 +79,7 @@ export default function Home() {
     return () => {
       if (globalCooldownTimerRef.current) clearTimeout(globalCooldownTimerRef.current);
       if (pendingFirstTriggerRef.current) clearTimeout(pendingFirstTriggerRef.current);
+      if (touchResetTimerRef.current) clearTimeout(touchResetTimerRef.current);
     };
   }, []);
 
@@ -184,6 +189,72 @@ export default function Home() {
   };
 
   const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
+    if (isMobileDevice) {
+      e.preventDefault();
+
+      // Check if this is a larger touch device (larger than 580px, e.g. iPad Pro)
+      if (window.innerWidth > 580) {
+        // If it's a second click on the same link within the time window
+        if (lastTouchClickedId === id) {
+          setLastTouchClickedId(null); // Reset
+          if (touchResetTimerRef.current) clearTimeout(touchResetTimerRef.current);
+
+          const scrollX = window.scrollX || window.pageXOffset;
+          const scrollY = window.scrollY || window.pageYOffset;
+          const linkPos = {
+            x: e.clientX + scrollX,
+            y: e.clientY + scrollY
+          };
+
+          const newWindow = {
+            id,
+            ...LOB_LINK_URLS[id],
+            linkPos
+          };
+
+          // Handle window opening/switching
+          if (retroWindow) {
+            if (retroWindow.id === id) {
+              setRetroWindow(newWindow);
+            } else {
+              setPendingRetroWindow(newWindow);
+            }
+            return;
+          }
+
+          setRetroWindow(newWindow);
+          return;
+        } else {
+          // First click on larger touch device: trigger animation and save click state
+          setLastTouchClickedId(id);
+          
+          if (touchResetTimerRef.current) clearTimeout(touchResetTimerRef.current);
+          touchResetTimerRef.current = setTimeout(() => {
+            setLastTouchClickedId(null);
+          }, 3500); // 3.5s window to perform the second click
+        }
+      }
+
+      // Trigger the active hover jiggle visual state temporarily on mobile click
+      setActiveHoverId(id);
+      setHasHoveredIds((prev) => {
+        const nextSet = new Set(prev);
+        nextSet.add(id);
+        return nextSet;
+      });
+      setTimeout(() => {
+        setActiveHoverId(null);
+      }, 500);
+
+      // Fire the particle lob throwing animation!
+      const now = Date.now();
+      const lastTriggeredTime = lastTriggeredTimesRef.current[id] || 0;
+      if (now - lastTriggeredTime >= LOCKOUT_DURATION && !isGlobalCooldown) {
+        fireLobTrigger(id);
+      }
+      return;
+    }
+
     // Check if below mobile breakpoint (580px)
     if (window.innerWidth <= 580) {
       // Allow default click action
@@ -244,6 +315,7 @@ export default function Home() {
 
     // Only run on mobile/tablet touch devices that do NOT have a physical mouse or trackpad connected
     const isMobile = (isMobileUA || isMaciPad) && isTouchDevice && !hasMouseOrPointer;
+    setIsMobileDevice(isMobile);
     if (isMobile) {
       // Add CSS class to body for mobile/tablet device targeting
       document.body.classList.add("is-mobile-device");
@@ -252,7 +324,10 @@ export default function Home() {
     let timeoutId: NodeJS.Timeout;
     
     // Shuffle queue management
-    const cycleQueue = [...LINK_IDS];
+    // On mobile-only devices, remove the auto-hover showcase from non-glitch links
+    const cycleQueue = isMobile
+      ? ["link-google", "link-analytics", "link-upenn"]
+      : [...LINK_IDS];
     const shuffleArray = (array: string[]) => {
       for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -363,7 +438,7 @@ export default function Home() {
           </TransitionLink>
           . I am a{" "}
           <Link
-            href="https://en.wikipedia.org/wiki/Product_design"
+            href={isMobileDevice ? "" : "https://en.wikipedia.org/wiki/Product_design"}
             className={`nowrap-link highlight-work${activeHoverId === "link-product-designer" ? " active-hover" : ""}${hasHoveredIds.has("link-product-designer") ? " has-hovered" : ""}${lockedLinks["link-product-designer"] ? " is-locked" : ""}${retroWindow ? " retro-window-open" : ""}`}
             id="link-product-designer"
             onMouseEnter={() => handleMouseEnter("link-product-designer")}
@@ -374,7 +449,7 @@ export default function Home() {
           </Link>{" "}
           and{" "}
           <Link
-            href="https://en.wikipedia.org/wiki/Professor"
+            href={isMobileDevice ? "" : "https://en.wikipedia.org/wiki/Professor"}
             className={`highlight-education${activeHoverId === "link-educator" ? " active-hover" : ""}${hasHoveredIds.has("link-educator") ? " has-hovered" : ""}${lockedLinks["link-educator"] ? " is-locked" : ""}${retroWindow ? " retro-window-open" : ""}`}
             id="link-educator"
             onMouseEnter={() => handleMouseEnter("link-educator")}
@@ -385,11 +460,11 @@ export default function Home() {
           </Link>{" "}
           based in{" "}
           <Link
-            href="https://www.visitphilly.com"
+            href={isMobileDevice ? "" : "https://www.visitphilly.com"}
             id="link-philadelphia"
             className={`highlight-geography${activeHoverId === "link-philadelphia" ? " active-hover" : ""}${hasHoveredIds.has("link-philadelphia") ? " has-hovered" : ""}${lockedLinks["link-philadelphia"] ? " is-locked" : ""}${retroWindow ? " retro-window-open" : ""}`}
-            target="_blank"
-            rel="noopener noreferrer"
+            target={isMobileDevice ? undefined : "_blank"}
+            rel={isMobileDevice ? undefined : "noopener noreferrer"}
             onMouseEnter={() => handleMouseEnter("link-philadelphia")}
             onMouseLeave={() => handleMouseLeave("link-philadelphia")}
             onClick={(e) => handleLinkClick(e, "link-philadelphia")}

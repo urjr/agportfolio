@@ -3092,6 +3092,7 @@ $lw-distance:        0.85em; // clip travel distance
 }
 
 .retro-zoom-btn {
+  position: relative;
   width: 14px;
   height: 14px;
   border: 1.5px solid #000;
@@ -3103,6 +3104,15 @@ $lw-distance:        0.85em; // clip travel distance
   justify-content: center;
   cursor: url('/assets/cursors/link.svg') 18 0, pointer;
   margin-left: auto; /* Pushes the zoom button to the far right */
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: -8px;
+    bottom: -8px;
+    left: -8px;
+    right: -8px;
+  }
 
   &:active {
     box-shadow: inset -1px -1px 0 #fff, inset 1px 1px 0 #808080;
