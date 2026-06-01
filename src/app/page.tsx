@@ -49,8 +49,7 @@ export default function Home() {
   } | null>(null);
 
   const [isMobileDevice, setIsMobileDevice] = useState(false);
-  const [lastTouchClickedId, setLastTouchClickedId] = useState<string | null>(null);
-  const touchResetTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const [touchClickCounts, setTouchClickCounts] = useState<Record<string, number>>({});
 
   const [pendingRetroWindow, setPendingRetroWindow] = useState<{
     id: string;
@@ -79,7 +78,6 @@ export default function Home() {
     return () => {
       if (globalCooldownTimerRef.current) clearTimeout(globalCooldownTimerRef.current);
       if (pendingFirstTriggerRef.current) clearTimeout(pendingFirstTriggerRef.current);
-      if (touchResetTimerRef.current) clearTimeout(touchResetTimerRef.current);
     };
   }, []);
 
@@ -194,10 +192,11 @@ export default function Home() {
 
       // Check if this is a larger touch device (larger than 580px, e.g. iPad Pro)
       if (window.innerWidth > 580) {
-        // If it's a second click on the same link within the time window
-        if (lastTouchClickedId === id) {
-          setLastTouchClickedId(null); // Reset
-          if (touchResetTimerRef.current) clearTimeout(touchResetTimerRef.current);
+        const currentCount = touchClickCounts[id] || 0;
+
+        if (currentCount >= 1) {
+          // Second click: reset count and open the retro window
+          setTouchClickCounts((prev) => ({ ...prev, [id]: 0 }));
 
           const scrollX = window.scrollX || window.pageXOffset;
           const scrollY = window.scrollY || window.pageYOffset;
@@ -225,13 +224,8 @@ export default function Home() {
           setRetroWindow(newWindow);
           return;
         } else {
-          // First click on larger touch device: trigger animation and save click state
-          setLastTouchClickedId(id);
-          
-          if (touchResetTimerRef.current) clearTimeout(touchResetTimerRef.current);
-          touchResetTimerRef.current = setTimeout(() => {
-            setLastTouchClickedId(null);
-          }, 3500); // 3.5s window to perform the second click
+          // First click: increment count, trigger animation and hover state below
+          setTouchClickCounts((prev) => ({ ...prev, [id]: 1 }));
         }
       }
 
@@ -246,12 +240,8 @@ export default function Home() {
         setActiveHoverId(null);
       }, 500);
 
-      // Fire the particle lob throwing animation!
-      const now = Date.now();
-      const lastTriggeredTime = lastTriggeredTimesRef.current[id] || 0;
-      if (now - lastTriggeredTime >= LOCKOUT_DURATION && !isGlobalCooldown) {
-        fireLobTrigger(id);
-      }
+      // Fire the particle lob throwing animation! (Bypass cooldowns on touch-only)
+      fireLobTrigger(id);
       return;
     }
 
