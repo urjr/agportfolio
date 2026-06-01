@@ -158,10 +158,11 @@ a {
 
     a {
       position: relative;
+      display: inline-block;
       padding: 2px 6px;
       margin: -2px -6px; // offset padding to avoid shifting layout
       z-index: 1;
-      transition: color 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease, font-weight 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: color 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease, font-weight 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 
       &::after {
         content: "";
@@ -176,6 +177,10 @@ a {
 
       &:hover {
         opacity: 1 !important; // Maintain full opacity on hover
+      }
+
+      &:not(.active):hover {
+        transform: scale(1.2);
       }
 
       &:hover::after {
@@ -373,7 +378,7 @@ a {
           font-weight: 700;
           letter-spacing: 0.08em;
           text-transform: uppercase;
-          transition: color 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease, font-weight 0.3s ease;
+          transition: color 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease, font-weight 0.3s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
           display: inline-block;
 
           &::after {
@@ -389,6 +394,10 @@ a {
 
           &:hover {
             opacity: 1 !important; // Maintain full opacity on hover
+          }
+
+          &:not(.active):hover {
+            transform: scale(1.2);
           }
 
           &:hover::after {
