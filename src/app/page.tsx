@@ -19,7 +19,7 @@ const LINK_IDS = [
 
 const LOB_LINK_URLS: Record<string, { url: string; title: string }> = {
   "link-product-designer": {
-    url: "https://ixdf.org/literature/topics/product-design",
+    url: "https://en.wikipedia.org/wiki/Product_design",
     title: "Product Designer"
   },
   "link-educator": {
@@ -363,7 +363,7 @@ export default function Home() {
           </TransitionLink>
           . I am a{" "}
           <Link
-            href="https://ixdf.org/literature/topics/product-design"
+            href="https://en.wikipedia.org/wiki/Product_design"
             className={`nowrap-link highlight-work${activeHoverId === "link-product-designer" ? " active-hover" : ""}${hasHoveredIds.has("link-product-designer") ? " has-hovered" : ""}${lockedLinks["link-product-designer"] ? " is-locked" : ""}${retroWindow ? " retro-window-open" : ""}`}
             id="link-product-designer"
             onMouseEnter={() => handleMouseEnter("link-product-designer")}

@@ -14,9 +14,9 @@ interface RetroWindowProps {
 
 export default function RetroWindow({ url, title, isOpen, triggerId, linkPos, isClosing: isClosingProp, onClose }: RetroWindowProps) {
   const [position, setPosition] = useState(() => {
-    // Offset by half of window's width (580/2 = 290) and height (420/2 = 210) to scale out of the exact click coordinates
+    // Offset by half of window's width (580/2 = 290) and height (520/2 = 260) to scale out of the exact click coordinates
     const startX = linkPos ? linkPos.x - 290 : (typeof window !== "undefined" ? (window.innerWidth - 580) / 2 + window.scrollX : 0);
-    const startY = linkPos ? linkPos.y - 210 : (typeof window !== "undefined" ? (window.innerHeight - 420) / 2 + window.scrollY : 0);
+    const startY = linkPos ? linkPos.y - 260 : (typeof window !== "undefined" ? (window.innerHeight - 520) / 2 + window.scrollY : 0);
     return { x: startX, y: startY };
   });
   const [opacity, setOpacity] = useState(0);
@@ -33,7 +33,7 @@ export default function RetroWindow({ url, title, isOpen, triggerId, linkPos, is
   useEffect(() => {
     if (isOpen && !isClosing) {
       const rectWidth = windowRef.current?.offsetWidth || 580;
-      const rectHeight = windowRef.current?.offsetHeight || 420;
+      const rectHeight = windowRef.current?.offsetHeight || 520;
       const scrollX = window.scrollX || window.pageXOffset;
       const scrollY = window.scrollY || window.pageYOffset;
       
@@ -83,7 +83,7 @@ export default function RetroWindow({ url, title, isOpen, triggerId, linkPos, is
     setIsClosing(true);
 
     const startX = linkPos ? linkPos.x - 290 : position.x;
-    const startY = linkPos ? linkPos.y - 210 : position.y;
+    const startY = linkPos ? linkPos.y - 260 : position.y;
 
     setPosition({ x: startX, y: startY });
     setOpacity(0);
@@ -99,7 +99,7 @@ export default function RetroWindow({ url, title, isOpen, triggerId, linkPos, is
     e.stopPropagation(); // Prevent drag triggers
 
     const width = windowRef.current?.offsetWidth || 580;
-    const height = windowRef.current?.offsetHeight || 420;
+    const height = windowRef.current?.offsetHeight || 520;
     const left = window.screenX + (window.innerWidth - width) / 2;
     const top = window.screenY + (window.innerHeight - height) / 2;
 
@@ -150,7 +150,7 @@ export default function RetroWindow({ url, title, isOpen, triggerId, linkPos, is
     const newY = e.clientY - dragStartRef.current.y;
     
     const rectWidth = windowRef.current?.offsetWidth || 580;
-    const rectHeight = windowRef.current?.offsetHeight || 420;
+    const rectHeight = windowRef.current?.offsetHeight || 520;
 
     // Strict viewport-only boundaries (with 10px padding) so the window can never be dragged out of view or cause page scrolling
     const minX = 10;

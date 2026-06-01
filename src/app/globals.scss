@@ -3021,7 +3021,7 @@ $lw-distance:        0.85em; // clip travel distance
   left: 0;
   width: 580px;
   max-width: 90vw;
-  height: 420px;
+  height: 520px;
   background-color: #c8c4bc;
   border: 2px solid #000;
   box-shadow: 
@@ -3056,6 +3056,7 @@ $lw-distance:        0.85em; // clip travel distance
 }
 
 .retro-close-btn {
+  position: relative;
   width: 14px;
   height: 14px;
   border: 1.5px solid #000;
@@ -3066,6 +3067,15 @@ $lw-distance:        0.85em; // clip travel distance
   align-items: center;
   justify-content: center;
   cursor: url('/assets/cursors/link.svg') 18 0, pointer;
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: -8px;
+    bottom: -8px;
+    left: -8px;
+    right: -8px;
+  }
 
   &:active {
     box-shadow: inset -1px -1px 0 #fff, inset 1px 1px 0 #808080;
