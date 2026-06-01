@@ -3001,4 +3001,225 @@ $lw-distance:        0.85em; // clip travel distance
   }
 }
 
+// ============================================================
+// Retro Mac OS Window Styling & Hover Animation Suppression
+// ============================================================
+
+.retro-window-open {
+  animation: none !important;
+  pointer-events: auto !important;
+  
+  // Revert color/background transitions or hover states to default locked/static styles
+  &:hover {
+    animation: none !important;
+  }
+}
+
+.retro-window {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 580px;
+  max-width: 90vw;
+  height: 420px;
+  background-color: #c8c4bc;
+  border: 2px solid #000;
+  box-shadow: 
+    inset 1px 1px 0px #fff, 
+    inset -1px -1px 0px #808080,
+    3px 3px 0px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  z-index: 500;
+  overflow: hidden;
+  font-family: "Chicago", "Geneva", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+  @media (max-width: 580px) {
+    display: none; // Safety fallback
+  }
+}
+
+.retro-window-titlebar {
+  height: 24px;
+  background-color: #c8c4bc;
+  border-bottom: 2px solid #000;
+  display: flex;
+  align-items: center;
+  padding: 0 6px;
+  user-select: none;
+  cursor: url('/assets/cursors/drag.svg') 12 12, move;
+  position: relative;
+
+  &:active {
+    cursor: url('/assets/cursors/drag.svg') 12 12, move;
+  }
+}
+
+.retro-close-btn {
+  width: 14px;
+  height: 14px;
+  border: 1.5px solid #000;
+  background-color: #c8c4bc;
+  box-shadow: inset 1px 1px 0 #fff, inset -1px -1px 0 #808080;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: url('/assets/cursors/link.svg') 18 0, pointer;
+
+  &:active {
+    box-shadow: inset -1px -1px 0 #fff, inset 1px 1px 0 #808080;
+    .retro-close-inner {
+      background-color: #000;
+    }
+  }
+
+  .retro-close-inner {
+    width: 6px;
+    height: 6px;
+    background-color: transparent;
+  }
+}
+
+.retro-zoom-btn {
+  width: 14px;
+  height: 14px;
+  border: 1.5px solid #000;
+  background-color: #c8c4bc;
+  box-shadow: inset 1px 1px 0 #fff, inset -1px -1px 0 #808080;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: url('/assets/cursors/link.svg') 18 0, pointer;
+  margin-left: auto; /* Pushes the zoom button to the far right */
+
+  &:active {
+    box-shadow: inset -1px -1px 0 #fff, inset 1px 1px 0 #808080;
+    .retro-zoom-inner {
+      background-color: #000;
+      &::after {
+        background-color: #000;
+      }
+    }
+  }
+
+  .retro-zoom-inner {
+    width: 8px;
+    height: 8px;
+    border: 1px solid #000;
+    background-color: transparent;
+    position: relative;
+    transition: background-color 0.1s ease;
+
+    // Small overlapping square inside representing classic zoom box icon
+    &::after {
+      content: "";
+      position: absolute;
+      top: 1px;
+      left: 1px;
+      width: 4px;
+      height: 4px;
+      border: 1px solid #000;
+      background-color: #c8c4bc;
+      transition: background-color 0.1s ease;
+    }
+  }
+}
+
+.retro-title-stripes {
+  flex-grow: 1;
+  height: 12px;
+  margin: 0 10px;
+  background: repeating-linear-gradient(
+    0deg,
+    #000,
+    #000 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.retro-title-text {
+  background-color: #c8c4bc;
+  padding: 0 8px;
+  font-size: 11px;
+  font-weight: bold;
+  color: #000;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.retro-window-controls-right {
+  display: flex;
+  gap: 4px;
+  margin-left: auto;
+}
+
+.retro-window-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1px solid #000;
+  display: inline-block;
+
+  &.dot-min {
+    background-color: #f39c12;
+  }
+
+  &.dot-max {
+    background-color: #27ae60;
+  }
+}
+
+.retro-window-body {
+  flex-grow: 1;
+  background-color: #fff;
+  border: 2px solid #000;
+  margin: 4px 6px;
+  box-shadow: inset 1.5px 1.5px 0px #808080, inset -1.5px -1.5px 0px #fff;
+  position: relative;
+  overflow: hidden;
+}
+
+.retro-iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background-color: #fff;
+}
+
+.retro-window-statusbar {
+  height: 16px;
+  background-color: #c8c4bc;
+  border-top: 1px solid #808080;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding-right: 4px;
+}
+
+.retro-resize-handle {
+  width: 10px;
+  height: 10px;
+  background: linear-gradient(135deg, transparent 40%, #000 40%, #000 50%, transparent 50%, transparent 70%, #000 70%, #000 80%, transparent 80%);
+}
+
+@keyframes retro-window-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+
 

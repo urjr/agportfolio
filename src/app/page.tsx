@@ -5,6 +5,7 @@ import Link from "next/link";
 import TransitionLink from "./components/TransitionLink";
 import LineReveal from "./components/LineReveal";
 import PhillyLobber from "./components/PhillyLobber";
+import RetroWindow from "./components/RetroWindow";
 
 const LINK_IDS = [
   "link-ulises",
@@ -16,6 +17,20 @@ const LINK_IDS = [
   "link-upenn"
 ];
 
+const LOB_LINK_URLS: Record<string, { url: string; title: string }> = {
+  "link-product-designer": {
+    url: "https://ixdf.org/literature/topics/product-design",
+    title: "Product Designer"
+  },
+  "link-educator": {
+    url: "https://en.wikipedia.org/wiki/Professor",
+    title: "Professor"
+  },
+  "link-philadelphia": {
+    url: "https://www.visitphilly.com",
+    title: "Philadelphia"
+  }
+};
 
 export default function Home() {
   const [activeHoverId, setActiveHoverId] = useState<string | null>(null);
@@ -24,6 +39,21 @@ export default function Home() {
   const [phillyTriggerCount, setPhillyTriggerCount] = useState(0);
   const [productTriggerCount, setProductTriggerCount] = useState(0);
   const [educatorTriggerCount, setEducatorTriggerCount] = useState(0);
+
+  // Retro Window States
+  const [retroWindow, setRetroWindow] = useState<{
+    id: string;
+    url: string;
+    title: string;
+    linkPos?: { x: number; y: number };
+  } | null>(null);
+
+  const [pendingRetroWindow, setPendingRetroWindow] = useState<{
+    id: string;
+    url: string;
+    title: string;
+    linkPos?: { x: number; y: number };
+  } | null>(null);
 
   const LOCKOUT_DURATION = 5600;                                          // Individual link lockout (ms)
   const BASE_COOLDOWN    = Math.round(LOCKOUT_DURATION * 0.25);           // 1400ms — starting global cooldown (25% of lockout)
@@ -57,6 +87,9 @@ export default function Home() {
 
   // Fires the lob animation for whichever link is currently hovered (shared by immediate and delayed paths)
   const fireLobTrigger = (id: string) => {
+    // If retro window is open, do not trigger animations
+    if (retroWindow) return;
+
     const now = Date.now();
 
     // Progressive cooldown step: reset if user waits longer than 0.25s (250ms) after cooldown expires
@@ -86,6 +119,8 @@ export default function Home() {
 
   // Trigger lob animations when themed links get hovered (with global cooldown, sustained hover, and individual link lockout checks)
   useEffect(() => {
+    if (retroWindow) return; // Do not trigger while window is open
+
     const LOB_LINK_IDS = ["link-philadelphia", "link-product-designer", "link-educator"];
     if (!activeHoverId || !LOB_LINK_IDS.includes(activeHoverId)) {
       lastTriggeredIdRef.current = null;
@@ -109,7 +144,7 @@ export default function Home() {
         fireLobTrigger(capturedId);
       }
     }, 150);
-  }, [activeHoverId, isGlobalCooldown]);
+  }, [activeHoverId, isGlobalCooldown, retroWindow]);
 
   const triggerGlobalCooldown = () => {
     // Make the first 2 cooldowns (step 0 and 1) 1.4 seconds, then scale linearly afterwards
@@ -127,6 +162,7 @@ export default function Home() {
   };
 
   const handleMouseEnter = (id: string) => {
+    if (retroWindow) return; // Ignore hover states if window is open
     activeHoverIdRef.current = id;
     setActiveHoverId(id);
     setHasHoveredIds((prev) => {
@@ -147,6 +183,53 @@ export default function Home() {
     setActiveHoverId((prev) => (prev === id ? null : prev));
   };
 
+  const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
+    // Check if below mobile breakpoint (580px)
+    if (window.innerWidth <= 580) {
+      // Allow default click action
+      return;
+    }
+
+    e.preventDefault();
+
+    const scrollX = window.scrollX || window.pageXOffset;
+    const scrollY = window.scrollY || window.pageYOffset;
+    const linkPos = {
+      x: e.clientX + scrollX,
+      y: e.clientY + scrollY
+    };
+
+    const newWindow = {
+      id,
+      ...LOB_LINK_URLS[id],
+      linkPos
+    };
+
+    // If click on any of the links, close the current retro window (or do nothing if clicking the same)
+    // and open/switch to the other one
+    if (retroWindow) {
+      if (retroWindow.id === id) {
+        // Re-trigger same window
+        setRetroWindow(newWindow);
+      } else {
+        // Switch windows: set the new one as pending so the old one can trigger its closing animation first
+        setPendingRetroWindow(newWindow);
+      }
+      return;
+    }
+
+    setRetroWindow(newWindow);
+  };
+
+  const handleWindowClose = () => {
+    if (pendingRetroWindow) {
+      setRetroWindow(pendingRetroWindow);
+      setPendingRetroWindow(null);
+    } else {
+      setRetroWindow(null);
+    }
+  };
+
   useEffect(() => {
     // 1. Device-based detection (User Agent + Touch capabilities)
     if (typeof window === "undefined") return;
@@ -161,10 +244,10 @@ export default function Home() {
 
     // Only run on mobile/tablet touch devices that do NOT have a physical mouse or trackpad connected
     const isMobile = (isMobileUA || isMaciPad) && isTouchDevice && !hasMouseOrPointer;
-    if (!isMobile) return;
-
-    // Add CSS class to body for mobile/tablet device targeting
-    document.body.classList.add("is-mobile-device");
+    if (isMobile) {
+      // Add CSS class to body for mobile/tablet device targeting
+      document.body.classList.add("is-mobile-device");
+    }
 
     let timeoutId: NodeJS.Timeout;
     
@@ -182,6 +265,8 @@ export default function Home() {
     let currentIndex = 0;
 
     const runShowcase = () => {
+      if (retroWindow) return; // Pause showcase while window is open
+
       if (currentIndex >= cycleQueue.length) {
         // Start a new cycle: shuffle the queue again and reset index
         const lastTriggeredId = cycleQueue[cycleQueue.length - 1];
@@ -229,19 +314,36 @@ export default function Home() {
     };
 
     // Stagger start by 2.5 seconds to let initial page intro animations finish
-    timeoutId = setTimeout(runShowcase, 2500);
+    if (isMobile) {
+      timeoutId = setTimeout(runShowcase, 2500);
+    }
 
     return () => {
       clearTimeout(timeoutId);
       document.body.classList.remove("is-mobile-device");
     };
-  }, []);
+  }, [retroWindow]);
+
 
   return (
-    <main className="main-content">
+    <main className="main-content" style={{ position: "relative", overflow: "hidden", height: "100vh" }}>
       <PhillyLobber theme="philadelphia" triggerCount={phillyTriggerCount} />
       <PhillyLobber theme="product" triggerCount={productTriggerCount} />
       <PhillyLobber theme="educator" triggerCount={educatorTriggerCount} />
+
+      {retroWindow && (
+        <RetroWindow
+          key={retroWindow.id}
+          url={retroWindow.url}
+          title={retroWindow.title}
+          isOpen={!!retroWindow}
+          triggerId={retroWindow.id}
+          linkPos={retroWindow.linkPos}
+          isClosing={!!pendingRetroWindow}
+          onClose={handleWindowClose}
+        />
+      )}
+
       <div className="bio-container">
         {/* Row 1 — intro line */}
         <LineReveal
@@ -261,33 +363,36 @@ export default function Home() {
           </TransitionLink>
           . I am a{" "}
           <Link
-            href="#"
-            className={`nowrap-link highlight-work${activeHoverId === "link-product-designer" ? " active-hover" : ""}${hasHoveredIds.has("link-product-designer") ? " has-hovered" : ""}${lockedLinks["link-product-designer"] ? " is-locked" : ""}`}
+            href="https://ixdf.org/literature/topics/product-design"
+            className={`nowrap-link highlight-work${activeHoverId === "link-product-designer" ? " active-hover" : ""}${hasHoveredIds.has("link-product-designer") ? " has-hovered" : ""}${lockedLinks["link-product-designer"] ? " is-locked" : ""}${retroWindow ? " retro-window-open" : ""}`}
             id="link-product-designer"
             onMouseEnter={() => handleMouseEnter("link-product-designer")}
             onMouseLeave={() => handleMouseLeave("link-product-designer")}
+            onClick={(e) => handleLinkClick(e, "link-product-designer")}
           >
             product designer
           </Link>{" "}
           and{" "}
           <Link
-            href="#"
-            className={`highlight-education${activeHoverId === "link-educator" ? " active-hover" : ""}${hasHoveredIds.has("link-educator") ? " has-hovered" : ""}${lockedLinks["link-educator"] ? " is-locked" : ""}`}
+            href="https://en.wikipedia.org/wiki/Professor"
+            className={`highlight-education${activeHoverId === "link-educator" ? " active-hover" : ""}${hasHoveredIds.has("link-educator") ? " has-hovered" : ""}${lockedLinks["link-educator"] ? " is-locked" : ""}${retroWindow ? " retro-window-open" : ""}`}
             id="link-educator"
             onMouseEnter={() => handleMouseEnter("link-educator")}
             onMouseLeave={() => handleMouseLeave("link-educator")}
+            onClick={(e) => handleLinkClick(e, "link-educator")}
           >
             educator
           </Link>{" "}
           based in{" "}
           <Link
-            href="https://en.wikipedia.org/wiki/Philadelphia"
+            href="https://www.visitphilly.com"
             id="link-philadelphia"
-            className={`highlight-geography${activeHoverId === "link-philadelphia" ? " active-hover" : ""}${hasHoveredIds.has("link-philadelphia") ? " has-hovered" : ""}${lockedLinks["link-philadelphia"] ? " is-locked" : ""}`}
+            className={`highlight-geography${activeHoverId === "link-philadelphia" ? " active-hover" : ""}${hasHoveredIds.has("link-philadelphia") ? " has-hovered" : ""}${lockedLinks["link-philadelphia"] ? " is-locked" : ""}${retroWindow ? " retro-window-open" : ""}`}
             target="_blank"
             rel="noopener noreferrer"
             onMouseEnter={() => handleMouseEnter("link-philadelphia")}
             onMouseLeave={() => handleMouseLeave("link-philadelphia")}
+            onClick={(e) => handleLinkClick(e, "link-philadelphia")}
           >
             Philadelphia
           </Link>
