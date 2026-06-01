@@ -100,10 +100,22 @@ export default function RetroWindow({ url, title, isOpen, triggerId, linkPos, is
   const handleMaximizeClick = (e: React.MouseEvent) => {
     e.stopPropagation(); // Prevent drag triggers
 
-    const width = windowRef.current?.offsetWidth || 580;
-    const height = windowRef.current?.offsetHeight || 520;
-    const left = window.screenX + (window.innerWidth - width) / 2;
-    const top = window.screenY + (window.innerHeight - height) / 2;
+    const rect = windowRef.current?.getBoundingClientRect();
+    const width = rect ? rect.width : (windowRef.current?.offsetWidth || 580);
+    const height = rect ? rect.height : (windowRef.current?.offsetHeight || 520);
+
+    // Calculate viewport top-left relative to screen
+    // Standard calculation uses mouse event's screen/client coordinates if available
+    const viewportLeft = (e.screenX !== undefined && e.clientX !== undefined)
+      ? (e.screenX - e.clientX)
+      : window.screenX;
+    
+    const viewportTop = (e.screenY !== undefined && e.clientY !== undefined)
+      ? (e.screenY - e.clientY)
+      : window.screenY;
+
+    const left = rect ? (viewportLeft + rect.left) : (window.screenX + (window.innerWidth - width) / 2);
+    const top = rect ? (viewportTop + rect.top) : (window.screenY + (window.innerHeight - height) / 2);
 
     try {
       window.open(
