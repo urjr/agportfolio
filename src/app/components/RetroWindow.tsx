@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { usePageTransition } from "./TransitionProvider";
 
 interface RetroWindowProps {
   url: string;
@@ -13,6 +14,7 @@ interface RetroWindowProps {
 }
 
 export default function RetroWindow({ url, title, isOpen, triggerId, linkPos, isClosing: isClosingProp, onClose }: RetroWindowProps) {
+  const { isExiting } = usePageTransition();
   const [position, setPosition] = useState(() => {
     // Offset by half of window's width (580/2 = 290) and height (520/2 = 260) to scale out of the exact click coordinates
     const startX = linkPos ? linkPos.x - 290 : (typeof window !== "undefined" ? (window.innerWidth - 580) / 2 + window.scrollX : 0);
@@ -122,6 +124,20 @@ export default function RetroWindow({ url, title, isOpen, triggerId, linkPos, is
       handleCloseClick();
     }
   }, [isClosingProp]);
+
+  // Trigger closing/exit animation when transitioning to another page
+  useEffect(() => {
+    if (isExiting) {
+      setIsClosing(true);
+
+      const startX = linkPos ? linkPos.x - 290 : position.x;
+      const startY = linkPos ? linkPos.y - 260 : position.y;
+
+      setPosition({ x: startX, y: startY });
+      setOpacity(0);
+      setScale(0.15);
+    }
+  }, [isExiting, linkPos]);
 
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     if (isClosing) return; // Prevent drag during close transition
