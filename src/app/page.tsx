@@ -190,6 +190,16 @@ export default function Home() {
     if (isMobileDevice) {
       e.preventDefault();
 
+      // Check if below mobile phone breakpoint (580px)
+      if (window.innerWidth <= 580) {
+        const lastTriggeredTime = lastTriggeredTimesRef.current[id] || 0;
+        const now = Date.now();
+        // 2800ms matches the particle lob animation flight duration in PhillyLobber
+        if (now - lastTriggeredTime < 2800) {
+          return;
+        }
+      }
+
       // Check if this is a larger touch device (larger than 580px, e.g. iPad Pro)
       if (window.innerWidth > 580) {
         const currentCount = touchClickCounts[id] || 0;
