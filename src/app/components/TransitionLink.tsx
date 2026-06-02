@@ -25,8 +25,11 @@ export default function TransitionLink({
     // External links pass through
     if (href.startsWith("http") || href.startsWith("mailto:") || href.startsWith("#")) return;
 
-    e.preventDefault();
     onClick?.(e);
+
+    if (e.defaultPrevented) return;
+
+    e.preventDefault();
     navigateTo(href);
   };
 

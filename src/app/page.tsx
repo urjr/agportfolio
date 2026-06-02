@@ -50,6 +50,7 @@ export default function Home() {
 
   const [isMobileDevice, setIsMobileDevice] = useState(false);
   const [touchClickCounts, setTouchClickCounts] = useState<Record<string, number>>({});
+  const [isWaveRevealed, setIsWaveRevealed] = useState(false);
 
   const [pendingRetroWindow, setPendingRetroWindow] = useState<{
     id: string;
@@ -61,7 +62,6 @@ export default function Home() {
   const LOCKOUT_DURATION = 5600;                                          // Individual link lockout (ms)
   const BASE_COOLDOWN    = Math.round(LOCKOUT_DURATION * 0.25);           // 1400ms — starting global cooldown (25% of lockout)
   const COOLDOWN_STEP    = Math.round((LOCKOUT_DURATION - BASE_COOLDOWN) / 5); // 840ms — linear increment per rapid trigger
-
   const [isGlobalCooldown, setIsGlobalCooldown] = useState(false);
   const globalCooldownTimerRef = useRef<NodeJS.Timeout | null>(null);
   const lastTriggeredIdRef = useRef<string | null>(null);
@@ -73,11 +73,18 @@ export default function Home() {
   const pendingFirstTriggerRef = useRef<NodeJS.Timeout | null>(null); // 150ms intent-delay timer for first-ever trigger
   const [lockedLinks, setLockedLinks] = useState<Record<string, boolean>>({});
 
+  const lastRevealTimeRef = useRef<number>(0);
+  const hideTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const waveRevealDelayRef = useRef<NodeJS.Timeout | null>(null); // Intent delay timer
+  const MIN_REVEAL_DURATION = 500; // Minimum time wave figure must stay open (ms)
+ 
   // Clean up timers on unmount
   useEffect(() => {
     return () => {
       if (globalCooldownTimerRef.current) clearTimeout(globalCooldownTimerRef.current);
       if (pendingFirstTriggerRef.current) clearTimeout(pendingFirstTriggerRef.current);
+      if (hideTimeoutRef.current) clearTimeout(hideTimeoutRef.current);
+      if (waveRevealDelayRef.current) clearTimeout(waveRevealDelayRef.current);
     };
   }, []);
 
@@ -186,7 +193,103 @@ export default function Home() {
     setActiveHoverId((prev) => (prev === id ? null : prev));
   };
 
+  const handleNameLinkClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (isMobileDevice) {
+      e.preventDefault();
+      if (!isWaveRevealed) {
+        setIsWaveRevealed(true);
+      } else {
+        if (window.innerWidth <= 580) {
+          setIsWaveRevealed(false);
+        }
+      }
+    }
+  };
+
+  const handleOtherLinkClick = () => {
+    if (hideTimeoutRef.current) {
+      clearTimeout(hideTimeoutRef.current);
+      hideTimeoutRef.current = null;
+    }
+    if (isWaveRevealed) {
+      setIsWaveRevealed(false);
+    }
+  };
+
+  // Sync wave reveal with activeHoverId on desktop
+  useEffect(() => {
+    if (isMobileDevice) return;
+
+    if (activeHoverId === "link-ulises") {
+      // Cancel any pending hide timers so the wave stays visible
+      if (hideTimeoutRef.current) {
+        clearTimeout(hideTimeoutRef.current);
+        hideTimeoutRef.current = null;
+      }
+
+      if (isWaveRevealed) return;
+
+      // Start a 150ms intent delay timer to avoid triggering on quick swipes
+      if (!waveRevealDelayRef.current) {
+        waveRevealDelayRef.current = setTimeout(() => {
+          setIsWaveRevealed(true);
+          lastRevealTimeRef.current = Date.now();
+          waveRevealDelayRef.current = null;
+        }, 150);
+      }
+    } else {
+      // Cancel any pending reveal timer if user leaves early
+      if (waveRevealDelayRef.current) {
+        clearTimeout(waveRevealDelayRef.current);
+        waveRevealDelayRef.current = null;
+      }
+
+      if (isWaveRevealed) {
+        const elapsed = Date.now() - lastRevealTimeRef.current;
+        const remaining = MIN_REVEAL_DURATION - elapsed;
+
+        if (hideTimeoutRef.current) {
+          clearTimeout(hideTimeoutRef.current);
+        }
+
+        if (remaining > 0) {
+          hideTimeoutRef.current = setTimeout(() => {
+            setIsWaveRevealed(false);
+            hideTimeoutRef.current = null;
+          }, remaining);
+        } else {
+          setIsWaveRevealed(false);
+        }
+      }
+    }
+  }, [activeHoverId, isMobileDevice, isWaveRevealed]);
+
+  // Close wave figure when tapping outside on touch devices
+  useEffect(() => {
+    if (!isMobileDevice || !isWaveRevealed) return;
+
+    const handleGlobalClick = (e: MouseEvent) => {
+      const nameLink = document.getElementById("link-ulises");
+      if (nameLink && nameLink.contains(e.target as Node)) {
+        return;
+      }
+      setIsWaveRevealed(false);
+    };
+
+    window.addEventListener("click", handleGlobalClick, { capture: true });
+    return () => {
+      window.removeEventListener("click", handleGlobalClick, { capture: true });
+    };
+  }, [isMobileDevice, isWaveRevealed]);
+
   const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
+    if (hideTimeoutRef.current) {
+      clearTimeout(hideTimeoutRef.current);
+      hideTimeoutRef.current = null;
+    }
+    if (isWaveRevealed) {
+      setIsWaveRevealed(false);
+    }
     if (isMobileDevice) {
       e.preventDefault();
 
@@ -433,6 +536,9 @@ export default function Home() {
             href="/about"
             className={`nowrap-link highlight-name${activeHoverId === "link-ulises" ? " active-hover" : ""}${hasHoveredIds.has("link-ulises") ? " has-hovered" : ""}`}
             id="link-ulises"
+            onMouseEnter={() => handleMouseEnter("link-ulises")}
+            onMouseLeave={() => handleMouseLeave("link-ulises")}
+            onClick={handleNameLinkClick}
           >
             Ulises Reyes-Kaura
           </TransitionLink>
@@ -490,6 +596,7 @@ export default function Home() {
             className={`google-svg-link highlight-work${activeHoverId === "link-google" ? " active-hover" : ""}${hasHoveredIds.has("link-google") ? " has-hovered" : ""}`}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={handleOtherLinkClick}
           >
             <span className="google-text">Google</span>
             <img
@@ -505,6 +612,7 @@ export default function Home() {
             className={`analytics-svg-link highlight-work${activeHoverId === "link-analytics" ? " active-hover" : ""}${hasHoveredIds.has("link-analytics") ? " has-hovered" : ""}`}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={handleOtherLinkClick}
           >
             <span className="analytics-text">Analytics</span>
             <img
@@ -520,6 +628,7 @@ export default function Home() {
             className={`upenn-svg-link highlight-education${activeHoverId === "link-upenn" ? " active-hover" : ""}${hasHoveredIds.has("link-upenn") ? " has-hovered" : ""}`}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={handleOtherLinkClick}
           >
             <span className="upenn-text">UPenn</span>
             <img
@@ -531,6 +640,12 @@ export default function Home() {
           .
         </LineReveal>
       </div>
+
+      <img
+        src="/assets/home/wave.svg"
+        alt="Waving illustration"
+        className={`wave-figure${isWaveRevealed ? " revealed" : ""}`}
+      />
     </main>
   );
 }
