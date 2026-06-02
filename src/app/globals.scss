@@ -78,7 +78,7 @@ html, body {
   transition: background-color 0.8s cubic-bezier(0.16, 1, 0.3, 1), color 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 
   // Custom Enlarged Mac OS pointer cursor (hotspot 0 0 at pointer tip)
-  cursor: url('/assets/cursors/pointer.svg') 0 0, auto;
+  cursor: url('/assets/cursors/pointer.svg') 5 0, auto;
 }
 
 body.theme-dark {
@@ -3091,11 +3091,12 @@ $lw-distance:        0.85em; // clip travel distance
   align-items: center;
   padding: 0 6px;
   user-select: none;
-  cursor: url('/assets/cursors/drag.svg') 12 12, move;
+  cursor: url('/assets/cursors/draggable.svg') 25 28, move;
   position: relative;
 
-  &:active {
-    cursor: url('/assets/cursors/drag.svg') 12 12, move;
+  &:active,
+  &.is-dragging {
+    cursor: url('/assets/cursors/dragging.svg') 22 22, move;
   }
 }
 
@@ -3110,7 +3111,7 @@ $lw-distance:        0.85em; // clip travel distance
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: url('/assets/cursors/link.svg') 18 0, pointer;
+  cursor: url('/assets/cursors/pointer.svg') 5 0, auto;
 
   &::after {
     content: "";
@@ -3146,7 +3147,7 @@ $lw-distance:        0.85em; // clip travel distance
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: url('/assets/cursors/link.svg') 18 0, pointer;
+  cursor: url('/assets/cursors/pointer.svg') 5 0, auto;
   margin-left: auto; /* Pushes the zoom button to the far right */
 
   &::after {

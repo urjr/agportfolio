@@ -221,7 +221,7 @@ export default function RetroWindow({ url, title, isOpen, triggerId, linkPos, is
     >
       {/* Title Bar */}
       <div
-        className="retro-window-titlebar"
+        className={`retro-window-titlebar${isDragging ? " is-dragging" : ""}`}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
