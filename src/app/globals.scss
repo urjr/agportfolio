@@ -3374,7 +3374,7 @@ $lw-distance:        0.85em; // clip travel distance
   position: fixed;
   bottom: 0;
   right: 0;
-  height: 100vh;
+  height: 70vh;
   width: auto;
   aspect-ratio: 564 / 1003;
   z-index: 1; // Behind bio-container (z-index: 2) but above default bg
@@ -3383,14 +3383,14 @@ $lw-distance:        0.85em; // clip travel distance
   // Transform settings
   transform-origin: bottom right;
   // Hidden state: pushed off-screen and tilted clockwise
-  transform: translate3d(100%, 15%, 0) rotate(25deg);
+  transform: translate3d(100%, 20%, 0) rotate(25deg);
   // Default exit transition (matches entrance speed)
   transition: transform 0.42s cubic-bezier(0.16, 1, 0.3, 1);
   will-change: transform;
 
   &.revealed {
     // Revealed state: tilts and shifts into viewport with aggressive spring-overshoot effect
-    transform: translate3d(15%, 5%, 0) rotate(-8deg);
+    transform: translate3d(25%, 10%, 0) rotate(-8deg);
     transition: transform 0.42s cubic-bezier(0.34, 1.8, 0.64, 1);
   }
 
@@ -3408,6 +3408,16 @@ $lw-distance:        0.85em; // clip travel distance
 
     &.revealed {
       transform: translate3d(25%, 10%, 0) rotate(-8deg);
+    }
+  }
+
+  // Restore the original 100vh full-height styling on screens wider than 2400px
+  @media (min-width: 2400px) {
+    height: 100vh;
+    transform: translate3d(100%, 15%, 0) rotate(25deg);
+
+    &.revealed {
+      transform: translate3d(15%, 5%, 0) rotate(-8deg);
     }
   }
 }
