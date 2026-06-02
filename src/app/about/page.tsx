@@ -195,7 +195,7 @@ export default function About() {
     if (modalVisible || !originRect) {
       return {
         transform: "translate(-50%, -50%)",
-        borderRadius: "20px",
+        borderRadius: "20px 0 0 20px",
         opacity: modalVisible ? 1 : 0,
       };
     }
@@ -210,7 +210,7 @@ export default function About() {
 
     return {
       transform: `translate(calc(-50% + ${dx.toFixed(1)}px), calc(-50% + ${dy.toFixed(1)}px)) scale(${scaleX}, ${scaleY})`,
-      borderRadius: "12px",
+      borderRadius: "12px 0 0 12px",
       opacity: 0.85,
     };
   };
@@ -556,7 +556,10 @@ export default function About() {
                 aria-label="Open Google company details"
                 onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") openModal("google", e.currentTarget as HTMLElement); }}
               >
-                <span className={`about-hover-card-inner${COMPANY_DATA.google?.imageSrc ? " has-image" : ""}`}>
+                <span
+                  className={`about-hover-card-inner${COMPANY_DATA.google?.imageSrc ? " has-image" : ""}`}
+                  style={COMPANY_DATA.google?.iconBg ? { backgroundColor: COMPANY_DATA.google.iconBg, backgroundImage: "none" } : undefined}
+                >
                   {COMPANY_DATA.google?.imageSrc ? (
                     <img src={COMPANY_DATA.google.imageSrc} alt="Google logo" className="about-hover-card-img" />
                   ) : (
@@ -609,7 +612,10 @@ export default function About() {
                 aria-label="Open Notarize company details"
                 onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") openModal("notarize", e.currentTarget as HTMLElement); }}
               >
-                <span className={`about-hover-card-inner${COMPANY_DATA.notarize?.imageSrc ? " has-image" : ""}`}>
+                <span
+                  className={`about-hover-card-inner${COMPANY_DATA.notarize?.imageSrc ? " has-image" : ""}`}
+                  style={COMPANY_DATA.notarize?.iconBg ? { backgroundColor: COMPANY_DATA.notarize.iconBg, backgroundImage: "none" } : undefined}
+                >
                   {COMPANY_DATA.notarize?.imageSrc ? (
                     <img src={COMPANY_DATA.notarize.imageSrc} alt="Notarize logo" className="about-hover-card-img" />
                   ) : (
@@ -675,7 +681,10 @@ export default function About() {
                 aria-label="Open Smarking company details"
                 onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") openModal("smarking", e.currentTarget as HTMLElement); }}
               >
-                <span className={`about-hover-card-inner${COMPANY_DATA.smarking?.imageSrc ? " has-image" : ""}`}>
+                <span
+                  className={`about-hover-card-inner${COMPANY_DATA.smarking?.imageSrc ? " has-image" : ""}`}
+                  style={COMPANY_DATA.smarking?.iconBg ? { backgroundColor: COMPANY_DATA.smarking.iconBg, backgroundImage: "none" } : undefined}
+                >
                   {COMPANY_DATA.smarking?.imageSrc ? (
                     <img src={COMPANY_DATA.smarking.imageSrc} alt="Smarking logo" className="about-hover-card-img" />
                   ) : (
@@ -707,7 +716,10 @@ export default function About() {
                 aria-label="Open AdHawk company details"
                 onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") openModal("adhawk", e.currentTarget as HTMLElement); }}
               >
-                <span className={`about-hover-card-inner${COMPANY_DATA.adhawk?.imageSrc ? " has-image" : ""}`}>
+                <span
+                  className={`about-hover-card-inner${COMPANY_DATA.adhawk?.imageSrc ? " has-image" : ""}`}
+                  style={COMPANY_DATA.adhawk?.iconBg ? { backgroundColor: COMPANY_DATA.adhawk.iconBg, backgroundImage: "none" } : undefined}
+                >
                   {COMPANY_DATA.adhawk?.imageSrc ? (
                     <img src={COMPANY_DATA.adhawk.imageSrc} alt="AdHawk logo" className="about-hover-card-img" />
                   ) : (
@@ -795,7 +807,10 @@ export default function About() {
                 aria-label="Open UPenn IPD details"
                 onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") openModal("upenn", e.currentTarget as HTMLElement); }}
               >
-                <span className={`about-hover-card-inner${COMPANY_DATA.upenn?.imageSrc ? " has-image" : ""}`}>
+                <span
+                  className={`about-hover-card-inner${COMPANY_DATA.upenn?.imageSrc ? " has-image" : ""}`}
+                  style={COMPANY_DATA.upenn?.iconBg ? { backgroundColor: COMPANY_DATA.upenn.iconBg, backgroundImage: "none" } : undefined}
+                >
                   {COMPANY_DATA.upenn?.imageSrc ? (
                     <img src={COMPANY_DATA.upenn.imageSrc} alt="UPenn logo" className="about-hover-card-img" />
                   ) : (
@@ -894,11 +909,13 @@ export default function About() {
                 <p className="company-modal-dates">{company.dates}</p>
               </div>
 
-              <div className="company-modal-chips">
-                {company.chips.map((chip) => (
-                  <span key={chip} className="company-modal-chip">{chip}</span>
-                ))}
-              </div>
+              {company.chips && company.chips.length > 0 && (
+                <div className="company-modal-chips">
+                  {company.chips.map((chip) => (
+                    <span key={chip} className="company-modal-chip">{chip}</span>
+                  ))}
+                </div>
+              )}
 
               <p className="company-modal-summary">{company.summary}</p>
 

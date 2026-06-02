@@ -60,7 +60,7 @@ export const COMPANY_DATA: Record<string, CompanyData> = {
   adhawk: {
     id: "adhawk",
     type: "work",
-    name: "AdHawk (Now Broadlume)",
+    name: "AdHawk (now Broadlume)",
     role: "Founding designer",
     dates: "2014 — 2017",
     chips: ["Techstars Boulder 2015"],

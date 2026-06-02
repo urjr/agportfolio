@@ -46,13 +46,15 @@ export default function CompanyCard({ company, inline = false }: CompanyCardProp
           <p className="company-card-dates">{company.dates}</p>
         </div>
 
-        <div className="company-card-chips">
-          {company.chips.map((chip) => (
-            <span key={chip} className="company-card-chip">
-              {chip}
-            </span>
-          ))}
-        </div>
+        {company.chips && company.chips.length > 0 && (
+          <div className="company-card-chips">
+            {company.chips.map((chip) => (
+              <span key={chip} className="company-card-chip">
+                {chip}
+              </span>
+            ))}
+          </div>
+        )}
 
         <p className="company-card-summary">{company.summary}</p>
 
