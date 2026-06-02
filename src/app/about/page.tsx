@@ -813,7 +813,11 @@ export default function About() {
           style={{ "--row-index": 7 } as React.CSSProperties}
         >
           <div className="about-image-placeholder">
-            {/* Portrait placeholder */}
+            <img
+              src="/assets/about/portrait.jpg"
+              alt="Portrait of Ulises Reyes-Kaura"
+              className="about-portrait-image"
+            />
           </div>
         </div>
       </div>

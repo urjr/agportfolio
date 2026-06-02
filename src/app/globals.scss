@@ -1393,7 +1393,6 @@ $lw-distance:        0.85em; // clip travel distance
 // Custom Premium Portrait Image Placeholder which scales height automatically
 .about-image-placeholder {
   width: 100%;
-  aspect-ratio: 3 / 4;
   border-radius: 16px;
   background: linear-gradient(135deg, rgba($color-text, 0.08), rgba($color-text, 0.03));
   border: 1.5px solid rgba($color-text, 0.08);
@@ -1406,6 +1405,13 @@ $lw-distance:        0.85em; // clip travel distance
   align-items: center;
   justify-content: center;
   transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+
+  .about-portrait-image {
+    width: 100%;
+    height: auto;
+    display: block;
+    pointer-events: none;
+  }
 
   body.theme-dark & {
     background: linear-gradient(135deg, rgba(#FAF8F5, 0.06), rgba(#FAF8F5, 0.02));
