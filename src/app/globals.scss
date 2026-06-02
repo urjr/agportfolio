@@ -1735,6 +1735,18 @@ $lw-distance:        0.85em; // clip travel distance
       border-color: rgba(#FAF8F5, 0.15);
     }
   }
+
+  &.has-image::before {
+    display: none;
+  }
+}
+
+.about-hover-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+  display: block;
 }
 
 .about-hover-card-label {
@@ -2593,9 +2605,10 @@ $lw-distance:        0.85em; // clip travel distance
 
 .company-card-img-element,
 .company-modal-img-element {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  width: 75%;
+  height: auto;
+  max-height: 75%;
+  object-fit: contain;
   display: block;
 }
 

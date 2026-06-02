@@ -21,7 +21,10 @@ export default function CompanyCard({ company, inline = false }: CompanyCardProp
         .join(" ")}
     >
       {/* Image placeholder (left column) */}
-      <div className="company-card-image">
+      <div
+        className="company-card-image"
+        style={company.iconBg ? { backgroundColor: company.iconBg, backgroundImage: "none" } : undefined}
+      >
         {company.imageSrc ? (
           <img
             src={company.imageSrc}

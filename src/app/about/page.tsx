@@ -556,8 +556,12 @@ export default function About() {
                 aria-label="Open Google company details"
                 onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") openModal("google", e.currentTarget as HTMLElement); }}
               >
-                <span className="about-hover-card-inner">
-                  <span className="about-hover-card-label">Google</span>
+                <span className={`about-hover-card-inner${COMPANY_DATA.google?.imageSrc ? " has-image" : ""}`}>
+                  {COMPANY_DATA.google?.imageSrc ? (
+                    <img src={COMPANY_DATA.google.imageSrc} alt="Google logo" className="about-hover-card-img" />
+                  ) : (
+                    <span className="about-hover-card-label">Google</span>
+                  )}
                 </span>
               </span>
             </span>{" "}
@@ -605,8 +609,12 @@ export default function About() {
                 aria-label="Open Notarize company details"
                 onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") openModal("notarize", e.currentTarget as HTMLElement); }}
               >
-                <span className="about-hover-card-inner">
-                  <span className="about-hover-card-label">Notarize</span>
+                <span className={`about-hover-card-inner${COMPANY_DATA.notarize?.imageSrc ? " has-image" : ""}`}>
+                  {COMPANY_DATA.notarize?.imageSrc ? (
+                    <img src={COMPANY_DATA.notarize.imageSrc} alt="Notarize logo" className="about-hover-card-img" />
+                  ) : (
+                    <span className="about-hover-card-label">Notarize</span>
+                  )}
                 </span>
               </span>
             </span>{" "}
@@ -667,8 +675,12 @@ export default function About() {
                 aria-label="Open Smarking company details"
                 onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") openModal("smarking", e.currentTarget as HTMLElement); }}
               >
-                <span className="about-hover-card-inner">
-                  <span className="about-hover-card-label">Smarking</span>
+                <span className={`about-hover-card-inner${COMPANY_DATA.smarking?.imageSrc ? " has-image" : ""}`}>
+                  {COMPANY_DATA.smarking?.imageSrc ? (
+                    <img src={COMPANY_DATA.smarking.imageSrc} alt="Smarking logo" className="about-hover-card-img" />
+                  ) : (
+                    <span className="about-hover-card-label">Smarking</span>
+                  )}
                 </span>
               </span>
             </span>{" "}
@@ -695,8 +707,12 @@ export default function About() {
                 aria-label="Open AdHawk company details"
                 onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") openModal("adhawk", e.currentTarget as HTMLElement); }}
               >
-                <span className="about-hover-card-inner">
-                  <span className="about-hover-card-label">AdHawk</span>
+                <span className={`about-hover-card-inner${COMPANY_DATA.adhawk?.imageSrc ? " has-image" : ""}`}>
+                  {COMPANY_DATA.adhawk?.imageSrc ? (
+                    <img src={COMPANY_DATA.adhawk.imageSrc} alt="AdHawk logo" className="about-hover-card-img" />
+                  ) : (
+                    <span className="about-hover-card-label">AdHawk</span>
+                  )}
                 </span>
               </span>
             </span>{" "}
@@ -779,8 +795,12 @@ export default function About() {
                 aria-label="Open UPenn IPD details"
                 onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") openModal("upenn", e.currentTarget as HTMLElement); }}
               >
-                <span className="about-hover-card-inner">
-                  <span className="about-hover-card-label">UPenn</span>
+                <span className={`about-hover-card-inner${COMPANY_DATA.upenn?.imageSrc ? " has-image" : ""}`}>
+                  {COMPANY_DATA.upenn?.imageSrc ? (
+                    <img src={COMPANY_DATA.upenn.imageSrc} alt="UPenn logo" className="about-hover-card-img" />
+                  ) : (
+                    <span className="about-hover-card-label">UPenn</span>
+                  )}
                 </span>
               </span>
             </span>{" "}
@@ -849,7 +869,10 @@ export default function About() {
             </button>
 
             {/* Image placeholder (left column) */}
-            <div className="company-modal-image">
+            <div
+              className="company-modal-image"
+              style={company.iconBg ? { backgroundColor: company.iconBg, backgroundImage: "none" } : undefined}
+            >
               {company.imageSrc ? (
                 <img
                   src={company.imageSrc}

@@ -11,6 +11,7 @@ export interface CompanyData {
   url: string;
   urlLabel: string;
   imageSrc?: string;
+  iconBg?: string;
 }
 
 export const COMPANY_DATA: Record<string, CompanyData> = {
@@ -26,6 +27,7 @@ export const COMPANY_DATA: Record<string, CompanyData> = {
     url: "https://about.google",
     urlLabel: "Visit Google",
     imageSrc: "/assets/work/google.webp",
+    iconBg: "#f5f5f5",
   },
   upenn: {
     id: "upenn",
@@ -39,6 +41,7 @@ export const COMPANY_DATA: Record<string, CompanyData> = {
     url: "https://ipd.me.upenn.edu/",
     urlLabel: "Visit IPD at UPenn",
     imageSrc: "/assets/work/upenn.jpg",
+    iconBg: "#fdfdfd",
   },
   notarize: {
     id: "notarize",
@@ -52,6 +55,7 @@ export const COMPANY_DATA: Record<string, CompanyData> = {
     url: "https://www.proof.com/product/notarize",
     urlLabel: "Visit Notarize",
     imageSrc: "/assets/work/notarize.webp",
+    iconBg: "#ffffff",
   },
   adhawk: {
     id: "adhawk",
@@ -65,6 +69,7 @@ export const COMPANY_DATA: Record<string, CompanyData> = {
     url: "https://www.broadlume.com/",
     urlLabel: "Visit Broadlume",
     imageSrc: "/assets/work/adhawk.webp",
+    iconBg: "#ffffff",
   },
   smarking: {
     id: "smarking",
@@ -78,6 +83,7 @@ export const COMPANY_DATA: Record<string, CompanyData> = {
     url: "https://justpark.com",
     urlLabel: "Visit JustPark",
     imageSrc: "/assets/work/smarking.webp",
+    iconBg: "#1fa637",
   },
 };
 
