@@ -1433,7 +1433,7 @@ $lw-distance:        0.85em; // clip travel distance
       rgba(#FAF8F5, 0.2),
       transparent
     );
-    animation: shimmer 2.5s infinite linear;
+    animation: shimmer 6s infinite linear;
 
     body.theme-dark & {
       background: linear-gradient(
@@ -1448,7 +1448,8 @@ $lw-distance:        0.85em; // clip travel distance
 
 @keyframes shimmer {
   0% { transform: translateX(-50%); }
-  100% { transform: translateX(50%); }
+  40% { transform: translateX(100%); }
+  100% { transform: translateX(100%); }
 }
 
 // Non-wrapping inline parent group to prevent punctuation/apostrophes ('s) from breaking onto a new line by themselves
