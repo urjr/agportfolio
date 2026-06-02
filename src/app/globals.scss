@@ -136,14 +136,48 @@ a {
   .nav-brand {
     position: absolute;
     left: 2rem;
-    font-family: 'Pecita', cursive, serif;
-    font-size: 1.4rem; // Script/handwritten initials look best slightly larger
-    letter-spacing: 0;
-    text-transform: none;
-    font-weight: normal;
+    display: flex;
+    align-items: center;
     
     a {
-      transition: color 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+      display: inline-flex;
+      align-items: center;
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), filter 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
+
+      &:hover {
+        opacity: 1 !important; // override global link hover opacity fade
+        transform: scale(1.15);
+        filter: drop-shadow(0 4px 10px rgba(106, 59, 42, 0.25));
+
+        body.theme-dark & {
+          filter: drop-shadow(0 4px 12px rgba(253, 220, 212, 0.35));
+        }
+      }
+
+      &:active {
+        transform: scale(1) !important;
+        filter: none !important;
+        transition: transform 0.1s ease, filter 0.1s ease;
+      }
+    }
+
+    .nav-logo {
+      width: 38px;
+      height: auto;
+      display: block;
+
+      &.nav-logo--white {
+        display: none;
+      }
+
+      body.is-404-page & {
+        &.nav-logo--default {
+          display: none;
+        }
+        &.nav-logo--white {
+          display: block;
+        }
+      }
     }
   }
 

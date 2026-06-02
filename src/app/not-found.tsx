@@ -9,6 +9,7 @@ export default function NotFound() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState(false);
   const { isExiting } = usePageTransition();
+  const [canvasHeight, setCanvasHeight] = useState(320);
 
   // Set theme-dark and is-404-page globally on mount and revert on unmount
   useEffect(() => {
@@ -55,7 +56,14 @@ export default function NotFound() {
 
       const resize = () => {
         const w = window.innerWidth;
-        const h = 320; // Perfect responsive height for the 404 graphic container
+        const imgRatio = img.naturalWidth / img.naturalHeight;
+        // Keep asset same size (max 500px, or slightly smaller on screens narrower than 540px)
+        const dWidth = Math.min(500, w - 40);
+        const dHeight = dWidth / imgRatio;
+        const h = Math.ceil(dHeight);
+
+        setCanvasHeight(h);
+
         canvas.width = w;
         canvas.height = h;
 
@@ -63,12 +71,8 @@ export default function NotFound() {
         offscreen.height = h;
         oCtx.clearRect(0, 0, w, h);
 
-        const imgRatio = img.naturalWidth / img.naturalHeight;
-        // Keep asset same size (max 500px, or slightly smaller on screens narrower than 540px)
-        const dWidth = Math.min(500, w - 40);
-        const dHeight = dWidth / imgRatio;
         const dx = (w - dWidth) / 2;
-        const dy = (h - dHeight) / 2;
+        const dy = 0;
 
         oCtx.drawImage(img, dx, dy, dWidth, dHeight);
       };
@@ -111,8 +115,8 @@ export default function NotFound() {
           }
         }
 
-        // Slices the offscreen pre-rendered image into horizontal bands (125 slices for an extremely fine digital look)
-        const sliceCount = 125;
+        // Slices the offscreen pre-rendered image into horizontal bands (220 slices for an extremely fine digital look)
+        const sliceCount = 220;
         const sliceHeight = h / sliceCount;
 
         for (let i = 0; i < sliceCount; i++) {
@@ -160,12 +164,12 @@ export default function NotFound() {
 
         // High-frequency, ultra-fine digital static noise
         const fineNoiseLineCount = isExitingRef.current
-          ? Math.floor(16 + exitProgress * 100)
-          : (isHoveredRef.current ? 16 : 5);
+          ? Math.floor(30 + exitProgress * 150)
+          : (isHoveredRef.current ? 35 : 12);
 
         ctx.fillStyle = isExitingRef.current
           ? `rgba(255, 255, 255, ${0.12 + exitProgress * 0.58})`
-          : "rgba(255, 255, 255, 0.12)";
+          : "rgba(255, 255, 255, 0.15)";
 
         for (let j = 0; j < fineNoiseLineCount; j++) {
           if (Math.random() > 0.4) {
@@ -176,6 +180,22 @@ export default function NotFound() {
               isExitingRef.current ? Math.floor(Math.random() * 8 + 1) : 1
             );
           }
+        }
+
+        // Add true high-frequency CRT pixel grain / static dots
+        const pixelGrainCount = isExitingRef.current
+          ? Math.floor(100 + exitProgress * 300)
+          : (isHoveredRef.current ? 120 : 40);
+        ctx.fillStyle = isExitingRef.current
+          ? `rgba(255, 255, 255, ${0.08 + exitProgress * 0.2})`
+          : "rgba(255, 255, 255, 0.08)";
+        for (let g = 0; g < pixelGrainCount; g++) {
+          ctx.fillRect(
+            Math.random() * w,
+            Math.random() * h,
+            Math.random() * 2 + 1,
+            Math.random() * 2 + 1
+          );
         }
 
         // Occasional ultra-fine digital chromatic aberration split bars
@@ -224,10 +244,10 @@ export default function NotFound() {
     // Rigorously bind handlers BEFORE assigning the image src to prevent race conditions
     img.onload = handleLoad;
     img.onerror = (e) => {
-      console.error("Failed to load 404.png graphic:", e);
+      console.error("Failed to load 404-rip.png graphic:", e);
     };
 
-    img.src = "/404.png";
+    img.src = "/assets/global/404-rip.png";
 
     // Immediate execution fallback if already resolved from memory cache
     if (img.complete) {
@@ -291,14 +311,14 @@ export default function NotFound() {
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-            minHeight: "320px",
+            minHeight: `${canvasHeight}px`,
             width: "100%",
             userSelect: "none",
             position: "relative",
             overflow: "hidden",
           }}
         >
-          <link rel="preload" href="/404.png" as="image" />
+          <link rel="preload" href="/assets/global/404-rip.png" as="image" />
           <TransitionLink
             href="/"
             style={{

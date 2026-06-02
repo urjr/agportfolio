@@ -69,7 +69,8 @@ export default function Navbar() {
       <header className={`navbar${showBorder ? " navbar--scrolled" : ""}${isMenuOpen ? " navbar--open" : ""}`} id="navbar">
         <div className="nav-brand">
           <TransitionLink href="/" id="nav-home">
-            U R-K
+            <img src="/assets/global/nav-logo.svg" alt="UR-K Logo" className="nav-logo nav-logo--default" />
+            <img src="/assets/global/nav-logo-white.svg" alt="UR-K Logo" className="nav-logo nav-logo--white" />
           </TransitionLink>
         </div>
 
