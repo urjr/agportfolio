@@ -8,6 +8,9 @@ import "./globals.scss";
 export const metadata: Metadata = {
   title: "Portfolio",
   description: "A minimal, responsive, and elegant personal website.",
+  icons: {
+    icon: "/favicon.svg",
+  },
 };
 
 export default function RootLayout({
