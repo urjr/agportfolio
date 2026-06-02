@@ -850,9 +850,17 @@ export default function About() {
 
             {/* Image placeholder (left column) */}
             <div className="company-modal-image">
-              <div className="company-modal-image-inner">
-                <span className="company-modal-image-label">{company.name}</span>
-              </div>
+              {company.imageSrc ? (
+                <img
+                  src={company.imageSrc}
+                  alt={`${company.name} logo`}
+                  className="company-modal-img-element"
+                />
+              ) : (
+                <div className="company-modal-image-inner">
+                  <span className="company-modal-image-label">{company.name}</span>
+                </div>
+              )}
             </div>
 
             {/* Details (right column) */}

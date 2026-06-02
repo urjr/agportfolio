@@ -22,9 +22,17 @@ export default function CompanyCard({ company, inline = false }: CompanyCardProp
     >
       {/* Image placeholder (left column) */}
       <div className="company-card-image">
-        <div className="company-card-image-inner">
-          <span className="company-card-image-label">{company.name}</span>
-        </div>
+        {company.imageSrc ? (
+          <img
+            src={company.imageSrc}
+            alt={`${company.name} logo`}
+            className="company-card-img-element"
+          />
+        ) : (
+          <div className="company-card-image-inner">
+            <span className="company-card-image-label">{company.name}</span>
+          </div>
+        )}
       </div>
 
       {/* Details (right column) */}
