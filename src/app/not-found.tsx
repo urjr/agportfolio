@@ -57,8 +57,8 @@ export default function NotFound() {
       const resize = () => {
         const w = window.innerWidth;
         const imgRatio = img.naturalWidth / img.naturalHeight;
-        // Keep asset same size (max 500px, or slightly smaller on screens narrower than 540px)
-        const dWidth = Math.min(500, w - 40);
+        // Keep asset same size (max 650px, or slightly smaller on screens narrower than 690px)
+        const dWidth = Math.min(650, w - 40);
         const dHeight = dWidth / imgRatio;
         const h = Math.ceil(dHeight);
 
