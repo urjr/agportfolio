@@ -294,7 +294,7 @@ export default function About() {
       });
 
       // Cache static dimensions to avoid reading layout inside requestAnimationFrame (prevents layout thrashing)
-      const scrollY = window.scrollY || document.documentElement.scrollTop || 0;
+      const scrollY = document.body.scrollTop || window.scrollY || document.documentElement.scrollTop || 0;
       if (textRowRef.current) {
         const textRect = textRowRef.current.getBoundingClientRect();
         staticLayoutRef.current.textRowBottomPageY = textRect.bottom + scrollY;
@@ -321,7 +321,7 @@ export default function About() {
     let lastIsFlipping = true;
 
     const frameUpdate = () => {
-      const scrollY = window.scrollY || document.documentElement.scrollTop || 0;
+      const scrollY = document.body.scrollTop || window.scrollY || document.documentElement.scrollTop || 0;
       const elapsed = (Date.now() - startTime) / 1000;
 
       if (lastIsFlipping !== isFlippingRef.current) {
