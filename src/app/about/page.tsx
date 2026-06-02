@@ -514,11 +514,11 @@ export default function About() {
         >
           <p className="about-paragraph">
             I am a product designer with over a decade of experience working on complex, data-driven web and mobile applications. I hold a Bachelors of Architecture from{" "}
-            <Link href="#" className="about-bold-link about-link-education">
+            <Link href="https://carta.fiu.edu/architecture/" className="about-bold-link about-link-education" target="_blank" rel="noopener noreferrer">
               FIU Department of Architecture
             </Link>
-            , and Masters of Architecture at the{" "}
-            <Link href="#" className="about-bold-link about-link-education">
+            , and Masters of Architecture from the{" "}
+            <Link href="https://architecture.mit.edu/" className="about-bold-link about-link-education" target="_blank" rel="noopener noreferrer">
               MIT School of Architecture
             </Link>
             .
@@ -540,7 +540,6 @@ export default function About() {
                 >
                   Google
                 </Link>
-                's
               </span>
               <span className="about-hover-connector about-connector-work">
                 <span className="about-connector-dot start-dot"></span>
@@ -568,19 +567,19 @@ export default function About() {
                 </span>
               </span>
             </span>{" "}
-            Measurement team, designing AI-first experiences across Google{" "}
-            <Link href="#" className="about-bold-link about-link-work">
+            designing AI-first experiences across Google{" "}
+            <Link href="https://business.google.com/us/google-ads/" className="about-bold-link about-link-work" target="_blank" rel="noopener noreferrer">
               Ads
             </Link>
             ,{" "}
-            <Link href="#" className="about-bold-link about-link-work">
+            <Link href="https://marketingplatform.google.com/about/analytics/" className="about-bold-link about-link-work" target="_blank" rel="noopener noreferrer">
               Analytics
             </Link>
             , and{" "}
-            <Link href="#" className="about-bold-link about-link-work">
+            <Link href="https://marketingplatform.google.com/about/" className="about-bold-link about-link-work" target="_blank" rel="noopener noreferrer">
               Marketing platform
             </Link>{" "}
-            products. Previously at Google, I worked for the Connect team, building internal tools for Google's sales, service, and support teams.
+            products. Previously at Google, I worked at a team responsible for building internal tools for Google's sales, service, and support teams.
           </p>
         </div>
 
@@ -589,7 +588,7 @@ export default function About() {
           style={{ "--row-index": 3 } as React.CSSProperties}
         >
           <p className="about-paragraph">
-            Before Google, I worked as lead product designer at{" "}
+            Before Google, I was lead product designer at{" "}
             <span className="about-link-group">
               <Link
                 href="#"
@@ -624,13 +623,13 @@ export default function About() {
                 </span>
               </span>
             </span>{" "}
-            (now known as{" "}
-            <Link href="#" className="about-bold-link about-link-work">
+            (now{" "}
+            <Link href="https://proof.com" className="about-bold-link about-link-work" target="_blank" rel="noopener noreferrer">
               Proof
             </Link>
-            ), creating the mortgage notarization platform from the ground up, on the world's first online notarization service. Since its launch, Proof has closed on{" "}
+            ), where I was a key part of building their mortgage notarization platform from the ground up, on the world's first online notarization service. Since its launch, Proof has closed on{" "}
             <span className="about-link-group">
-              <Link href="#" className="about-bold-link about-link-geography">
+              <Link href="https://www.proof.com/blog/proof-surpasses-640-billion-in-real-estate-transactions" className="about-bold-link about-link-geography" target="_blank" rel="noopener noreferrer">
                 $640B
               </Link>
               <span className="about-hover-connector about-connector-geography">
@@ -641,15 +640,15 @@ export default function About() {
               <span className="about-hover-card about-card-geography left-side">
                 <span className="about-hover-card-inner">
                   <span className="about-geography-pill-text">
-                    Proof has secured over $640B in remote online transactions as the world's leading eNotary system.
+                    Proof, the trusted platform for securing the digital economy, reported that it has secured more than $643 billion in real estate transactions, including $151 billion in 2025 alone, reflecting a dramatic increase in demand and urgency for trusted identities across the sector. 
                   </span>
-                  <Link href="https://www.proof.com" target="_blank" rel="noopener noreferrer" className="about-geography-read-more">
+                  <Link href="https://www.proof.com/blog/proof-surpasses-640-billion-in-real-estate-transactions" target="_blank" rel="noopener noreferrer" className="about-geography-read-more">
                     Read more
                   </Link>
                 </span>
               </span>
             </span>{" "}
-            in fully-remote online real estate transactions.
+            in real estate transactions.
           </p>
         </div>
 
@@ -730,8 +729,8 @@ export default function About() {
             </span>{" "}
             (Techstars Boulder 2015). At both companies, I helped establish the early branding, product, and vision, playing a key role in securing admission to both accelerator programs, and over $5MM in total of seed funding. Smarking was{" "}
             <span className="about-link-group">
-              <Link href="#" className="about-bold-link about-link-geography">
-                acquired by Parkhub
+              <Link href="https://www.justpark.com/business/solutions/insights/" className="about-bold-link about-link-geography" target="_blank" rel="noopener noreferrer">
+                acquired by JustPark
               </Link>
               <span className="about-hover-connector about-connector-geography">
                 <span className="about-connector-dot start-dot"></span>
@@ -741,9 +740,9 @@ export default function About() {
               <span className="about-hover-card about-card-geography right-side">
                 <span className="about-hover-card-inner">
                   <span className="about-geography-pill-text">
-                    Smarking merged with Parkhub to integrate real-time parking analytics with modern venue operations.
+                    JustPark recently acquired Smarking, a leading provider of real-time business intelligence for the parking industry, creating an ideal marriage of parking management solutions.
                   </span>
-                  <Link href="https://www.parkhub.com" target="_blank" rel="noopener noreferrer" className="about-geography-read-more">
+                  <Link href="https://www.justpark.com/business/solutions/insights/" target="_blank" rel="noopener noreferrer" className="about-geography-read-more">
                     Read more
                   </Link>
                 </span>
@@ -751,7 +750,7 @@ export default function About() {
             </span>{" "}
             in 2022, and Broadlume (formerly AdHawk) was{" "}
             <span className="about-link-group">
-              <Link href="#" className="about-bold-link about-link-geography">
+              <Link href="https://www.cyncly.com/resources/news/cyncly-to-acquire-broadlume" className="about-bold-link about-link-geography" target="_blank" rel="noopener noreferrer">
                 acquired by Cyncly
               </Link>
               <span className="about-hover-connector about-connector-geography">
@@ -762,9 +761,9 @@ export default function About() {
               <span className="about-hover-card about-card-geography left-side">
                 <span className="about-hover-card-inner">
                   <span className="about-geography-pill-text">
-                    Broadlume partnered with Cyncly to expand retail sales and digital marketing tools globally.
+                    Cyncly, a leading global provider of software and content solutions that help make amazing spaces for living, today announces it has entered into a definitive agreement to acquire Broadlume, a leading provider of digital marketing, visualization and business management software for the flooring industry.
                   </span>
-                  <Link href="https://www.cyncly.com" target="_blank" rel="noopener noreferrer" className="about-geography-read-more">
+                  <Link href="https://www.cyncly.com/resources/news/cyncly-to-acquire-broadlume" target="_blank" rel="noopener noreferrer" className="about-geography-read-more">
                     Read more
                   </Link>
                 </span>
@@ -779,7 +778,7 @@ export default function About() {
           style={{ "--row-index": 5 } as React.CSSProperties}
         >
           <p className="about-paragraph">
-            Outside of designing for tech companies, I am a professor at{" "}
+            Outside of designing for tech companies, I am a lecturer at{" "}
             <span className="about-link-group">
               <span className="about-nowrap-group">
                 <Link
@@ -831,12 +830,12 @@ export default function About() {
           style={{ "--row-index": 6 } as React.CSSProperties}
         >
           <p className="about-paragraph">
-            Send me a shout on{" "}
+            Reach out to me on{" "}
             <Link href="https://www.linkedin.com/in/ulirey/" className="about-bold-link about-link-special" target="_blank" rel="noopener noreferrer">
               LinkedIn
             </Link>{" "}
             or{" "}
-            <Link href="mailto:hello@example.com" className="about-bold-link about-link-special">
+             <Link href="mailto:hello@ulises.fyi" className="about-bold-link about-link-special">
               email
             </Link>
             !

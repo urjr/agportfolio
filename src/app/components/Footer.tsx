@@ -39,7 +39,7 @@ export default function Footer() {
           </li>
           <li>
             <a
-              href="mailto:hello@example.com"
+              href="mailto:hello@ulises.fyi"
               id="footer-email"
               aria-label="Email"
             >
