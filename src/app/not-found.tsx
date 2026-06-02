@@ -286,11 +286,19 @@ export default function NotFound() {
       <style
         dangerouslySetInnerHTML={{
           __html: `
-            body {
+            html, body {
               background-color: #2B2017 !important;
               color: #FAF8F5 !important;
+              overflow: hidden !important;
+              height: 100% !important;
             }
-            .navbar, .footer {
+            .navbar {
+              background-color: transparent !important;
+              backdrop-filter: none !important;
+              -webkit-backdrop-filter: none !important;
+              border-bottom: 1px solid transparent !important;
+            }
+            .footer {
               background-color: rgba(43, 32, 23, 0.85) !important;
               color: #FAF8F5 !important;
             }

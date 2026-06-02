@@ -3304,8 +3304,8 @@ $lw-distance:        0.85em; // clip travel distance
   transform-origin: bottom right;
   // Hidden state: pushed off-screen and tilted clockwise
   transform: translate3d(100%, 15%, 0) rotate(25deg);
-  // Default exit transition (smooth and fast retraction)
-  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  // Default exit transition (matches entrance speed)
+  transition: transform 0.42s cubic-bezier(0.16, 1, 0.3, 1);
   will-change: transform;
 
   &.revealed {
