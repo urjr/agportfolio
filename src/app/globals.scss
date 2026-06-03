@@ -890,41 +890,62 @@ $lw-distance:        0.85em; // clip travel distance
       letter-spacing: 0;
       border-bottom: none !important; // Hide underlines everywhere
       padding: 2px 8px;
-      margin: -2px -8px;
-      transition: background-color 0.3s cubic-bezier(0.16, 1, 0.3, 1), color 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease, box-shadow 0.3s ease;
+      margin: -2px -8px; // Original margin
+      transition: color 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
       display: inline-block;
       vertical-align: baseline;
+      position: relative;
+      z-index: 1;
 
-      // Theme highlights in resting (pre-hover) state (with inset shadow as an inner border)
+      // Pseudo-element to render the colored highlight background with a 3px transparent bottom cutout
+      &::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 3px; // Leaves the bottom 3px transparent
+        z-index: -1;
+        transition: background-color 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        pointer-events: none; // Ensure clicks pass through to the link
+      }
+
+      // Theme highlights in resting (pre-hover) state
       &.highlight-name {
-        background-color: #FCDCD3; // Pastel peach
         color: #6B3B2B; // Dark terracotta
-        box-shadow: inset 0 -3px 0 0 $color-bg;
+        &::before {
+          background-color: #FCDCD3; // Pastel peach
+        }
       }
 
       &.highlight-work {
-        background-color: #DFE8F9; // Pastel periwinkle (swapped)
-        color: #203A6F; // Dark periwinkle navy (swapped)
-        box-shadow: inset 0 -3px 0 0 $color-bg;
+        color: #203A6F; // Dark periwinkle navy
+        &::before {
+          background-color: #DFE8F9; // Pastel periwinkle
+        }
       }
 
       &.highlight-education {
-        background-color: #F9F0DB; // Pastel warm yellow (swapped)
-        color: #5C481A; // Dark amber gold (swapped)
-        box-shadow: inset 0 -3px 0 0 $color-bg;
+        color: #5C481A; // Dark amber gold
+        &::before {
+          background-color: #F9F0DB; // Pastel warm yellow
+        }
       }
 
       &.highlight-geography {
-        background-color: #DDEFEA; // Pastel mint/sage green (swapped)
-        color: #1C4E43; // Dark teal/forest green (swapped)
-        box-shadow: inset 0 -3px 0 0 $color-bg;
+        color: #1C4E43; // Dark teal/forest green
+        &::before {
+          background-color: #DDEFEA; // Pastel mint/sage green
+        }
       }
 
       // 1. Non-glitch hovers (go darker and apply unique subtle jiggle animations for one cycle)
       &.highlight-name:hover, &.highlight-name.active-hover {
-        background-color: #F6BDAE !important; // Deeper warm peach
         color: #562719 !important; // Deeper terracotta
         opacity: 1 !important;
+        &::before {
+          background-color: #F6BDAE !important; // Deeper warm peach
+        }
         @media (prefers-reduced-motion: no-preference) {
           animation: jiggle-pivot 0.3s ease-in-out;
           body.is-mobile-device & {
@@ -934,9 +955,11 @@ $lw-distance:        0.85em; // clip travel distance
       }
 
       &.highlight-work:hover, &.highlight-work.active-hover {
-        background-color: #BDCFF3 !important; // Deeper periwinkle (swapped)
-        color: #13264F !important; // Deeper periwinkle navy (swapped)
+        color: #13264F !important; // Deeper periwinkle navy
         opacity: 1 !important;
+        &::before {
+          background-color: #BDCFF3 !important; // Deeper periwinkle
+        }
         @media (prefers-reduced-motion: no-preference) {
           animation: jiggle-pulse 0.3s ease-in-out;
           body.is-mobile-device & {
@@ -946,9 +969,11 @@ $lw-distance:        0.85em; // clip travel distance
       }
 
       &.highlight-education:hover, &.highlight-education.active-hover {
-        background-color: #F3DFB4 !important; // Deeper warm yellow (swapped)
-        color: #42320E !important; // Deeper amber gold (swapped)
+        color: #42320E !important; // Deeper amber gold
         opacity: 1 !important;
+        &::before {
+          background-color: #F3DFB4 !important; // Deeper warm yellow
+        }
         @media (prefers-reduced-motion: no-preference) {
           animation: jiggle-horizontal 0.3s ease-in-out;
           body.is-mobile-device & {
@@ -958,9 +983,11 @@ $lw-distance:        0.85em; // clip travel distance
       }
 
       &.highlight-geography:hover, &.highlight-geography.active-hover {
-        background-color: #BDDFD5 !important; // Deeper mint/sage green
         color: #133E35 !important; // Deeper forest green
         opacity: 1 !important;
+        &::before {
+          background-color: #BDDFD5 !important; // Deeper mint/sage green
+        }
         @media (prefers-reduced-motion: no-preference) {
           animation: jiggle-vertical 0.3s ease-in-out;
           body.is-mobile-device & {
@@ -998,24 +1025,18 @@ $lw-distance:        0.85em; // clip travel distance
         }
       }
 
-      // 2. Glitch-enabled links hover (remove highlight background and shadow)
+      // 2. Glitch-enabled links hover (remove highlight background)
       &.google-svg-link:hover, &.google-svg-link.active-hover,
       &.analytics-svg-link:hover, &.analytics-svg-link.active-hover,
       &.upenn-svg-link:hover, &.upenn-svg-link.active-hover {
-        background-color: transparent !important;
-        box-shadow: none !important;
         opacity: 1 !important;
-      }
-    }
-
-    // Dark theme support for the inset highlight truncation border
-    body.theme-dark & {
-      a {
-        &.highlight-name, &.highlight-work, &.highlight-education, &.highlight-geography {
-          box-shadow: inset 0 -3px 0 0 #2B2017; // Matches the dark cocoa background
+        &::before {
+          background-color: transparent !important;
         }
       }
     }
+
+
 
     .nowrap-link {
       white-space: nowrap;
