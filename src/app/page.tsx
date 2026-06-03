@@ -480,12 +480,8 @@ export default function Home() {
         setActiveHoverId(null);
 
         // Rest/pause before highlighting the next link:
-        // Use a longer pause (2.2s to 3.0s) for lob animations to let particles finish their full arcing trajectory.
-        // Use a quick pause (0.55s to 0.95s) for snappy glitch effects.
-        const isLobTrigger = ["link-philadelphia", "link-product-designer", "link-educator"].includes(nextId);
-        const restDuration = isLobTrigger
-          ? 2200 + Math.random() * 800
-          : (1100 + Math.random() * 800) * 0.5;
+        // Use a 2.0s to 3.0s pause to give the page visual breathing room and let animations complete
+        const restDuration = 2000 + Math.random() * 1000;
 
         timeoutId = setTimeout(runShowcase, restDuration);
       }, hoverDuration);
