@@ -3398,6 +3398,9 @@ $lw-distance:        0.85em; // clip travel distance
 // ============================================================
 
 .wave-figure {
+  // Balanced Spring: zeta=0.5, omega=15 (damped harmonic oscillator)
+  --wave-spring-easing: linear(0 0%, 0.0027 0.5%, 0.0107 1%, 0.0234 1.5%, 0.0405 2%, 0.0862 3%, 0.1446 4%, 0.2127 5%, 0.2877 6%, 0.6105 10%, 0.7246 11.5%, 0.795 12.5%, 0.8598 13.5%, 0.9455 15%, 1.0164 16.5%, 1.0553 17.5%, 1.0876 18.5%, 1.1244 20%, 1.1415 21%, 1.1533 22%, 1.1603 23%, 1.163 24%, 1.1619 25%, 1.1543 26.5%, 1.1305 29%, 1.0471 35.5%, 1.015 38.5%, 0.9892 42%, 0.9762 45.5%, 0.9746 50.5%, 0.9973 62.5%, 1.0036 69%, 1 100%);
+
   position: fixed;
   bottom: 0;
   right: 0;
@@ -3417,9 +3420,21 @@ $lw-distance:        0.85em; // clip travel distance
   will-change: transform;
 
   &.revealed {
-    // Revealed state: tilts and shifts into viewport with aggressive spring-overshoot effect
+    // Revealed state: tilts and shifts into viewport
     transform: translate3d(25%, 10%, 0) rotate(-8deg);
-    transition: transform 0.42s cubic-bezier(0.34, 1.8, 0.64, 1);
+    
+    // Fallback cubic-bezier transition for browsers that don't support linear()
+    transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+    // Modern browsers that support CSS linear() easing get the real physics spring
+    @supports (transition-timing-function: linear(0, 1)) {
+      transition: transform 0.85s var(--wave-spring-easing);
+    }
+  }
+
+  // Disable transitions for users who prefer reduced motion
+  @media (prefers-reduced-motion: reduce) {
+    transition: none !important;
   }
 
   // Optimize responsive reveal for smaller screen viewports (mobile/portrait tablets)
