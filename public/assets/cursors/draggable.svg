@@ -1,5 +1,10 @@
 <svg width="45" height="49" viewBox="0 0 45 49" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g filter="url(#filter0_d_28_2)">
+<style>
+  .custom-cursor-shadow {
+    filter: drop-shadow(0px 4px 2px rgba(0, 0, 0, 0.25));
+  }
+</style>
+<g class="custom-cursor-shadow">
 <path d="M38.9444 6.15001V4.10001H32.7778V2.05H30.7222H28.6667H26.6111V1.09151e-05H22.5V2.05H20.4444V4.10001V6.15001V8.2V10.25V12.3V14.35H18.3889V12.3V10.25V8.2H16.3333V6.15001V4.10001V2.05H14.2778V1.09151e-05H10.1667V2.05H8.11111V4.10001V6.15001V8.2H10.1667V10.25V12.3V14.35H12.2222V16.4V18.45H10.1667V16.4H4V18.45V22.55H6.05556V24.6H8.11111V28.7H10.1667V32.8H12.2222V36.9H14.2778V38.95V41H32.7778H34.8333V36.9H36.8889V32.8H38.9444V20.5H41V18.45V16.4V14.35V12.3V10.25V8.2V6.15001H38.9444Z" fill="white"/>
 <path d="M14.2778 5.53678e-05H10.1667V2.05005H14.2778V5.53678e-05Z" fill="black"/>
 <path d="M26.6111 5.53678e-05H22.5V2.05005H26.6111V5.53678e-05Z" fill="black"/>
@@ -19,16 +24,4 @@
 <path d="M8.11111 24.6V28.7H10.1667V24.6H8.11111Z" fill="black"/>
 <path d="M10.1667 28.7001V32.8H12.2222V28.7001H10.1667Z" fill="black"/>
 </g>
-<defs>
-<filter id="filter0_d_28_2" x="0" y="0" width="45" height="49" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-<feFlood flood-opacity="0" result="BackgroundImageFix"/>
-<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
-<feOffset dy="4"/>
-<feGaussianBlur stdDeviation="2"/>
-<feComposite in2="hardAlpha" operator="out"/>
-<feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"/>
-<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_28_2"/>
-<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_28_2" result="shape"/>
-</filter>
-</defs>
 </svg>

@@ -1,5 +1,10 @@
 <svg width="45" height="56" viewBox="0 0 45 56" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g filter="url(#filter0_d_29_62)">
+<style>
+  .custom-cursor-shadow {
+    filter: drop-shadow(0px 4px 2px rgba(0, 0, 0, 0.25));
+  }
+</style>
+<g class="custom-cursor-shadow">
 <path d="M38.8235 19.6362V17.4544H36.6471V15.2726H32.2941V13.0908H25.7647V10.909H21.4118V2.18182H19.2353V1.72059e-05H14.8824V2.18182H12.7059V21.8184H10.5294V19.6362H4V21.8184V22.9089V26.1816H6.17647V28.3634H8.35294V32.727H10.5294V37.091H12.7059V41.4546H14.8824V45.8182V48H34.4706H36.6471V41.4546H38.8235V34.9092H41V19.6362H38.8235Z" fill="white"/>
 <path d="M14.8824 28.3634H12.7059V2.18184H14.8824V28.3634Z" fill="black"/>
 <path d="M19.2353 2.18176H14.8824V-3.9053e-05H19.2353V2.18176Z" fill="black"/>
@@ -23,16 +28,4 @@
 <path d="M14.8824 41.4546H12.7059V37.091H14.8824V41.4546Z" fill="black"/>
 <path d="M17.0588 45.8182H14.8824V41.4546H17.0588V45.8182Z" fill="black"/>
 </g>
-<defs>
-<filter id="filter0_d_29_62" x="0" y="0" width="45" height="56" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-<feFlood flood-opacity="0" result="BackgroundImageFix"/>
-<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
-<feOffset dy="4"/>
-<feGaussianBlur stdDeviation="2"/>
-<feComposite in2="hardAlpha" operator="out"/>
-<feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"/>
-<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_29_62"/>
-<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_29_62" result="shape"/>
-</filter>
-</defs>
 </svg>
