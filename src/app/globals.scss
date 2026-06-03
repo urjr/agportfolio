@@ -876,11 +876,17 @@ $lw-distance:        0.85em; // clip travel distance
     white-space: normal;
     max-width: 1200px;
     user-select: text;
+    text-shadow: 0 0 8px $color-bg, 0 0 4px $color-bg;
+
+    body.theme-dark & {
+      text-shadow: 0 0 8px #2B2017, 0 0 4px #2B2017;
+    }
 
     a {
       font-family: 'Pecita', cursive, serif;
       font-size: $pecita-scale; // Driven by the scale variable at the top
       font-weight: normal;
+      text-shadow: none;
       letter-spacing: 0;
       border-bottom: none !important; // Hide underlines everywhere
       padding: 2px 8px;

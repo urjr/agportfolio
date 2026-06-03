@@ -729,7 +729,7 @@ export default function About() {
             </span>{" "}
             (Techstars Boulder 2015). At both companies, I helped establish the early branding, product, and vision, playing a key role in securing admission to both accelerator programs, and over $5MM in total of seed funding. Smarking was{" "}
             <span className="about-link-group">
-              <Link href="https://www.justpark.com/business/solutions/insights/" className="about-bold-link about-link-geography" target="_blank" rel="noopener noreferrer">
+              <Link href="https://www.justpark.com/business/blog/parkhub-and-smarking-a-powerhouse-combination" className="about-bold-link about-link-geography" target="_blank" rel="noopener noreferrer">
                 acquired by JustPark
               </Link>
               <span className="about-hover-connector about-connector-geography">
@@ -742,7 +742,7 @@ export default function About() {
                   <span className="about-geography-pill-text">
                     JustPark recently acquired Smarking, a leading provider of real-time business intelligence for the parking industry, creating an ideal marriage of parking management solutions.
                   </span>
-                  <Link href="https://www.justpark.com/business/solutions/insights/" target="_blank" rel="noopener noreferrer" className="about-geography-read-more">
+                  <Link href="https://www.justpark.com/business/blog/parkhub-and-smarking-a-powerhouse-combination" target="_blank" rel="noopener noreferrer" className="about-geography-read-more">
                     Read more
                   </Link>
                 </span>
