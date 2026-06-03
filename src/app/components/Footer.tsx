@@ -52,6 +52,23 @@ export default function Footer() {
               />
             </a>
           </li>
+          <li>
+            <a
+              href="/resume.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              id="footer-resume"
+              aria-label="Resume"
+            >
+              <img
+                src="/assets/home/socials/resume.svg"
+                alt="Resume"
+                className="footer-icon"
+                width={36}
+                height={36}
+              />
+            </a>
+          </li>
         </ul>
       </nav>
     </footer>
