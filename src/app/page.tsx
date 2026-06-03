@@ -282,6 +282,19 @@ export default function Home() {
     };
   }, [isMobileDevice, isWaveRevealed]);
 
+  // On touch-only devices, auto-hide the wave SVG after 1.5 seconds
+  useEffect(() => {
+    if (!isMobileDevice || !isWaveRevealed) return;
+
+    const timer = setTimeout(() => {
+      setIsWaveRevealed(false);
+    }, 1500);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [isMobileDevice, isWaveRevealed]);
+
   const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
     if (hideTimeoutRef.current) {
       clearTimeout(hideTimeoutRef.current);
