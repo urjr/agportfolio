@@ -2457,7 +2457,7 @@ $lw-distance:        0.85em; // clip travel distance
   letter-spacing: 0.02em;
   text-decoration: none !important;
   border: none;
-  cursor: pointer;
+  cursor: url('/assets/cursors/link.svg') 18 0, pointer;
   align-self: flex-start;
   transition:
     background 0.22s ease,
@@ -2834,7 +2834,7 @@ $lw-distance:        0.85em; // clip travel distance
   letter-spacing: 0.02em;
   text-decoration: none !important;
   border: none;
-  cursor: pointer;
+  cursor: url('/assets/cursors/link.svg') 18 0, pointer;
   align-self: flex-start;
   transition:
     background 0.22s ease,
