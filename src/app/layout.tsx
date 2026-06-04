@@ -3,6 +3,7 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import { TransitionProvider } from "./components/TransitionProvider";
 import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.scss";
 
 export const viewport: Viewport = {
@@ -86,6 +87,7 @@ export default function RootLayout({
           <Footer />
         </TransitionProvider>
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
