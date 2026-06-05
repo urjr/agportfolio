@@ -10,6 +10,18 @@ export default function Work() {
   const [wasFlipEntered] = useState(() => {
     return transitionType === "about-to-work" && !!sharedCardCoords;
   });
+  const [isTransitionActive, setIsTransitionActive] = useState(() => {
+    return transitionType === "about-to-work" && !!sharedCardCoords;
+  });
+
+  useEffect(() => {
+    if (isTransitionActive) {
+      const timer = setTimeout(() => {
+        setIsTransitionActive(false);
+      }, 600); // matches the FLIP animation duration
+      return () => clearTimeout(timer);
+    }
+  }, [isTransitionActive]);
   const hasAnimated = useRef(false);
 
   useEffect(() => {
@@ -73,7 +85,9 @@ export default function Work() {
   const getExitClass = () => {
     if (isFlipExit) return "page-row--exit-flip";
     if (isExiting) return "page-row--exit";
-    if (isFlipEnter || wasFlipEntered) return "page-row--enter-flip";
+    if (isFlipEnter || isTransitionActive) return "page-row--enter-flip";
+    // If FLIP transition completed, return empty class to let borders fade back in
+    if (wasFlipEntered && !isTransitionActive) return "";
     return "page-row--enter";
   };
 
@@ -89,7 +103,7 @@ export default function Work() {
               className={`page-row ${getExitClass()}`}
               style={{ "--row-index": index } as React.CSSProperties}
             >
-              <CompanyCard company={company} inline />
+              <CompanyCard company={company} />
             </div>
           );
         })}

@@ -2,11 +2,9 @@ import type { CompanyData } from "../data/companies";
 
 interface CompanyCardProps {
   company: CompanyData;
-  /** When true (Work page): no shadow, no scrim, rendered inline */
-  inline?: boolean;
 }
 
-export default function CompanyCard({ company, inline = false }: CompanyCardProps) {
+export default function CompanyCard({ company }: CompanyCardProps) {
   const isEducation = company.type === "education";
 
   return (
@@ -15,7 +13,6 @@ export default function CompanyCard({ company, inline = false }: CompanyCardProp
       className={[
         "company-card",
         isEducation ? "company-card--education" : "company-card--work",
-        inline ? "company-card--inline" : "",
       ]
         .filter(Boolean)
         .join(" ")}
@@ -58,30 +55,60 @@ export default function CompanyCard({ company, inline = false }: CompanyCardProp
 
         <p className="company-card-summary">{company.summary}</p>
 
-        <a
-          href={company.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="company-card-cta"
-        >
-          {company.urlLabel}
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 14 14"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            aria-hidden="true"
+        <div className="company-card-actions">
+          <a
+            href={company.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="company-card-cta"
           >
-            <path
-              d="M2 12L12 2M12 2H5M12 2V9"
-              stroke="currentColor"
-              strokeWidth="1.6"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </a>
+            {company.urlLabel}
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 14 14"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              aria-hidden="true"
+            >
+              <path
+                d="M2 12L12 2M12 2H5M12 2V9"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </a>
+
+          {(company.id === "google" || company.id === "upenn") && (
+            <div className="company-card-case-study-wrapper">
+              <button
+                type="button"
+                className="company-card-cta company-card-cta--disabled company-card-case-study"
+                aria-label="Case study not available"
+              >
+                View Case Study
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="lock-icon"
+                  aria-hidden="true"
+                >
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                </svg>
+              </button>
+              <span className="case-study-tooltip">Not available</span>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

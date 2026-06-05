@@ -631,6 +631,15 @@ $lw-distance:        0.85em; // clip travel distance
   }
 }
 
+@keyframes gentle-bobble {
+  0%, 100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(var(--bobble-x, 1.5px), var(--bobble-y, -5px));
+  }
+}
+
 // Word slide-up from below (clip reveal)
 @keyframes lw-enter {
   from {
@@ -2155,38 +2164,36 @@ $lw-distance:        0.85em; // clip travel distance
   width: 34px;
   height: 34px;
   border-radius: 50%;
-  border: 1.5px solid rgba(#2B2017, 0.12);
-  background: rgba(#FAF8F5, 0.85);
+  border: none;
+  background: transparent;
   color: rgba(#2B2017, 0.55);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition:
-    background 0.2s ease,
-    border-color 0.2s ease,
     color 0.2s ease,
     transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 
   &:hover {
-    background: rgba(#2B2017, 0.07);
-    border-color: rgba(#2B2017, 0.25);
+    background: transparent;
+    border: none;
     color: rgba(#2B2017, 0.85);
-    transform: scale(1.08);
+    transform: scale(1.15);
   }
 
   &:active {
-    transform: scale(0.94);
+    transform: scale(0.9);
   }
 
   body.theme-dark & {
-    border-color: rgba(#FAF8F5, 0.12);
-    background: rgba(#2B2017, 0.5);
+    border: none;
+    background: transparent;
     color: rgba(#FAF8F5, 0.55);
 
     &:hover {
-      background: rgba(#FAF8F5, 0.1);
-      border-color: rgba(#FAF8F5, 0.25);
+      background: transparent;
+      border: none;
       color: rgba(#FAF8F5, 0.85);
     }
   }
@@ -2354,7 +2361,7 @@ $lw-distance:        0.85em; // clip travel distance
 .company-modal-name {
   font-family: 'Gabarito', sans-serif;
   font-size: 1.955rem;
-  font-weight: 500;
+  font-weight: 600;
   color: #10161F;
   line-height: 1.15;
   margin: 0;
@@ -2456,7 +2463,8 @@ $lw-distance:        0.85em; // clip travel distance
   font-weight: 600;
   letter-spacing: 0.02em;
   text-decoration: none !important;
-  border: none;
+  border: 1.5px solid transparent;
+  line-height: 1.2;
   cursor: url('/assets/cursors/link.svg') 18 0, pointer;
   align-self: flex-start;
   transition:
@@ -2488,6 +2496,77 @@ $lw-distance:        0.85em; // clip travel distance
   }
 }
 
+.company-modal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.company-modal-case-study-wrapper {
+  position: relative;
+  display: inline-flex;
+}
+
+.company-modal-cta--disabled {
+  cursor: url('/assets/cursors/pointer-no.svg') 5 0, not-allowed;
+  pointer-events: auto; /* Ensure hover and tooltip work */
+  line-height: 1.2;
+  
+  // Work default (blue) - Light Mode
+  background: #f0f4fc;
+  border: 1.5px dashed rgba(#203A6F, 0.25);
+  color: rgba(#203A6F, 0.6) !important;
+  box-shadow: none !important;
+
+  &:hover {
+    background: #f0f4fc !important;
+    transform: none !important;
+    box-shadow: none !important;
+    color: rgba(#203A6F, 0.6) !important;
+    animation: rumble 0.25s linear infinite;
+  }
+
+  body.theme-dark & {
+    background: rgba(#203A6F, 0.08);
+    border-color: rgba(#A7C2ED, 0.2);
+    color: rgba(#A7C2ED, 0.5) !important;
+
+    &:hover {
+      background: rgba(#203A6F, 0.08) !important;
+      color: rgba(#A7C2ED, 0.5) !important;
+    }
+  }
+
+  // Education (amber) override
+  .company-modal--education & {
+    background: #faf6eb;
+    border-color: rgba(#5C481A, 0.25);
+    color: rgba(#5C481A, 0.6) !important;
+
+    &:hover {
+      background: #faf6eb !important;
+      color: rgba(#5C481A, 0.6) !important;
+    }
+
+    body.theme-dark & {
+      background: rgba(#5C481A, 0.08);
+      border-color: rgba(#E3C18E, 0.2);
+      color: rgba(#E3C18E, 0.5) !important;
+
+      &:hover {
+        background: rgba(#5C481A, 0.08) !important;
+        color: rgba(#E3C18E, 0.5) !important;
+      }
+    }
+  }
+
+  .lock-icon {
+    flex-shrink: 0;
+  }
+}
+
 // ============================================================
 // Work Page Layout
 // ============================================================
@@ -2502,16 +2581,67 @@ $lw-distance:        0.85em; // clip travel distance
 
 .work-content {
   width: 100%;
-  max-width: 900px;
+  max-width: 1040px;
   padding: 4rem 1.5rem 3rem;
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
+
+  .page-row {
+    border-bottom: 1px solid rgba(#2B2017, 0.08);
+    padding-bottom: 1.25rem;
+    transition: border-color 0.3s ease;
+
+    body.theme-dark & {
+      border-bottom-color: rgba(#FAF8F5, 0.08);
+    }
+
+    &:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    // Hide divider lines during active FLIP transitions for clean card animations
+    &.page-row--exit-flip,
+    &.page-row--enter-flip {
+      border-bottom-color: transparent !important;
+    }
+  }
+
+  .page-row:nth-child(1) .company-card-image {
+    --bobble-duration: 6.8s;
+    --bobble-delay: 0.2s;
+    --bobble-x: -2px;
+    --bobble-y: -7px;
+  }
+  .page-row:nth-child(2) .company-card-image {
+    --bobble-duration: 8.4s;
+    --bobble-delay: 1.5s;
+    --bobble-x: 3px;
+    --bobble-y: 6px;
+  }
+  .page-row:nth-child(3) .company-card-image {
+    --bobble-duration: 7.5s;
+    --bobble-delay: 1.0s;
+    --bobble-x: 2.5px;
+    --bobble-y: -8px;
+  }
+  .page-row:nth-child(4) .company-card-image {
+    --bobble-duration: 7.1s;
+    --bobble-delay: 1.1s;
+    --bobble-x: -3px;
+    --bobble-y: 7px;
+  }
+  .page-row:nth-child(5) .company-card-image {
+    --bobble-duration: 9.2s;
+    --bobble-delay: 2.3s;
+    --bobble-x: -1.5px;
+    --bobble-y: -8px;
+  }
 }
 
 // ============================================================
-// Shared CompanyCard Component
-// (Used by About modal AND Work page inline list)
+// CompanyCard Component (Used on Work page)
 // ============================================================
 
 .company-card {
@@ -2519,84 +2649,50 @@ $lw-distance:        0.85em; // clip travel distance
   flex-direction: row;
   width: 100%;
   overflow: hidden;
+  position: relative;
+
+  // Merged Work page card layout styles directly
+  padding: 2.5rem;
+  border-radius: 16px 0 0 16px;
+  border: 1.5px solid transparent;
   background: transparent;
 
-  // Inline (Work page) variant: outlined card with gap spacing
-  &.company-card--inline {
-    padding: 2.5rem;
-    border-radius: 16px 0 0 16px;
-    border: 1.5px solid transparent;
-    transition:
-      background 0.22s ease,
-      border-color 0.22s ease,
-      box-shadow 0.22s ease;
+  @media (max-width: 580px) {
+    padding: 1.5rem 0.5rem;
+  }
 
-    &:hover {
-      box-shadow: 0 4px 24px rgba(43, 32, 23, 0.07);
+  .company-card-image {
+    width: 260px;
+    min-height: 230px;
+    flex-shrink: 0;
+    border-radius: 10px;
 
-      body.theme-dark & {
-        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
-      }
+    @media (max-width: 680px) {
+      position: absolute;
+      top: 2.5rem;
+      right: 2.5rem;
+      width: 54px;
+      height: 54px;
+      min-height: 54px;
+      border-radius: 8px;
     }
 
-    // Category backgrounds for inline cards
-    &.company-card--work {
-      background: #f2f6ff;
-      border-color: rgba(#203A6F, 0.18);
+    @media (max-width: 580px) {
+      top: 1.5rem;
+      right: 0.5rem;
+    }
+  }
 
-      &:hover {
-        background: #e6efff;
-        border-color: rgba(#203A6F, 0.32);
-      }
+  .company-card-details {
+    padding: 0 0 0 3rem;
 
-      body.theme-dark & {
-        background: rgba(#203A6F, 0.15);
-        border-color: rgba(#A7C2ED, 0.12);
-
-        &:hover {
-          background: rgba(#203A6F, 0.22);
-          border-color: rgba(#A7C2ED, 0.22);
-        }
-      }
+    @media (max-width: 680px) {
+      padding: 0;
+      padding-right: 70px;
     }
 
-    &.company-card--education {
-      background: #fdfaf2;
-      border-color: rgba(#5C481A, 0.18);
-
-      &:hover {
-        background: #fcf3e3;
-        border-color: rgba(#5C481A, 0.32);
-      }
-
-      body.theme-dark & {
-        background: rgba(#5C481A, 0.15);
-        border-color: rgba(#E3C18E, 0.12);
-
-        &:hover {
-          background: rgba(#5C481A, 0.22);
-          border-color: rgba(#E3C18E, 0.22);
-        }
-      }
-    }
-
-    .company-card-image {
-      width: 200px;
-      min-height: 190px;
-      flex-shrink: 0;
-      border-radius: 10px;
-
-      @media (max-width: 680px) {
-        display: none;
-      }
-    }
-
-    .company-card-details {
-      padding: 0 0 0 2.25rem;
-
-      @media (max-width: 680px) {
-        padding: 0;
-      }
+    @media (max-width: 580px) {
+      padding-right: 64px;
     }
   }
 
@@ -2617,13 +2713,20 @@ $lw-distance:        0.85em; // clip travel distance
   border-radius: 10px;
   overflow: hidden;
 
+  // Gentle float bobble animation
+  animation: gentle-bobble var(--bobble-duration, 6.8s) ease-in-out infinite;
+  animation-delay: var(--bobble-delay, 0s);
+  will-change: transform;
+
   // Work (blue) default
   background: linear-gradient(145deg, rgba(#DFE8F9, 0.55), rgba(#EEF3FB, 0.28));
   border: 1.5px solid rgba(#203A6F, 0.09);
+  box-shadow: 0 4px 16px rgba(43, 32, 23, 0.05);
 
   body.theme-dark & {
     background: linear-gradient(145deg, rgba(#203A6F, 0.28), rgba(#13264F, 0.14));
     border-color: rgba(#A7C2ED, 0.1);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
   }
 
   // Education (amber) override
@@ -2712,7 +2815,7 @@ $lw-distance:        0.85em; // clip travel distance
 .company-card-name {
   font-family: 'Gabarito', sans-serif;
   font-size: clamp(1.725rem, 3.45vw, 2.3rem);
-  font-weight: 500;
+  font-weight: 600;
   color: #10161F;
   line-height: 1.1;
   margin: 0;
@@ -2827,29 +2930,34 @@ $lw-distance:        0.85em; // clip travel distance
   align-items: center;
   gap: 7px;
   padding: 9px 18px;
-  border-radius: 100px;
+  border-radius: 8px;
   font-family: 'Gabarito', sans-serif;
   font-size: 0.82rem;
   font-weight: 600;
   letter-spacing: 0.02em;
   text-decoration: none !important;
-  border: none;
+  border: 1.5px solid transparent;
   cursor: url('/assets/cursors/link.svg') 18 0, pointer;
   align-self: flex-start;
   transition:
     background 0.22s ease,
+    border-color 0.22s ease,
     transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
-    box-shadow 0.22s ease;
+    box-shadow 0.22s ease,
+    color 0.22s ease;
 
-  // Work (blue)
-  background: #203A6F;
-  color: #FAF8F5 !important;
+  // Work (blue) - Light Mode
+  background: #e6efff;
+  border-color: rgba(#203A6F, 0.15);
+  color: #203A6F !important;
 
   &:hover {
-    background: #2C4E96;
+    opacity: 1 !important;
+    background: #d0e0ff;
+    border-color: rgba(#203A6F, 0.25);
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(#203A6F, 0.32);
-    color: #FAF8F5 !important;
+    box-shadow: 0 4px 12px rgba(#203A6F, 0.12);
+    color: #203A6F !important;
   }
 
   &:active {
@@ -2858,37 +2966,209 @@ $lw-distance:        0.85em; // clip travel distance
   }
 
   body.theme-dark & {
+    // Work (blue) - Dark Mode
     background: #A7C2ED;
+    border-color: rgba(#A7C2ED, 0.2);
     color: #10161F !important;
 
     &:hover {
+      opacity: 1 !important;
       background: #C0D4F5;
-      box-shadow: 0 6px 20px rgba(#A7C2ED, 0.28);
+      border-color: rgba(#A7C2ED, 0.35);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
       color: #10161F !important;
     }
   }
 
   // Education (amber)
   .company-card--education & {
-    background: #5C481A;
-    color: #FAF8F5 !important;
+    // Education (amber) - Light Mode
+    background: #fcf3e3;
+    border-color: rgba(#5C481A, 0.15);
+    color: #5C481A !important;
 
     &:hover {
-      background: #7A6022;
-      box-shadow: 0 6px 20px rgba(#5C481A, 0.32);
-      color: #FAF8F5 !important;
+      opacity: 1 !important;
+      background: #f5e2c4;
+      border-color: rgba(#5C481A, 0.25);
+      box-shadow: 0 4px 12px rgba(#5C481A, 0.12);
+      color: #5C481A !important;
     }
 
     body.theme-dark & {
+      // Education (amber) - Dark Mode
       background: #E3C18E;
+      border-color: rgba(#E3C18E, 0.2);
       color: #2B1A05 !important;
 
       &:hover {
+        opacity: 1 !important;
         background: #EDD09E;
-        box-shadow: 0 6px 20px rgba(#E3C18E, 0.28);
+        border-color: rgba(#E3C18E, 0.35);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
         color: #2B1A05 !important;
       }
     }
+  }
+}
+
+.company-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  margin-top: 4px;
+}
+
+.company-card-case-study-wrapper {
+  position: relative;
+  display: inline-flex;
+}
+
+.company-card-cta--disabled {
+  cursor: url('/assets/cursors/pointer-no.svg') 5 0, not-allowed;
+  pointer-events: auto; /* Ensure hover and tooltip work */
+  background: #f0f4fc;
+  border: 1.5px dashed rgba(#203A6F, 0.25);
+  color: rgba(#203A6F, 0.6) !important;
+  box-shadow: none !important;
+
+  &:hover {
+    background: #f0f4fc !important;
+    transform: none !important; /* Prevent default vertical lift */
+    box-shadow: none !important;
+    color: rgba(#203A6F, 0.6) !important;
+    animation: rumble 0.25s linear infinite;
+  }
+
+  body.theme-dark & {
+    background: rgba(#203A6F, 0.08);
+    border-color: rgba(#A7C2ED, 0.2);
+    color: rgba(#A7C2ED, 0.5) !important;
+
+    &:hover {
+      background: rgba(#203A6F, 0.08) !important;
+      color: rgba(#A7C2ED, 0.5) !important;
+    }
+  }
+
+  // Muted theme matching Education (amber)
+  .company-card--education & {
+    background: #faf6eb;
+    border-color: rgba(#5C481A, 0.25);
+    color: rgba(#5C481A, 0.6) !important;
+
+    &:hover {
+      background: #faf6eb !important;
+      color: rgba(#5C481A, 0.6) !important;
+    }
+
+    body.theme-dark & {
+      background: rgba(#5C481A, 0.08);
+      border-color: rgba(#E3C18E, 0.2);
+      color: rgba(#E3C18E, 0.5) !important;
+
+      &:hover {
+        background: rgba(#5C481A, 0.08) !important;
+        color: rgba(#E3C18E, 0.5) !important;
+      }
+    }
+  }
+
+  .lock-icon {
+    flex-shrink: 0;
+  }
+}
+
+.case-study-tooltip {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-4px);
+  background: #10161F; // Dark cocoa background
+  color: #FAF8F5;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-family: 'Gabarito', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 500;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 10;
+  letter-spacing: 0.01em;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 5px;
+    border-style: solid;
+    border-color: #10161F transparent transparent transparent;
+  }
+
+  body.theme-dark & {
+    background: #FAF8F5;
+    color: #10161F;
+
+    &::after {
+      border-color: #FAF8F5 transparent transparent transparent;
+    }
+  }
+}
+
+.company-card-case-study-wrapper:hover,
+.company-modal-case-study-wrapper:hover {
+  .case-study-tooltip {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(-10px);
+  }
+}
+
+@keyframes rumble {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  10% { transform: translate(-0.8px, -0.8px) rotate(-0.5deg); }
+  20% { transform: translate(0.8px, -0.5px) rotate(0.5deg); }
+  30% { transform: translate(-0.5px, 0.8px) rotate(-0.5deg); }
+  40% { transform: translate(0.8px, 0.8px) rotate(0deg); }
+  50% { transform: translate(-0.8px, 0.5px) rotate(0.5deg); }
+  60% { transform: translate(0.5px, -0.8px) rotate(-0.5deg); }
+  70% { transform: translate(-0.8px, -0.8px) rotate(0.5deg); }
+  80% { transform: translate(0.8px, 0.5px) rotate(-0.5deg); }
+  90% { transform: translate(-0.5px, 0.8px) rotate(0deg); }
+  100% { transform: translate(0, 0) rotate(0deg); }
+}
+
+// Larger text sizes on wider screens (after the mobile hamburger menu breakpoint)
+@media (min-width: 769px) {
+  .company-card-name {
+    font-size: clamp(2.3rem, 4.2vw, 3.25rem);
+  }
+  .company-card-role {
+    font-size: 1.05rem;
+    margin-top: 6px;
+  }
+  .company-card-dates {
+    font-size: 0.88rem;
+  }
+  .company-card-chip {
+    font-size: 0.76rem;
+    padding: 4px 12px;
+  }
+  .company-card-summary {
+    font-size: clamp(1.1rem, 2.1vw, 1.35rem);
+    line-height: 1.7;
+  }
+  .company-card-cta {
+    font-size: 0.95rem;
+    padding: 12px 24px;
+    border-radius: 8px;
   }
 }
 
